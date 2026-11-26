@@ -74,10 +74,14 @@ jobs:
           cmake -S /tmp/usign -B /tmp/usign/b >/dev/null
           make -C /tmp/usign/b >/dev/null
           umask 077
-          printf '%s\n' "$SIGN_KEY" > /tmp/nf.key
-          /tmp/usign/b/usign -S -m dist/nightfall-root.tar.gz -s /tmp/nf.key -x dist/nightfall-root.tar.gz.sig
+          # usign always treats the first line of a key file as a comment; keep only the key line and add the comment ourselves,
+          # so a secret pasted with or without the "untrusted comment:" line (or with stray CR/blank lines) works.
+          KEYLINE=$(printf '%s\n' "$SIGN_KEY" | tr -d '\r' | grep -v '^untrusted comment:' | grep -v '^[[:space:]]*$' | head -n 1 | tr -d '[:space:]')
+          [ -n "$KEYLINE" ] || { echo "::error::NIGHTFALL_SIGN_KEY has no key line"; exit 1; }
+          printf 'untrusted comment: Nightfall release key\n%s\n' "$KEYLINE" > /tmp/nf.key
+          /tmp/usign/b/usign -S -m dist/nightfall-root.tar.gz -s /tmp/nf.key -x dist/nightfall-root.tar.gz.sig || { rm -f /tmp/nf.key; echo "::error::usign could not sign with NIGHTFALL_SIGN_KEY (wrong or password-protected key?)"; exit 1; }
           rm -f /tmp/nf.key
-          /tmp/usign/b/usign -V -m dist/nightfall-root.tar.gz -p luci-theme-nightfall/root/etc/nightfall-release.pub -x dist/nightfall-root.tar.gz.sig
+          /tmp/usign/b/usign -V -m dist/nightfall-root.tar.gz -p luci-theme-nightfall/root/etc/nightfall-release.pub -x dist/nightfall-root.tar.gz.sig || { echo "::error::Signature does not verify with luci-theme-nightfall/root/etc/nightfall-release.pub: NIGHTFALL_SIGN_KEY is not the matching private key"; exit 1; }
       - name: Publish the GitHub Release
         uses: softprops/action-gh-release@v2
         with:
