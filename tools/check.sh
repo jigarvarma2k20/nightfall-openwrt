@@ -60,7 +60,7 @@ if command -v node >/dev/null; then node tools/test-app-traffic-monitor.js || er
 echo "== Cache version =="
 b=$(grep -o '[0-9]\{8\}[a-z]' luci-theme-nightfall/ucode/template/themes/nightfall/header.ut | sort -u)
 echo "$b"
-[ "$(echo "$b" | wc -l)" = 1 ] || err "header.ut has mixed cache versions"
+[ "$(echo "$b" | wc -l | tr -d " ")" = 1 ] || err "header.ut has mixed cache versions"
 
 echo "== Theme version =="
 cv=$(sed -n 's/^## v\([^ ·]*\) ·.*/\1/p' CHANGELOG.md | head -n 1)

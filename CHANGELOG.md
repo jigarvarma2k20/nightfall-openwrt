@@ -1,3 +1,10 @@
+## v1.30.0 · English interface
+- [Important] **The whole interface is now in English**: Personalization, Overview widgets, Resource Monitor, sign-in screen, notifications, the Telegram bot and the router scripts. Numbers and dates use the en-US format.
+- [Important] **Updates come from the jigarvarma2k20/nightfall-openwrt fork**, which signs releases with its own key.
+- [Improved] Traffic history recorded by earlier versions still shows correctly: old app names and events are converted to English.
+- [Improved] Device types are still recognized from Russian device names, and guest networks with Russian names are still detected.
+- [Fixed] The installer no longer prints garbled characters after the version number when run in some shells.
+
 ## v1.29.0 · Router log center and smart diagnostics
 - [Added] **Router log center**: recognizes syslog levels and inline message markers (err, warn, notice, info, debug) and visually separates errors, warnings and notices.
 - [Added] **Log filters and tools**: quick level filters, search by service and text, manual refresh, auto-refresh, copying entries and CSV export.
