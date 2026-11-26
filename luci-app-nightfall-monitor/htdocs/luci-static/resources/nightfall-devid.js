@@ -2,16 +2,16 @@
 'require baseclass';
 
 /*
- * Nightfall: опознавание устройства по MAC-адресу и имени узла.
- *  - приватный (случайный) MAC: у телефонов с «частным адресом Wi‑Fi» второй бит первого байта равен 1 — по такому адресу
- *    производителя узнать нельзя, и это надо показывать честно, а не гадать;
- *  - производитель по первым трём байтам (OUI): компактная таблица самых частых домашних производителей.
- *    Это не полный список IEEE (в нём десятки тысяч записей): неизвестный префикс просто остаётся без подписи;
- *  - вид устройства (телефон, ТВ, компьютер…) по имени узла и по производителю.
- * Используется Монитором и карточками «Сейчас» (тема подключает модуль, если он есть).
+ * Nightfall: device identification by MAC address and host name.
+ *  - private (random) MAC: on phones with a "private Wi‑Fi address" the second bit of the first byte is 1; the vendor
+ *    cannot be determined from such an address, and this should be shown honestly instead of guessing;
+ *  - vendor by the first three bytes (OUI): a compact table of the most common home vendors.
+ *    This is not the full IEEE list (it has tens of thousands of entries): an unknown prefix simply stays unlabeled;
+ *  - device type (phone, TV, computer…) by host name and by vendor.
+ * Used by the Monitor and the "Now" cards (the theme loads the module if it is present).
  */
 
-/* префикс (6 символов hex) → производитель; значение «Имя|вид» (вид необязателен) */
+/* prefix (6 hex characters) → vendor; value "Name|type" (type is optional) */
 const OUI = {
 	/* Apple */
 	'000393': 'Apple', '000a27': 'Apple', '000a95': 'Apple', '000d93': 'Apple', '001124': 'Apple', '001451': 'Apple', '0016cb': 'Apple',
@@ -19,20 +19,20 @@ const OUI = {
 	'001ff3': 'Apple', '0021e9': 'Apple', '002241': 'Apple', '002312': 'Apple', '002332': 'Apple', '00236c': 'Apple', '0023df': 'Apple',
 	'002436': 'Apple', '002500': 'Apple', '00254b': 'Apple', '0025bc': 'Apple', '002608': 'Apple', '00264a': 'Apple', '0026b0': 'Apple',
 	'0026bb': 'Apple', '3c0754': 'Apple', 'f01898': 'Apple', 'acbc32': 'Apple', '9801a7': 'Apple',
-	/* платформы разработчиков и «умный дом» */
+	/* developer platforms and "smart home" */
 	'b827eb': 'Raspberry Pi|pc', 'dca632': 'Raspberry Pi|pc', 'e45f01': 'Raspberry Pi|pc', 'd83add': 'Raspberry Pi|pc', '2ccf67': 'Raspberry Pi|pc',
 	'240ac4': 'Espressif|iot', '30aea4': 'Espressif|iot', '7c9ebd': 'Espressif|iot', 'a4cf12': 'Espressif|iot', '840d8e': 'Espressif|iot',
 	'246f28': 'Espressif|iot', '5ccf7f': 'Espressif|iot', 'bcddc2': 'Espressif|iot', '84cca8': 'Espressif|iot', 'c44f33': 'Espressif|iot',
 	'ecfabc': 'Espressif|iot', '3c71bf': 'Espressif|iot', 'cc50e3': 'Espressif|iot', '8caab5': 'Espressif|iot', '68c63a': 'Espressif|iot',
-	/* колонки, консоли */
+	/* speakers, consoles */
 	'000e58': 'Sonos|speaker', '5caafd': 'Sonos|speaker', '7828ca': 'Sonos|speaker', 'b8e937': 'Sonos|speaker', '949f3e': 'Sonos|speaker',
 	'0009bf': 'Nintendo|console', '001656': 'Nintendo|console', '0017ab': 'Nintendo|console', '00191d': 'Nintendo|console', '001ae9': 'Nintendo|console',
 	'001bea': 'Nintendo|console', '001cbe': 'Nintendo|console', '001e35': 'Nintendo|console', '001f32': 'Nintendo|console', '002147': 'Nintendo|console',
 	'0022aa': 'Nintendo|console', '0024f3': 'Nintendo|console', '002659': 'Nintendo|console', '8c56c5': 'Nintendo|console', '98b6e9': 'Nintendo|console',
-	/* виртуальные машины и контейнеры */
+	/* virtual machines and containers */
 	'000c29': 'VMware|vm', '005056': 'VMware|vm', '000569': 'VMware|vm', '001c14': 'VMware|vm', '00155d': 'Microsoft Hyper-V|vm',
 	'080027': 'VirtualBox|vm', '525400': 'QEMU/KVM|vm',
-	/* сетевое оборудование */
+	/* network equipment */
 	'50c7bf': 'TP-Link|net', '14cc20': 'TP-Link|net', '98dac4': 'TP-Link|net', 'f4f26d': 'TP-Link|net', '002719': 'TP-Link|net', '54c80f': 'TP-Link|net',
 	'10feed': 'TP-Link|net', '60e327': 'TP-Link|net', 'a0f3c1': 'TP-Link|net', 'ec086b': 'TP-Link|net', '647002': 'TP-Link|net', '30b5c2': 'TP-Link|net',
 	'c04a00': 'TP-Link|net', '8416f9': 'TP-Link|net',
@@ -40,7 +40,7 @@ const OUI = {
 	'0016ea': 'Intel'
 };
 
-/* вид устройства: [шаблон имени узла, код] — первый совпавший побеждает */
+/* device type: [host name pattern, code]; the first match wins */
 const KIND_RE = [
 	[ /ipad|tablet|galaxy-?tab|\bsm-t\d|mi-?pad|lenovo-?tab|matepad|планшет/i, 'tablet' ],
 	[ /iphone|android|galaxy|\bsm-[a-z]\d|pixel|redmi|xiaomi|poco|huawei|honor|oneplus|realme|oppo|vivo|phone|\bmi-?\d|nothing|телефон|смартфон|мобильн/i, 'phone' ],
@@ -56,11 +56,11 @@ const KIND_RE = [
 ];
 
 const KIND_LABEL = {
-	phone: 'Телефон', tablet: 'Планшет', watch: 'Часы', console: 'Приставка', tv: 'Телевизор', printer: 'Принтер', camera: 'Камера',
-	speaker: 'Колонка', iot: 'Умный дом', net: 'Сеть', pc: 'Компьютер', vm: 'Виртуальная машина', unk: 'Устройство'
+	phone: 'Phone', tablet: 'Tablet', watch: 'Watch', console: 'Console', tv: 'TV', printer: 'Printer', camera: 'Camera',
+	speaker: 'Speaker', iot: 'Smart home', net: 'Network', pc: 'Computer', vm: 'Virtual machine', unk: 'Device'
 };
 
-/* значки: простые контуры 24×24 */
+/* icons: simple 24×24 outlines */
 const KIND_SVG = {
 	phone: '<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/>',
 	tablet: '<rect x="5" y="2" width="14" height="20" rx="2"/><path d="M11 18h2"/>',
@@ -86,13 +86,13 @@ return baseclass.extend({
 	KIND_LABEL: KIND_LABEL,
 	norm: norm,
 
-	/* приватный (случайный, «locally administered») адрес: производителя по нему узнать нельзя */
+	/* private (random, "locally administered") address: the vendor cannot be determined from it */
 	isPrivate: function(mac) {
 		const m = norm(mac);
 		return m ? (parseInt(m.slice(0, 2), 16) & 2) === 2 : false;
 	},
 
-	/* опознавание: { vendor, kind, label, priv, hint } */
+	/* identification: { vendor, kind, label, priv, hint } */
 	identify: function(mac, host) {
 		const m = norm(mac), priv = m ? this.isPrivate(m) : false;
 		let vendor = '', kind = '';
@@ -103,12 +103,12 @@ return baseclass.extend({
 		if (!vendor && /iphone|ipad|macbook|imac|mac-?mini|apple/i.test(h)) vendor = 'Apple';
 		const label = KIND_LABEL[kind] || '';
 		let hint = '';
-		if (priv) hint = 'Частный (случайный) MAC: у устройства включён «частный адрес Wi‑Fi», производителя по нему узнать нельзя';
-		else if (vendor) hint = 'Производитель по MAC: ' + vendor;
+		if (priv) hint = 'Private (random) MAC: the device has "private Wi‑Fi address" turned on, so the vendor cannot be determined from it';
+		else if (vendor) hint = 'Vendor by MAC: ' + vendor;
 		return { vendor: vendor, kind: kind || 'unk', label: label, priv: priv, hint: hint, known: !!(vendor || kind) };
 	},
 
-	/* значок вида устройства (строка SVG, без внешних данных) */
+	/* device type icon (an SVG string, no external data) */
 	icon: function(kind) {
 		return '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
 			+ (KIND_SVG[kind] || KIND_SVG.unk) + '</svg>';

@@ -25,7 +25,7 @@ grep -Fq 'WIFI_HIST=0; APPS=0' "$COLLECTOR"
 
 # Update and restore must have explicit rollback paths; uninstall must stop/disable procd.
 grep -Fq 'rollback()' "$UPDATE"
-grep -Fq 'исходные настройки возвращены' "$BACKUP"
+grep -Fq 'the original settings were restored' "$BACKUP"
 grep -Fq '/etc/init.d/nightfall-collector stop' "$UNINSTALL"
 grep -Fq '/etc/init.d/nightfall-collector disable' "$UNINSTALL"
 

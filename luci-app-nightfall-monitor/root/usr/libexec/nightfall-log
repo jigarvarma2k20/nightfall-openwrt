@@ -1,8 +1,8 @@
 #!/bin/sh
-# Nightfall: системный журнал роутера для вкладки «Журнал». Только чтение.
-#   nightfall-log read [N]   — последние N строк (по умолчанию 400, не больше 1500), JSON:
-#                              {"ok":true,"rows":[["Nov 16 02:10:01","daemon.info","dropbear","текст"],...]}
-# Для проверок: NF_LOGREAD (команда вместо logread).
+# Nightfall: the router system log for the "Log" tab. Read-only.
+#   nightfall-log read [N]   — last N lines (400 by default, at most 1500), JSON:
+#                              {"ok":true,"rows":[["Nov 16 02:10:01","daemon.info","dropbear","text"],...]}
+# For checks: NF_LOGREAD (command used instead of logread).
 LOGREAD=${NF_LOGREAD:-logread}
 case "$1" in
 read)

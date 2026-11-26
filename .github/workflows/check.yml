@@ -13,14 +13,14 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
       - run: ./tools/check.sh
-      - name: Сборка кандидата стабильного релиза
+      - name: Build a stable release candidate
         if: github.event_name == 'pull_request' && github.head_ref == 'release/stability-1.28.0'
         run: |
           set -eu
           VERSION=$(awk -F'"' '/"version"/ { print $4; exit }' luci-theme-nightfall/htdocs/luci-static/nightfall/version.json)
           test -n "$VERSION"
           VERSION="v$VERSION" sh ./build-release.sh
-      - name: Проверка установочного архива
+      - name: Check the install archive
         if: github.event_name == 'pull_request' && github.head_ref == 'release/stability-1.28.0'
         run: |
           set -eu
@@ -32,7 +32,7 @@ jobs:
           ARCHIVE_VERSION=$(tar -xOf dist/nightfall-root.tar.gz ./www/luci-static/nightfall/version.json | awk -F'"' '/"version"/ { print $4; exit }')
           test "$ARCHIVE_VERSION" = "$EXPECTED_VERSION"
           tar -xOf dist/nightfall-root.tar.gz ./usr/share/ucode/luci/template/themes/nightfall/header.ut | grep -Fq "?v=$EXPECTED_VERSION"
-      - name: Загрузка сборки для проверки релиза
+      - name: Upload the build for release testing
         if: success() && github.event_name == 'pull_request' && github.head_ref == 'release/stability-1.28.0'
         uses: actions/upload-artifact@v4
         with:
@@ -42,12 +42,12 @@ jobs:
             dist/nightfall-root.tar.gz.sha256
           if-no-files-found: error
           retention-days: 14
-      - name: Сборка RC с исправлениями учёта трафика и репитера
+      - name: Build an RC with traffic accounting and repeater fixes
         if: github.event_name == 'pull_request' && github.head_ref == 'fix/repeater-device-identity'
         env:
           VERSION: v1.28.7-rc.2
         run: sh ./build-release.sh
-      - name: Проверка RC-архива и версии
+      - name: Check the RC archive and version
         if: github.event_name == 'pull_request' && github.head_ref == 'fix/repeater-device-identity'
         env:
           VERSION: v1.28.7-rc.2
@@ -60,7 +60,7 @@ jobs:
           ARCHIVE_VERSION=$(tar -xOf dist/nightfall-root.tar.gz ./www/luci-static/nightfall/version.json | awk -F'"' '/"version"/ { print $4; exit }')
           test "$ARCHIVE_VERSION" = "$EXPECTED_VERSION"
           tar -xOf dist/nightfall-root.tar.gz ./usr/share/ucode/luci/template/themes/nightfall/header.ut | grep -Fq "?v=$EXPECTED_VERSION"
-      - name: Загрузка RC для установки на роутер
+      - name: Upload the RC for installing on a router
         if: success() && github.event_name == 'pull_request' && github.head_ref == 'fix/repeater-device-identity'
         uses: actions/upload-artifact@v4
         with:
@@ -71,33 +71,33 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-      - name: Проверка службы и скриптов мониторинга
+      - name: Check the monitoring service and scripts
         run: sh tools/test-service.sh
-      - name: "USB-хранилище: отключение и восстановление"
+      - name: "USB storage: disconnect and recovery"
         run: sh tools/test-persist.sh
-      - name: Тесты бота (без Telegram)
+      - name: Bot tests (without Telegram)
         run: sh tools/test-bot.sh
-      - name: История температур по датчикам
+      - name: Per-sensor temperature history
         run: sh tools/test-temps.sh
-      - name: Безопасность и диагностика
+      - name: Security and diagnostics
         run: sh tools/test-sec.sh
-      - name: Резервная копия и восстановление Nightfall
+      - name: Nightfall backup and restore
         run: sh tools/test-backup.sh
-      - name: Расписание блокировки
+      - name: Block schedule
         run: sh tools/test-block.sh
-      - name: Учёт трафика только для LAN-клиентов
+      - name: Traffic accounting for LAN clients only
         run: sh tools/test-device-accounting.sh
       - name: Test monitor device identity (repeater and direct Wi-Fi)
         run: node tools/test-monitor-device-identity.js
-      - name: Большие счётчики трафика в JSON истории
+      - name: Large traffic counters in history JSON
         run: node tools/test-history-devdaily.js
-      - name: Окно «Что нового» после обновления
+      - name: What's new dialog after an update
         run: sh tools/test-whats-new.sh
-      - name: Изолированные тесты LuCI updater и отката
+      - name: Isolated LuCI updater and rollback tests
         run: sh tools/test-updater.sh
-      - name: Тесты установки, обновления и удаления
+      - name: Install, update and uninstall tests
         run: sh tools/test-install.sh
-      - name: Дымовой тест (Playwright)
+      - name: Smoke test (Playwright)
         run: |
           npm install --no-save playwright@1.49.0
           npx playwright install --with-deps chromium

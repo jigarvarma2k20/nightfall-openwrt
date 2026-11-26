@@ -1,7 +1,7 @@
 #!/bin/sh
-# Nightfall: статистика DNS-запросов для вкладки «Сеть» (по журналу dnsmasq, только чтение).
-#   nightfall-dns top   — JSON: {"ok":true,"enabled":true,"total":N,"types":[["A",n],..],"nx":N,"sites":[["сайт",n],..],"clients":[["ip",n],..],"nxd":[["имя",n],..]}
-# Журнал запросов dnsmasq включается вместе с учётом по приложениям (dhcp.@dnsmasq[0].logqueries=1). Для проверок: NF_LOGREAD, NF_UCI.
+# Nightfall: DNS query statistics for the "Network" tab (from the dnsmasq log, read-only).
+#   nightfall-dns top   — JSON: {"ok":true,"enabled":true,"total":N,"types":[["A",n],..],"nx":N,"sites":[["site",n],..],"clients":[["ip",n],..],"nxd":[["name",n],..]}
+# The dnsmasq query log is turned on together with per-app accounting (dhcp.@dnsmasq[0].logqueries=1). For checks: NF_LOGREAD, NF_UCI.
 LOGREAD=${NF_LOGREAD:-logread}
 UCI=${NF_UCI:-uci}
 [ "$1" = top ] || { echo "usage: nightfall-dns top" >&2; exit 1; }

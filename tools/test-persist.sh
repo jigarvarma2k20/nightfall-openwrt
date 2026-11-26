@@ -159,5 +159,5 @@ if NF_CONF="$T/config" NF_DEF="$T/config.default" NF_NORESTART=1 sh "$CONFIG" se
 grep -q '"ok":false' "$T/config-root" || { echo "FAIL: root path accepted" >&2; exit 1; }
 
 echo
-echo "ИТОГО: ok=$ok, ошибок=$bad"
+echo "TOTAL: ok=$ok, failed=$bad"
 [ "$bad" -eq 0 ]

@@ -1,32 +1,32 @@
-# Резервная копия и восстановление Nightfall
+# Nightfall backup and restore
 
-Актуально для **Nightfall v1.28.6**. Утилита `/usr/libexec/nightfall-backup` создаёт архив настроек Nightfall, проверяет его структуру и контрольные суммы манифеста, показывает предварительный просмотр и выполняет транзакционное восстановление.
+Applies to **Nightfall v1.28.6**. The `/usr/libexec/nightfall-backup` utility creates an archive of Nightfall settings, checks its structure and the manifest checksums, shows a preview and performs a transactional restore.
 
-**Аппаратная проверка:** создание и восстановление резервных копий проверялись на Cudy WR3000U-256MB с OpenWrt 25.12.6. Инструкция описывает функции Nightfall и не ограничивает их использование этой моделью; на других устройствах поведение следует проверять отдельно.
+**Hardware testing:** creating and restoring backups was tested on a Cudy WR3000U-256MB with OpenWrt 25.12.6. This guide describes Nightfall features and does not limit their use to this model; on other devices the behavior should be checked separately.
 
-> Архив предназначен для переноса и восстановления настроек Nightfall. Он **не является резервной копией OpenWrt** и не содержит сетевую конфигурацию роутера.
+> The archive is meant for moving and restoring Nightfall settings. It is **not an OpenWrt backup** and does not contain the router's network configuration.
 
-## Где хранятся архивы
+## Where archives are stored
 
-Если `PERSIST_DIR` в `/etc/nightfall-monitor.conf` указывает на реально смонтированный внешний USB/SD-накопитель, архивы автоматически сохраняются в отдельной папке `nightfall-backups` на том же разделе.
+If `PERSIST_DIR` in `/etc/nightfall-monitor.conf` points to an actually mounted external USB/SD drive, archives are automatically saved to a separate `nightfall-backups` folder on the same partition.
 
-Например, при:
+For example, with:
 
 ```sh
 PERSIST_DIR=/mnt/sda1/nightfall
 ```
 
-резервные копии находятся в:
+backups are located in:
 
 ```
 /mnt/sda1/nightfall-backups/
 ```
 
-Если внешний накопитель не настроен или не смонтирован, используется временный каталог `/tmp/nightfall-backups`. Он находится в RAM и очищается при перезагрузке. Утилита сообщает, какое хранилище выбрано. При возвращении USB/SD новые копии снова будут сохраняться на внешний накопитель.
+If no external drive is configured or mounted, the temporary directory `/tmp/nightfall-backups` is used. It is in RAM and is cleared on reboot. The utility reports which storage was selected. When the USB/SD drive comes back, new backups are saved to the external drive again.
 
-Количество сохраняемых архивов на USB/SD задаётся параметром `BACKUP_KEEP`: от 1 до 20, по умолчанию 5. Ротация удаляет только старые завершённые архивы Nightfall данного роутера. Временные копии в `/tmp` автоматически не ротируются этим правилом.
+The number of archives kept on USB/SD is set with `BACKUP_KEEP`: from 1 to 20, 5 by default. Rotation removes only old, completed Nightfall archives of this router. Temporary copies in `/tmp` are not rotated automatically by this rule.
 
-Проверить настройки и найти архивы:
+To check the settings and find archives:
 
 ```sh
 grep -E '^(PERSIST_DIR|BACKUP_KEEP)=' /etc/nightfall-monitor.conf
@@ -34,85 +34,85 @@ find /mnt -type f -path '*/nightfall-backups/nightfall-backup-*.tar.gz' -print 2
 ls -lh /tmp/nightfall-backups/ 2>/dev/null
 ```
 
-## Создать резервную копию
+## Create a backup
 
-### Через Telegram
+### Via Telegram
 
-1. Откройте Telegram-бота Nightfall и нажмите **«Резервная копия»**.
-2. Бот создаст и проверит архив, сохранит локальную копию на роутере и отправит архив отдельным сообщением-файлом.
-3. Под файлом появится кнопка **«Проверить и восстановить»**. Она нужна для проверки и запуска процедуры восстановления; само создание копии не меняет настройки.
+1. Open the Nightfall Telegram bot and press **"Backup"**.
+2. The bot creates and checks the archive, saves a local copy on the router and sends the archive as a separate file message.
+3. A **"Check and restore"** button appears under the file. It is used to check the archive and start the restore procedure; creating a backup by itself does not change any settings.
 
-### Через LuCI или SSH
+### Via LuCI or SSH
 
-В настройках «Монитора ресурсов» есть действие **«Создать резервную копию сейчас»**. Оно создаёт проверенный архив и выводит путь к нему.
+The Resource Monitor settings have a **"Create backup now"** action. It creates a verified archive and shows its path.
 
-По SSH можно выполнить:
+Over SSH you can run:
 
 ```sh
 /usr/libexec/nightfall-backup create
 ```
 
-В выводе будет полный путь к архиву, число файлов и выбранное хранилище. Перед перезагрузкой роутера или переносом настроек скопируйте архив с USB/SD на компьютер либо сохраните файл, отправленный ботом.
+The output shows the full path to the archive, the number of files and the selected storage. Before rebooting the router or moving settings, copy the archive from the USB/SD drive to a computer, or keep the file sent by the bot.
 
-## Проверить архив
+## Check an archive
 
-До восстановления архив можно проверить отдельно:
+Before restoring, an archive can be checked separately:
 
 ```sh
-/usr/libexec/nightfall-backup list /ПУТЬ/К/nightfall-backup-ИМЯ.tar.gz
+/usr/libexec/nightfall-backup list /PATH/TO/nightfall-backup-NAME.tar.gz
 ```
 
-Команда проверяет формат архива, манифест, контрольные суммы и допустимый состав файлов. Она только показывает содержимое и ничего не меняет.
+The command checks the archive format, the manifest, the checksums and the allowed set of files. It only shows the contents and changes nothing.
 
-## Восстановить через Telegram
+## Restore via Telegram
 
-Это рекомендуемый способ, если архив был создан кнопкой бота или доступен боту в локальном хранилище.
+This is the recommended method if the archive was created with the bot button or is available to the bot in local storage.
 
-1. Нажмите **«Проверить и восстановить»** под сообщением с архивом.
-2. Бот проверит локальный архив и покажет его манифест и список файлов.
-3. Если проверка успешна, появятся кнопки **«Восстановить настройки»** и **«Отмена»**.
-4. Нажмите **«Восстановить настройки»**, только если согласны заменить текущие настройки Nightfall содержимым архива. Подтверждение действительно 5 минут.
-5. При успешном восстановлении бот сообщает о результате и автоматически перезапускает сборщик и Telegram-бота.
+1. Press **"Check and restore"** under the message with the archive.
+2. The bot checks the local archive and shows its manifest and list of files.
+3. If the check succeeds, the **"Restore settings"** and **"Cancel"** buttons appear.
+4. Press **"Restore settings"** only if you agree to replace the current Nightfall settings with the contents of the archive. The confirmation is valid for 5 minutes.
+5. After a successful restore, the bot reports the result and automatically restarts the collector and the Telegram bot.
 
-Кнопка **«Отмена»** отменяет запрос и не меняет текущие настройки. Если проверка архива не прошла, бот не предлагает применить его. Если подтверждение просрочено, запустите проверку заново.
+The **"Cancel"** button cancels the request and leaves the current settings unchanged. If the archive check fails, the bot does not offer to apply it. If the confirmation has expired, run the check again.
 
-## Восстановить через SSH
+## Restore via SSH
 
-Сначала выполните предварительный просмотр:
+First, run a preview:
 
 ```sh
-/usr/libexec/nightfall-backup restore /ПУТЬ/К/АРХИВУ.tar.gz
+/usr/libexec/nightfall-backup restore /PATH/TO/ARCHIVE.tar.gz
 ```
 
-Убедитесь, что состав архива подходит. Затем отдельно подтвердите применение:
+Make sure the archive contents are what you expect. Then confirm applying it separately:
 
 ```sh
-/usr/libexec/nightfall-backup restore /ПУТЬ/К/АРХИВУ.tar.gz apply
+/usr/libexec/nightfall-backup restore /PATH/TO/ARCHIVE.tar.gz apply
 /etc/init.d/nightfall-collector restart
 ```
 
-Восстановление транзакционное: перед заменой файлов утилита подготавливает новые файлы и копии текущих настроек. При ошибке применения выполняется попытка вернуть исходные файлы. Если откат тоже не удался, утилита выводит сообщение о критической ошибке — проверьте каталог `/etc` вручную.
+The restore is transactional: before replacing files, the utility prepares the new files and copies of the current settings. If applying fails, it tries to put the original files back. If the rollback also fails, the utility prints a critical error message; check the `/etc` directory manually.
 
-## Что входит в архив
+## What the archive contains
 
-Архив содержит только существующие на момент создания файлы Nightfall. В зависимости от включённых функций это могут быть:
+The archive contains only the Nightfall files that existed when it was created. Depending on the enabled features, these may be:
 
-- `nightfall-monitor.conf` — настройки монитора, постоянного хранения и уведомлений;
-- `nightfall-prefs.json`, `nightfall-logo.json`, `nightfall-bg.json` — персонализация;
-- списки устройств, групп, блокировок, известных устройств и правил приложений;
-- журнал событий Nightfall;
-- открытый ключ проверки подписи релизов.
+- `nightfall-monitor.conf`: monitor, persistent storage and notification settings;
+- `nightfall-prefs.json`, `nightfall-logo.json`, `nightfall-bg.json`: personalization;
+- lists of devices, groups, blocks, known devices and app rules;
+- the Nightfall event log;
+- the public key for verifying release signatures.
 
-Фактический состав конкретного архива всегда смотрите в выводе команды `list` или в предварительном просмотре восстановления.
+Always check the actual contents of a specific archive in the output of the `list` command or in the restore preview.
 
-## Что не входит в архив
+## What the archive does not contain
 
-- сетевые настройки OpenWrt: LAN/WAN, DHCP, firewall, Wi-Fi и другие системные параметры;
-- секреты Telegram `TG_TOKEN` и `TG_PROXY`;
-- временные данные истории из `/tmp/nightfall`.
+- OpenWrt network settings: LAN/WAN, DHCP, firewall, Wi-Fi and other system parameters;
+- the Telegram secrets `TG_TOKEN` and `TG_PROXY`;
+- temporary history data from `/tmp/nightfall`.
 
-При восстановлении текущие `TG_TOKEN` и `TG_PROXY` сохраняются из действующей конфигурации роутера, если они были заданы. Поэтому при восстановлении на том же роутере повторно вводить их не требуется. При переносе архива на новый роутер задайте Telegram-токен и прокси в настройках нового устройства.
+On restore, the current `TG_TOKEN` and `TG_PROXY` are kept from the router's active configuration, if they were set. So when restoring on the same router you don't need to enter them again. When moving an archive to a new router, set the Telegram token and proxy in the new device's settings.
 
-Архив может содержать имена устройств, группы и журналы. Храните его как личные данные и не публикуйте в открытом доступе.
+The archive may contain device names, groups and logs. Treat it as personal data and do not publish it.
 
-**Важно:** не используйте `tar -xzf архив.tar.gz -C /` для восстановления. Такой способ обходит проверку, сохранение текущих секретов и механизм отката Nightfall.
+**Important:** do not use `tar -xzf archive.tar.gz -C /` to restore. That bypasses the checks, the preservation of current secrets and the Nightfall rollback mechanism.

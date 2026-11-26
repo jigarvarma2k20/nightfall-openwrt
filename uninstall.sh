@@ -1,21 +1,21 @@
 #!/bin/sh
-# Удаление Nightfall с роутера (OpenWrt, busybox sh). Запускать прямо на роутере:
+# Remove Nightfall from the router (OpenWrt, busybox sh). Run it directly on the router:
 #
-#   wget -qO- https://raw.githubusercontent.com/Nikolai752/nightfall-openwrt/main/uninstall.sh | sh
-#   (или curl -fsSL ... | sh)
+#   wget -qO- https://raw.githubusercontent.com/jigarvarma2k20/nightfall-openwrt/main/uninstall.sh | sh
+#   (or curl -fsSL ... | sh)
 #
-# По умолчанию: возвращает стандартную тему и полностью убирает Nightfall: тему, «Монитор ресурсов»,
-# Telegram-бота, сборщик истории, пункты меню (в том числе «Nightfall: все элементы»), права rpcd,
-# записи в настройках LuCI и кэш. Ваши НАСТРОЙКИ и данные (/etc/nightfall-*) остаются, чтобы при
-# повторной установке всё вернулось.
+# By default: restores the standard theme and fully removes Nightfall: the theme, the Resource Monitor,
+# the Telegram bot, the history collector, menu entries (including "Nightfall: all elements"), rpcd permissions,
+# LuCI config entries and the cache. Your SETTINGS and data (/etc/nightfall-*) are kept, so everything
+# comes back after a reinstall.
 #
-# Параметры (после «| sh -s --»):
-#   --theme-only   только вернуть стандартную тему, файлы не трогать
-#   --wipe         удалить всё, включая настройки, списки устройств, журнал и токен бота
-#   --purge        то же, что без параметров (оставлено для совместимости)
-#   -h, --help     эта справка
+# Options (after "| sh -s --"):
+#   --theme-only   only restore the standard theme, leave the files
+#   --wipe         remove everything, including settings, device lists, the log and the bot token
+#   --purge        same as no options (kept for compatibility)
+#   -h, --help     this help
 #
-# Для тестов: NF_ROOT (корень вместо /).
+# For tests: NF_ROOT (root instead of /).
 
 ROOT=${NF_ROOT:-}
 THEME_ONLY=0; WIPE=0
@@ -26,21 +26,21 @@ for a in "$@"; do
 	--purge) ;;
 	-h|--help)
 		cat <<'EOT'
-Удаление Nightfall: wget -qO- https://raw.githubusercontent.com/Nikolai752/nightfall-openwrt/main/uninstall.sh | sh
-Параметры (после «| sh -s --»):
-  --theme-only   только вернуть стандартную тему, файлы не трогать
-  --wipe         удалить всё, включая настройки, списки устройств, журнал и токен бота
-  --purge        то же, что без параметров (для совместимости)
-  -h, --help     эта справка
-Без параметров: тема, монитор, бот, меню, права и кэш удаляются, ваши настройки (/etc/nightfall-*) остаются.
+Remove Nightfall: wget -qO- https://raw.githubusercontent.com/jigarvarma2k20/nightfall-openwrt/main/uninstall.sh | sh
+Options (after "| sh -s --"):
+  --theme-only   only restore the standard theme, leave the files
+  --wipe         remove everything, including settings, device lists, the log and the bot token
+  --purge        same as no options (for compatibility)
+  -h, --help     this help
+No options: the theme, monitor, bot, menus, permissions and cache are removed; your settings (/etc/nightfall-*) are kept.
 EOT
 		exit 0 ;;
-	*) echo "ОШИБКА: неизвестный параметр: $a (справка: --help)" >&2; exit 2 ;;
+	*) echo "ERROR: unknown option: $a (see --help)" >&2; exit 2 ;;
 	esac
 done
 has() { command -v "$1" >/dev/null 2>&1; }
 
-# 1. вернуть стандартную тему, если сейчас выбрана Nightfall
+# 1. restore the standard theme if Nightfall is currently selected
 if has uci && [ -z "$ROOT" ]; then
 	cur=$(uci -q get luci.main.mediaurlbase)
 	case "$cur" in
@@ -51,20 +51,20 @@ if has uci && [ -z "$ROOT" ]; then
 			new=$(uci -q show luci.themes | grep -v -i nightfall | sed -n "s/.*='\(\/luci-static\/[^']*\)'.*/\1/p" | head -n1)
 		fi
 		if [ -n "$new" ]; then
-			uci set luci.main.mediaurlbase="$new" && uci commit luci && echo "Тема переключена на $new"
+			uci set luci.main.mediaurlbase="$new" && uci commit luci && echo "Theme switched to $new"
 		else
-			echo "Внимание: другой темы не нашлось, выберите её в «Система → Система → Язык и стиль»."
+			echo "Warning: no other theme found; select one in \"System -> System -> Language and Style\"."
 		fi ;;
-	*) echo "Сейчас выбрана не Nightfall ($cur), тему не меняю." ;;
+	*) echo "The current theme is not Nightfall ($cur); leaving it unchanged." ;;
 	esac
 fi
 
 if [ "$THEME_ONLY" = 0 ]; then
-	# 2. вернуть системные изменения (dnsmasq/sysctl учёта по приложениям, правила блокировки)
+	# 2. revert system changes (dnsmasq/sysctl for per-app accounting, block rules)
 	if [ -z "$ROOT" ]; then
 		[ -x /usr/libexec/nightfall-apps ] && /usr/libexec/nightfall-apps disable >/dev/null 2>&1
 		has nft && nft delete table inet nightfall 2>/dev/null
-		# 3. остановить сборщик и бота (в том числе процессы вне procd)
+		# 3. stop the collector and the bot (including processes outside procd)
 		if [ -x /etc/init.d/nightfall-collector ]; then
 			/etc/init.d/nightfall-collector stop 2>/dev/null
 			/etc/init.d/nightfall-collector disable 2>/dev/null
@@ -76,7 +76,7 @@ if [ "$THEME_ONLY" = 0 ]; then
 		done
 	fi
 
-	# 4. файлы
+	# 4. files
 	rm -rf "$ROOT/www/luci-static/nightfall" "$ROOT/www/luci-static/nightfall-light" "$ROOT/www/luci-static/nightfall-dark" \
 	       "$ROOT/www/luci-static/resources/menu-nightfall.js" "$ROOT/www/luci-static/resources/nightfall-"*.js \
 	       "$ROOT/www/luci-static/resources/view/nightfall" \
@@ -93,7 +93,7 @@ if [ "$THEME_ONLY" = 0 ]; then
 		rm -f "$ROOT"/etc/nightfall-* 2>/dev/null
 	fi
 
-	# 5. записи в настройках LuCI
+	# 5. LuCI config entries
 	if has uci && [ -z "$ROOT" ]; then
 		uci -q delete luci.themes.Nightfall
 		uci -q delete luci.themes.NightfallDark
@@ -102,26 +102,26 @@ if [ "$THEME_ONLY" = 0 ]; then
 	fi
 fi
 
-# 6. кэш LuCI и права
+# 6. LuCI cache and permissions
 if [ -z "$ROOT" ]; then
 	rm -rf /tmp/luci-indexcache* /tmp/luci-modulecache 2>/dev/null
 	/etc/init.d/rpcd reload 2>/dev/null || /etc/init.d/rpcd restart 2>/dev/null
 fi
 
-# 7. проверка: что осталось
+# 7. check what is left
 if [ "$THEME_ONLY" = 0 ]; then
 	left=$(find "$ROOT/www" "$ROOT/usr" "$ROOT/etc" "$ROOT/tmp" \( -name '*[Nn]ightfall*' \) 2>/dev/null | grep -v '^'"$ROOT"'/etc/nightfall-' | head -n 20)
 	if [ -n "$left" ]; then
-		echo "Внимание: остались файлы Nightfall:"; echo "$left"
+		echo "Warning: Nightfall files remain:"; echo "$left"
 	else
-		echo "Файлы Nightfall удалены."
+		echo "Nightfall files removed."
 	fi
 	keep=$(ls "$ROOT"/etc/nightfall-* 2>/dev/null | head -n 30)
 	if [ -n "$keep" ] && [ "$WIPE" = 0 ]; then
-		echo "Остались ваши настройки и данные (для повторной установки). Удалить их: добавьте --wipe"
+		echo "Your settings and data were kept (for a reinstall). To remove them, add --wipe"
 	fi
 else
-	echo "Тема отключена, файлы остались. Удалить всё: запустите без --theme-only."
+	echo "Theme disabled, files kept. To remove everything, run without --theme-only."
 fi
-echo "Готово. Обновите страницу браузера (Ctrl+F5), при необходимости выйдите из LuCI и войдите снова."
+echo "Done. Reload the browser page (Ctrl+F5); if needed, log out of LuCI and log in again."
 exit 0

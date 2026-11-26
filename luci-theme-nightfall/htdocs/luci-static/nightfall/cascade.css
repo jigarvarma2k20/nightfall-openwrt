@@ -2666,7 +2666,7 @@ div.cbi-value var.cbi-tooltip-container,
 	margin: .2em;
 }
 
-/* значки без размера (сигнал) занимают место ещё до загрузки: строки таблицы не прыгают при каждом опросе */
+/* unsized icons (signal) reserve space before loading: table rows don't jump on every poll */
 .assoclist .td img, .assoclist td img, .leases .td img { width: 24px; height: 24px; object-fit: contain; vertical-align: middle; }
 .assoclist .td img[style*="32px"], .assoclist td img[style*="32px"] { width: 32px; height: 32px; }
 
@@ -3621,7 +3621,7 @@ input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; border-radius
 input[type="range"]:hover::-webkit-slider-thumb { box-shadow: inset 0 0 0 4px var(--nf-accent); }
 input[type="range"]:active::-webkit-slider-thumb { box-shadow: inset 0 0 0 6px var(--nf-accent); }
 
-/* ======== background patterns (Personalisation → Фон) ======== */
+/* ======== background patterns (Personalization → Background) ======== */
 body { position: relative; z-index: 0; }
 body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 html[data-nf-bg="flat"] body { background: var(--nf-bg); }
@@ -3742,7 +3742,7 @@ header [data-indicator="uci-changes"]::before { background: #f7630c; }
 .ace_marker-layer .ace_active-line { background: var(--nf-hover) !important; }
 .ace_marker-layer .ace_selection { background: color-mix(in srgb, var(--nf-accent) 30%, transparent) !important; }
 
-/* ======== Fluent v3: pager («  Показано …  ») and bridge port icons ======== */
+/* ======== Fluent v3: pager ("  Showing …  ") and bridge port icons ======== */
 /* a row of "button, text, button" (package list pager) must not stretch the buttons across the card */
 :is(div, span):has(> :is(button, .btn, .cbi-button):first-child + :not(button, .btn, .cbi-button) + :is(button, .btn, .cbi-button):last-child) {
 	display: flex !important;
@@ -3856,7 +3856,7 @@ img[src*="/icons/wireguard_disabled.svg"] { content: url(icons/wireguard_disable
 .ifacebox img[src*="/icons/"], .ifacebadge img[src*="/icons/"] { width: 22px; height: 22px; filter: none !important; }
 img[src*="/icons/signal-"] { width: 24px; height: 24px; }
 
-/* ===== Nightfall: Обзор — живые плитки, порядок карточек, статусные метки ===== */
+/* ===== Nightfall: Overview — live tiles, card order, status badges ===== */
 .nf-badge { display: inline-flex; align-items: center; gap: 5px; padding: 1px 9px; border-radius: 999px; font-size: calc(12px * var(--nf-fsz, 1)); line-height: calc(18px * var(--nf-fsz, 1)); font-weight: 600; white-space: nowrap; background: var(--nf-card-alt); color: var(--nf-text-dim); border: 1px solid var(--nf-stroke); }
 .nf-badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: none; }
 .nf-badge.ok { color: var(--nf-g-up); background: color-mix(in srgb, var(--nf-g-up) 14%, transparent); border-color: color-mix(in srgb, var(--nf-g-up) 35%, transparent); }
@@ -3893,7 +3893,7 @@ img[src*="/icons/signal-"] { width: 24px; height: 24px; }
 @media (hover: none) { .nf-grip { opacity: .5; } }
 .nf-dragging { opacity: .45; }
 
-/* Обзор: плотная раскладка без пустот (строки по 8px, высоту карточек считает nightfall-overview.js) */
+/* Overview: dense layout without gaps (8px rows, card heights computed by nightfall-overview.js) */
 @media (min-width: 900px) {
 	body[data-page="admin-status-overview"] #view:has(> .cbi-section.fade-in) { display: grid; columns: auto; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-auto-rows: 8px; column-gap: 16px; row-gap: 0; align-items: start; }
 	body[data-page="admin-status-overview"] #view:has(> .cbi-section.fade-in) > .cbi-section,
@@ -3903,7 +3903,7 @@ img[src*="/icons/signal-"] { width: 24px; height: 24px; }
 	body[data-page="admin-status-overview"] #view:has(> .cbi-section.fade-in) > .cbi-section:has(.table .th:nth-child(5)) { grid-column: 1 / -1; }
 }
 
-/* ======== sign-in: всё по центру — часы, дата и окно входа ======== */
+/* ======== sign-in: everything centered — clock, date and sign-in box ======== */
 .nf-lock { left: 0; right: 0; top: 5vh; text-align: center; }
 .nf-lock b { font-size: calc(84px * var(--nf-fsz, 1)); }
 .nf-lock span { font-size: calc(21px * var(--nf-fsz, 1)); margin-top: 6px; }
@@ -3916,7 +3916,7 @@ body.nf-blank .modal.login { margin: 0 auto; }
 @media (max-height: 600px) { .nf-lock { display: none; } body.nf-blank #modal_overlay { padding-top: 24px; } }
 @media (max-width: 899px) { body.nf-blank #modal_overlay { align-items: center; } }
 
-/* ======== Персонализация: плотность, текст, скругление, стекло, вход, обзор ======== */
+/* ======== Personalization: density, text, corner radius, glass, sign-in, overview ======== */
 .nf-pop { max-height: calc(100vh - 80px); overflow-y: auto; }
 .nf-pop-sec { margin-top: 2px; }
 .nf-pop-sec .nf-seg { margin-bottom: 2px; }
@@ -3951,7 +3951,7 @@ html[data-nf-ov-badges="off"] .ifacebadge .nf-badge { display: none; }
 html[data-nf-ov-badges="off"] .nf-badge { background: none; border: 0; padding: 0; color: inherit; font-weight: inherit; }
 html[data-nf-ov-badges="off"] .nf-badge::before { display: none; }
 
-/* ======== стили, расписание, свёрнутое меню, полоса интернета ======== */
+/* ======== styles, schedule, collapsed menu, internet bar ======== */
 .nf-pop-times { display: none; align-items: center; flex-wrap: wrap; gap: 6px 8px; margin-top: 8px; font-size: calc(13px * var(--nf-fsz, 1)); color: var(--nf-text-dim); }
 .nf-pop-times[data-on] { display: flex; }
 .nf-time { width: 92px; height: 30px; padding: 0 6px; }
@@ -4016,7 +4016,7 @@ html[data-nf-glass="off"][data-nf-style="glass"] .cbi-section, html[data-nf-glas
 .nf-seg.nf-presets { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px; }
 .nf-presets button { height: 32px; padding: 0 4px; font-size: calc(12.5px * var(--nf-fsz, 1)); white-space: nowrap; }
 
-/* метки внутри блоков портов и клиентов: не вылезают за границы */
+/* labels inside port and client blocks: don't overflow the edges */
 .ifacebox .ifacebox-body { box-sizing: border-box; max-width: 100%; overflow: visible; }
 .ifacebox .cbi-tooltip { width: max-content; max-width: min(260px, 90vw); }
 .ifacebox .ifacebox-body .nf-badge { max-width: 100%; box-sizing: border-box; justify-content: center; font-size: calc(11.5px * var(--nf-fsz, 1)); padding: 1px 7px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -4034,13 +4034,13 @@ html[data-nf-style="glass"] .modal.login .cbi-map, html[data-nf-style="glass"] .
 html[data-nf-style="glass"] .zonebadge { border-radius: 999px; padding: 3px 12px; }
 html[data-nf-style="glass"] .cbi-section .cbi-section:has(> .zonebadge), html[data-nf-style="glass"] .cbi-section > div > .zonebadge { box-shadow: none; }
 
-/* созвездия: анимированный фон */
+/* constellations: animated background */
 #nf-const { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
 html[data-nf-const="app"] #maincontent { position: relative; z-index: 1; }
 html[data-nf-const="app"] header { z-index: 5; }
 body.nf-blank .nf-lock { z-index: 1; }
 
-/* таблицы: мягкие шапки и полосы вместо плотных серых плашек */
+/* tables: soft headers and stripes instead of dense gray slabs */
 .tr.table-titles, .tr.cbi-section-table-titles, .cbi-section-thead > .tr > .th, .cbi-section-tfoot > .tr > .td { background: color-mix(in srgb, var(--nf-text) 4.5%, transparent); }
 .cbi-rowstyle-2, .cbi-rowstyle-2 > .td { background: color-mix(in srgb, var(--nf-text) 2.2%, transparent); }
 .table .tr:first-child > .th:first-child, .tr.table-titles > .th:first-child { border-top-left-radius: var(--nf-radius-sm, 6px); border-bottom-left-radius: var(--nf-radius-sm, 6px); }
@@ -4051,7 +4051,7 @@ html[data-nf-style="glass"] .cbi-rowstyle-2, html[data-nf-style="glass"] .cbi-ro
 html[data-nf-style="glass"] .table .tr:hover > .td { background: color-mix(in srgb, var(--nf-glass-fill) 60%, transparent); }
 html[data-nf-style="glass"] .cbi-section .table .th { background: color-mix(in srgb, var(--nf-glass-fill) 70%, transparent); }
 
-/* круглые углы: вложенные блоки скругляем меньше внешних, чтобы дуги были соосными и не наезжали */
+/* rounded corners: nested blocks get a smaller radius than outer ones so the arcs stay concentric and don't overlap */
 html[data-nf-radius="round"] .cbi-section { padding-top: 18px; }
 html[data-nf-radius="round"] .cbi-section .cbi-section, html[data-nf-radius="round"] .cbi-section .ifacebox, html[data-nf-radius="round"] .cbi-section .table,
 html[data-nf-radius="round"] .cbi-section .cbi-tabcontainer, html[data-nf-radius="round"] .cbi-section pre, html[data-nf-radius="round"] .cbi-section .alert-message,
@@ -4065,14 +4065,14 @@ html[data-nf-radius="round"] .table .tr:first-child > .th:first-child, html[data
 html[data-nf-radius="round"] .table .tr:first-child > .th:last-child, html[data-nf-radius="round"] .tr.table-titles > .th:last-child { border-top-right-radius: 9px; border-bottom-right-radius: 9px; }
 html[data-nf-radius="round"] .cbi-page-actions, html[data-nf-radius="round"] .nf-pop { border-radius: 18px; }
 
-/* выбор своего цвета: круглый образец с кольцом вместо системного овала */
+/* custom color picker: round swatch with a ring instead of the system oval */
 .nf-color { -webkit-appearance: none; appearance: none; width: 30px; height: 30px; padding: 0; border: 0; border-radius: 50%; background: transparent; cursor: pointer; box-shadow: 0 0 0 2px var(--nf-card, #fff), 0 0 0 3px color-mix(in srgb, currentColor 35%, transparent); transition: transform .15s; }
 .nf-color:hover { transform: scale(1.1); }
 .nf-color::-webkit-color-swatch-wrapper { padding: 0; }
 .nf-color::-webkit-color-swatch { border: 0; border-radius: 50%; }
 .nf-color::-moz-color-swatch { border: 0; border-radius: 50%; }
 
-/* стекло: убрать лишнюю полоску/рамку у шапки таблицы */
+/* glass: remove the extra stripe/border on the table header */
 html[data-nf-style="glass"] .table .tr:first-child > .th, html[data-nf-style="glass"] .table .tr.table-titles > .th,
 html[data-nf-style="glass"] .cbi-section-thead > .tr > .th, html[data-nf-style="glass"] .cbi-section-tfoot > .tr > .td { box-shadow: none !important; border-top-color: transparent !important; border-bottom-color: transparent !important; background: color-mix(in srgb, var(--nf-glass-fill) 45%, transparent) !important; }
 html[data-nf-style="glass"] .table, html[data-nf-style="glass"] .cbi-section > .table, html[data-nf-style="glass"] .cbi-section-table { border: 0 !important; box-shadow: none !important; outline: 0 !important; background: transparent !important; }
@@ -4080,7 +4080,7 @@ html[data-nf-style="glass"] .tr.table-titles, html[data-nf-style="glass"] .tr.cb
 html[data-nf-style="glass"] .table .tr:first-child > .th:first-child, html[data-nf-style="glass"] .tr.table-titles > .th:first-child { border-radius: 9px 0 0 9px; }
 html[data-nf-style="glass"] .table .tr:first-child > .th:last-child, html[data-nf-style="glass"] .tr.table-titles > .th:last-child { border-radius: 0 9px 9px 0; }
 
-/* ======== Топ клиентов (Обзор) ======== */
+/* ======== Top clients (Overview) ======== */
 .nf-top-b { display: flex; flex-direction: column; padding-bottom: 10px; }
 .nf-top-r { display: grid; grid-template-columns: minmax(110px, 1.3fr) minmax(70px, 2fr) auto auto; gap: 6px 16px; align-items: center; padding: 9px 0; border-top: 1px solid var(--nf-stroke); }
 .nf-top-r:first-child { border-top: 0; }
@@ -4096,7 +4096,7 @@ html[data-nf-style="glass"] .table .tr:first-child > .th:last-child, html[data-n
 .nf-top-d b { color: var(--nf-text); font-weight: 600; }
 @media (max-width: 640px) { .nf-top-r { grid-template-columns: 1fr auto; } .nf-top-bar { grid-column: 1 / -1; order: 3; } .nf-top-d { grid-column: 1 / -1; text-align: left; order: 4; } }
 
-/* ======== пустые состояния и загрузка ======== */
+/* ======== empty states and loading ======== */
 .nf-empty, .table .tr.placeholder > .td { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 26px 16px; text-align: center; color: var(--nf-text-dim); }
 .table .tr.placeholder { display: block; width: 100%; height: auto; }
 .table .tr.placeholder > .td { display: block; position: static; width: 100% !important; border-top: 0; text-align: center; line-height: 1.4; }
@@ -4115,7 +4115,7 @@ html:not([data-nf-motion="off"]) #view > .spinning, html:not([data-nf-motion="of
 	animation: nf-shimmer 1.5s linear infinite; border-radius: 10px;
 }
 
-/* ======== плавные переходы между страницами ======== */
+/* ======== smooth page transitions ======== */
 @view-transition { navigation: auto; }
 header, #nf-tabbar { view-transition-name: nf-chrome; }
 #nf-netbar { view-transition-name: nf-netbar; }
@@ -4126,7 +4126,7 @@ header, #nf-tabbar { view-transition-name: nf-chrome; }
 html[data-nf-motion="off"]::view-transition-group(*), html[data-nf-motion="off"]::view-transition-old(*), html[data-nf-motion="off"]::view-transition-new(*) { animation-duration: 0s !important; }
 @media (prefers-reduced-motion: reduce) { ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation-duration: 0s !important; } }
 
-/* ======== новые фоны: аврора и волны ======== */
+/* ======== new backgrounds: aurora and waves ======== */
 @keyframes nf-aurora { 0% { transform: translate3d(-4%, -3%, 0) rotate(0deg) scale(1); } 50% { transform: translate3d(5%, 3%, 0) rotate(6deg) scale(1.12); } 100% { transform: translate3d(-2%, 5%, 0) rotate(-5deg) scale(1.05); } }
 html[data-nf-bg="aurora"] body::before {
 	inset: -18%; opacity: .85; filter: blur(46px) saturate(1.25);
@@ -4156,7 +4156,7 @@ html[data-nf-bg="waves"] body::after {
 html[data-nf-motion="off"][data-nf-bg="aurora"] body::before, html[data-nf-motion="off"][data-nf-bg="waves"] body::before, html[data-nf-motion="off"][data-nf-bg="waves"] body::after { animation: none !important; }
 @media (prefers-reduced-motion: reduce) { html[data-nf-bg="aurora"] body::before, html[data-nf-bg="waves"] body::before, html[data-nf-bg="waves"] body::after { animation: none; } }
 
-/* ======== мобильный вид: нижняя панель и шторка ======== */
+/* ======== mobile view: bottom bar and drawer ======== */
 #nf-tabbar, #nf-sheet { display: none; }
 @media (max-width: 899px) {
 	body.nf-app { padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
@@ -4190,7 +4190,7 @@ html[data-nf-motion="off"][data-nf-bg="aurora"] body::before, html[data-nf-motio
 html[data-nf-motion="off"] #nf-sheet .nf-sheet-p, html[data-nf-motion="off"] #nf-tabbar button { transition: none; }
 .nf-top-v { white-space: nowrap; }
 
-/* ======== исправления: вложенные блоки и кнопка «Скрыть» ======== */
+/* ======== fixes: nested blocks and the "Hide" button ======== */
 html .cbi-section .cbi-section:not(:has(> .zonebadge)) { padding-top: 10px !important; padding-bottom: 10px !important; }
 #view > .cbi-section > .cbi-title h3 > .label[data-indicator], #view > .cbi-section > .cbi-title h3 > .cbi-button, #view > .cbi-section > .cbi-title h3 > button {
 	display: inline-flex; align-items: center; gap: 6px; height: 28px; margin: 0 0 0 auto; padding: 0 12px 0 10px; border-radius: 999px;
@@ -4205,7 +4205,7 @@ html .cbi-section .cbi-section:not(:has(> .zonebadge)) { padding-top: 10px !impo
 	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17.9 17.9A10.9 10.9 0 0 1 12 20c-7 0-10-8-10-8a18 18 0 0 1 5.1-5.9M9.9 4.2A10 10 0 0 1 12 4c7 0 10 8 10 8a18 18 0 0 1-2.2 3.3M1 1l22 22'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
-/* ======== плавное перетаскивание карточек ======== */
+/* ======== smooth card dragging ======== */
 .nf-slot { border: 2px dashed color-mix(in srgb, var(--nf-accent) 55%, transparent); border-radius: var(--nf-radius, 8px); background: color-mix(in srgb, var(--nf-accent) 8%, transparent); min-width: 0; transition: background-color .2s; }
 .nf-lifted { position: fixed !important; z-index: 3500; margin: 0 !important; pointer-events: none; cursor: grabbing; transition: none; opacity: .97;
 	box-shadow: 0 24px 60px rgba(0, 0, 0, .42), 0 0 0 1px color-mix(in srgb, var(--nf-accent) 50%, transparent) !important; }
@@ -4215,7 +4215,7 @@ body.nf-drag-on * { cursor: grabbing !important; }
 .nf-grip { touch-action: none; }
 .nf-moving { will-change: transform; }
 
-/* ======== новые карточки Обзора ======== */
+/* ======== new Overview cards ======== */
 html[data-nf-ov-top="off"] .nf-top, html[data-nf-ov-wifi="off"] .nf-wifi, html[data-nf-ov-events="off"] .nf-events, html[data-nf-ov-health="off"] .nf-health, html[data-nf-ov-quick="off"] .nf-quick { display: none !important; }
 .nf-health-b { display: flex; align-items: center; gap: 18px; padding-bottom: 10px; }
 .nf-ring { position: relative; flex: none; width: 92px; height: 92px; }
@@ -4253,7 +4253,7 @@ html[data-nf-ov-top="off"] .nf-top, html[data-nf-ov-wifi="off"] .nf-wifi, html[d
 .nf-qa[disabled] { opacity: .55; cursor: default; }
 .nf-qnote { width: 100%; color: var(--nf-text-dim); font-size: calc(12px * var(--nf-fsz, 1)); min-height: 1.2em; }
 
-/* ======== размер карточек Обзора ======== */
+/* ======== Overview card size ======== */
 html[data-nf-ov-size="sm"] #view > .cbi-section.fade-in { padding: 10px 14px 4px; }
 html[data-nf-ov-size="sm"] #view > .cbi-section.fade-in .table .td, html[data-nf-ov-size="sm"] #view > .cbi-section.fade-in .table .th { padding-top: 5px; padding-bottom: 5px; font-size: calc(12px * var(--nf-fsz, 1)); }
 html[data-nf-ov-size="sm"] .nf-tile { padding: 8px 10px; }
@@ -4263,7 +4263,7 @@ html[data-nf-ov-size="lg"] #view > .cbi-section.fade-in .table .td, html[data-nf
 html[data-nf-ov-size="lg"] .nf-tile { padding: 16px 18px; }
 @media (min-width: 900px) { html[data-nf-ov-size="lg"] #view:has(> .cbi-section.fade-in) { grid-template-columns: minmax(0, 1fr); } }
 
-/* ======== тон, размытие и прозрачность стекла ======== */
+/* ======== glass tint, blur and transparency ======== */
 html[data-nf-style="glass"] { --nf-gblur: 28px; --nf-gtint: 1; }
 html[data-nf-style="glass"] .cbi-section, html[data-nf-style="glass"] fieldset.cbi-section, html[data-nf-style="glass"] .nf-tile, html[data-nf-style="glass"] .nf-pop, html[data-nf-style="glass"] .modal, html[data-nf-style="glass"] .nf-live-grid .nf-tile {
 	-webkit-backdrop-filter: blur(var(--nf-gblur)) saturate(190%) !important; backdrop-filter: blur(var(--nf-gblur)) saturate(190%) !important;
@@ -4273,7 +4273,7 @@ html[data-nf-style="glass"][data-nf-gtone="dark"] { --nf-glass-bd: rgba(255, 255
 html[data-nf-style="glass"][data-nf-gtone="auto"]:not([data-darkmode="true"]) { --nf-glass-fill: rgba(255, 255, 255, calc(.42 * var(--nf-gk, 1))); }
 html[data-nf-style="glass"][data-nf-gtone="auto"][data-darkmode="true"] { --nf-glass-fill: rgba(30, 34, 52, calc(.46 * var(--nf-gk, 1))); }
 
-/* ======== фон экрана входа: аврора и волны ======== */
+/* ======== sign-in screen background: aurora and waves ======== */
 html[data-nf-login-bg="aurora"] body.nf-blank::before { content: ""; position: fixed; inset: -18%; z-index: -1; pointer-events: none; opacity: .9; filter: blur(46px) saturate(1.25);
 	background: radial-gradient(38% 44% at 14% 22%, color-mix(in srgb, var(--nf-accent) 46%, transparent), transparent 70%), radial-gradient(34% 42% at 84% 14%, rgba(168, 85, 247, .38), transparent 70%), radial-gradient(42% 46% at 72% 88%, rgba(20, 184, 166, .34), transparent 70%), radial-gradient(30% 36% at 28% 82%, rgba(244, 114, 182, .26), transparent 70%);
 	animation: nf-aurora 32s ease-in-out infinite alternate; }
@@ -4286,7 +4286,7 @@ html[data-nf-login-bg="waves"] body.nf-blank::after { height: 34vh; background: 
 	-webkit-mask-size: 1300px 100%; mask-size: 1300px 100%; animation: nf-wave-b 64s linear infinite; }
 html[data-nf-motion="off"][data-nf-login-bg="aurora"] body.nf-blank::before, html[data-nf-motion="off"][data-nf-login-bg="waves"] body.nf-blank::before, html[data-nf-motion="off"][data-nf-login-bg="waves"] body.nf-blank::after { animation: none !important; }
 
-/* ======== подсказки по терминам ======== */
+/* ======== term tooltips ======== */
 .nf-hint { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; margin-left: 6px; border-radius: 50%; vertical-align: middle; font-size: 11px; font-weight: 700; line-height: 1; font-style: normal; color: var(--nf-text-dim); border: 1px solid var(--nf-stroke-strong); cursor: help; user-select: none; }
 .nf-hint:hover, .nf-hint:focus-visible { color: var(--nf-accent); border-color: var(--nf-accent); outline: 0; }
 html[data-nf-hints="off"] .nf-hint { display: none; }
@@ -4300,11 +4300,11 @@ html[data-nf-style="glass"][data-nf-glass="on"][data-nf-gtone="light"] :is(.cbi-
 .nf-ring svg { background: none !important; }
 #view .nf-ring[style] > svg, #view .nf-ring > svg { background: none !important; }
 
-/* шкалы: подпись («3 / 4096 (0%)») рисуется над полоской, её нельзя обрезать при скруглении */
+/* gauges: the label ("3 / 4096 (0%)") is drawn above the bar and must not be clipped by rounding */
 html[data-nf-radius="round"] .cbi-section .cbi-progressbar, .cbi-progressbar { overflow: visible; border-radius: 999px; }
 .cbi-progressbar > div { max-width: 100%; }
 
-/* ======== единый набор иконок карточек ======== */
+/* ======== unified card icon set ======== */
 .nf-ci { display: inline-block; flex: none; width: 18px; height: 18px; vertical-align: -3px; margin-right: 2px; background: color-mix(in srgb, var(--nf-accent) 88%, var(--nf-text)); -webkit-mask: var(--m) center / contain no-repeat; mask: var(--m) center / contain no-repeat; }
 .nfm-card-title .nf-ci { margin-right: 0; }
 .nfm-card-title:has(.nf-ci)::before { display: none; } .nfm-card-title:has(.nf-ci) { padding-left: 0; }
@@ -4339,7 +4339,7 @@ html[data-nf-radius="round"] .cbi-section .cbi-progressbar, .cbi-progressbar { o
 :root[data-darkmode="true"] .nf-ci[data-i="generic"] { --c1: #cbd5e1; --c2: #e5e7eb; }
 html[data-nf-style="glass"] .nf-ci { background: linear-gradient(135deg, var(--c1), var(--c2)); width: 20px; height: 20px; filter: drop-shadow(0 1px 3px color-mix(in srgb, var(--c2) 45%, transparent)); }
 
-/* ======== иконки меню: свои для каждого стиля, светлые и тёмные варианты ======== */
+/* ======== menu icons: per style, light and dark variants ======== */
 header .nav > li[data-name="status"] { --ic1: #10b981; --ic2: #06b6d4; }
 header .nav > li[data-name="system"] { --ic1: #f59e0b; --ic2: #ef4444; }
 header .nav > li[data-name="services"] { --ic1: #8b5cf6; --ic2: #ec4899; }
@@ -4358,7 +4358,7 @@ html[data-nf-style="glass"] header .nav > li > a::before { width: 20px; height: 
 html[data-nf-style="glass"] header .nav > li.active > a::before, html[data-nf-style="glass"] header .nav > li > a:hover::before { background: linear-gradient(135deg, var(--ic1, var(--nf-accent)), var(--ic2, var(--nf-accent))); }
 html:not([data-nf-style="glass"]) header .nav > li > a::before { transition: background-color .2s; }
 
-/* ======== плавная пилюля активного пункта меню ======== */
+/* ======== smooth pill for the active menu item ======== */
 header .nav { position: relative; }
 header .nav > li { position: relative; z-index: 1; }
 .nf-pill { position: absolute; left: 0; top: 0; z-index: 0; width: 0; height: 0; opacity: 0; pointer-events: none; border-radius: var(--nf-radius-sm, 8px);
@@ -4374,7 +4374,7 @@ body.nf-pill-on header .nav .dropdown-menu li.active > a::before { display: none
 @media (max-width: 899px) { .nf-pill { display: none; } }
 html[data-nf-nav="mini"] .nf-pill { display: none; }
 
-/* ======== закрепление и переименование ======== */
+/* ======== pinning and renaming ======== */
 .nf-pin { width: 24px; height: 24px; padding: 0; margin-left: 2px; border: 0; border-radius: 6px; background: transparent; box-shadow: none; cursor: pointer; opacity: 0; transition: opacity .15s, background-color .15s; }
 .nf-pin::before { content: ""; display: block; width: 15px; height: 15px; margin: auto; background: var(--nf-text-dim);
 	-webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 17v5M9 3h6l-1 6 3 3v2H7v-2l3-3z'/%3E%3C/svg%3E") center / contain no-repeat;
@@ -4394,7 +4394,7 @@ html[data-nf-style="glass"] .nf-pinned { box-shadow: inset 0 2px 0 var(--nf-acce
 @media (hover: none) { .nf-edit { opacity: .6; } }
 input.nf-rename { width: 100%; max-width: 240px; height: 30px; padding: 0 10px; font: inherit; font-weight: 600; border-radius: 8px; }
 
-/* ======== Wi‑Fi: раскрываемые клиенты ======== */
+/* ======== Wi‑Fi: expandable clients ======== */
 .nf-sta-w { border-top: 1px solid var(--nf-stroke); }
 .nf-sta-w:first-child { border-top: 0; }
 .nf-sta-w .nf-sta { border-top: 0; cursor: pointer; border-radius: 10px; transition: background-color .15s; }
@@ -4407,7 +4407,7 @@ input.nf-rename { width: 100%; max-width: 240px; height: 30px; padding: 0 10px; 
 .nf-sta-a { grid-column: 1 / -1; }
 .nf-sta-a .nf-qa { min-height: 32px; }
 
-/* ======== «Скрыть» только иконкой-глазом ======== */
+/* ======== "Hide" as an eye icon only ======== */
 #view > .cbi-section > .cbi-title h3 > .label[data-indicator], #view > .cbi-section > .cbi-title h3 > .cbi-button, #view > .cbi-section > .cbi-title h3 > button {
 	width: 30px; height: 30px; padding: 0 !important; justify-content: center; gap: 0 !important; font-size: 0 !important; border-radius: 50%; }
 #view > .cbi-section > .cbi-title h3 > .label[data-indicator]::before, #view > .cbi-section > .cbi-title h3 > .cbi-button::before, #view > .cbi-section > .cbi-title h3 > button::before { width: 16px; height: 16px; }
@@ -4415,7 +4415,7 @@ input.nf-rename { width: 100%; max-width: 240px; height: 30px; padding: 0 10px; 
 	-webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E") center / contain no-repeat;
 	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E") center / contain no-repeat; }
 
-/* ======== плитки открываются: окно с графиком ======== */
+/* ======== tiles open: chart window ======== */
 .nf-tile[data-tile] { cursor: pointer; transition: transform .18s, box-shadow .18s; }
 .nf-tile[data-tile]:hover { transform: translateY(-2px); }
 .nf-tile[data-tile]:focus-visible { outline: 2px solid var(--nf-accent); outline-offset: 2px; }
@@ -4456,7 +4456,7 @@ html[data-nf-style="glass"] .nf-dlg { background: color-mix(in srgb, var(--nf-fl
 .nf-dnote { min-height: 1.2em; padding-top: 6px; color: var(--nf-text-dim); font-size: calc(12.5px * var(--nf-fsz, 1)); text-align: center; }
 .nf-dtip[hidden] { display: none; }
 
-/* ======== диалоги и уведомления LuCI в стеклянном стиле ======== */
+/* ======== LuCI dialogs and notifications in glass style ======== */
 body.modal-overlay-active #modal_overlay { -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); background: rgba(8, 12, 26, .4) !important; }
 .modal { border-radius: var(--nf-radius, 12px); }
 html[data-nf-style="glass"] .modal { border-radius: 24px; -webkit-backdrop-filter: blur(34px) saturate(190%); backdrop-filter: blur(34px) saturate(190%); }
@@ -4472,7 +4472,7 @@ html[data-nf-style="glass"] .alert-message.success::before { background: var(--n
 html[data-nf-style="glass"] #indicators .label[data-indicator], html[data-nf-style="glass"] header [data-indicator] { border-radius: 999px; }
 html[data-nf-style="glass"] .cbi-tooltip, html[data-nf-style="glass"] .ifacebadge .cbi-tooltip { border-radius: 14px; -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
 
-/* ======== Монитор ресурсов: тот же вид, что у Обзора ======== */
+/* ======== Resource Monitor: same look as Overview ======== */
 html .nfm .nfm-top h2 { font-size: calc(28px * var(--nf-fsz, 1)); font-weight: 600; letter-spacing: -.01em; }
 html .nfm .nfm-card { border-radius: var(--nf-radius, 8px); padding: 18px 20px; }
 html:not([data-nf-settled]) .nfm .nfm-card { animation: nf-rise .38s cubic-bezier(.2, .7, .2, 1) both; }
@@ -4503,31 +4503,31 @@ html[data-nf-style="glass"] .nfm .nfm-table th:first-child { border-radius: 10px
 html[data-nf-style="glass"] .nfm .nfm-alert { border-radius: 16px; }
 
 
-/* ======== v20261101h: исправления ======== */
+/* ======== v20261101h: fixes ======== */
 
-/* --- экран входа: подложка не размывает и не темнит часы --- */
+/* --- sign-in screen: the backdrop doesn't blur or darken the clock --- */
 body.nf-blank #modal_overlay, body.nf-blank.modal-overlay-active #modal_overlay { background: transparent !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 body.nf-blank .nf-lock { z-index: 905; text-shadow: 0 1px 22px color-mix(in srgb, var(--nf-bg) 70%, transparent); }
 body.nf-blank .modal.login { z-index: 910; overflow: visible; }
 body.nf-blank .modal.login .cbi-map, body.nf-blank .modal.login .cbi-section, body.nf-blank .modal.login .cbi-section-node { overflow: visible !important; max-height: none; }
-/* свой класс, чтобы не пересекаться с кружком «?» (подсказки по терминам) */
+/* own class, so it doesn't clash with the "?" circle (term tooltips) */
 .nf-lhint { margin-top: 8px; padding: 6px 10px; border-radius: 10px; font-size: calc(12.5px * var(--nf-fsz, 1)); line-height: 1.35; text-align: left; color: var(--nf-warn-fg, #9d5d00); background: var(--nf-warn-bg, #fff4ce); border: 1px solid color-mix(in srgb, var(--nf-warn-fg, #9d5d00) 35%, transparent); }
 :root[data-darkmode="true"] .nf-lhint { color: #ffd479; background: rgba(255, 196, 70, .14); border-color: rgba(255, 196, 70, .35); }
 
-/* --- тон стекла: светлое в тёмной теме и тёмное в светлой --- */
+/* --- glass tint: light in the dark theme and dark in the light theme --- */
 html[data-nf-style="glass"][data-nf-gtone="light"][data-darkmode="true"] { --nf-glass-fill: rgba(238, 242, 252, calc(.62 * var(--nf-gk, 1))); --nf-glass-bd: rgba(255, 255, 255, .55); }
 html[data-nf-style="glass"][data-nf-gtone="dark"]:not([data-darkmode="true"]) { --nf-glass-fill: rgba(16, 18, 30, calc(.58 * var(--nf-gk, 1))); }
 html[data-nf-glass="off"][data-nf-style="glass"] :is(.cbi-section, .nf-tile, .modal) { color: var(--nf-text); }
-/* поповер настроек всегда читаем: плотная подложка независимо от тона */
+/* settings popover is always readable: solid backdrop regardless of tint */
 html[data-nf-style="glass"] .nf-pop { background: color-mix(in srgb, var(--nf-flyout, var(--nf-card)) 90%, transparent) !important; }
 
-/* --- быстрые действия в стекле --- */
+/* --- quick actions in glass --- */
 html[data-nf-style="glass"] .nf-qa { min-height: 40px; border-radius: 14px; border: 1px solid var(--nf-glass-bd); background: color-mix(in srgb, var(--nf-glass-fill) 82%, var(--nf-accent) 10%);
 	box-shadow: inset 0 1px 0 var(--nf-glass-in), 0 4px 14px rgba(40, 50, 120, .12); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
 html[data-nf-style="glass"] .nf-qa:hover { background: color-mix(in srgb, var(--nf-glass-fill) 62%, var(--nf-accent) 22%); }
 html[data-nf-style="glass"] .nf-qa.arm { background: color-mix(in srgb, var(--nf-g-bad, #e5484d) 26%, var(--nf-glass-fill)); }
 
-/* --- ползунки в панели персонализации --- */
+/* --- sliders in the personalization panel --- */
 .nf-rng { display: block; margin-top: 14px; cursor: pointer; }
 .nf-rng-t { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; font-size: calc(14px * var(--nf-fsz, 1)); }
 .nf-rng-v { font-variant-numeric: tabular-nums; font-size: calc(12.5px * var(--nf-fsz, 1)); color: var(--nf-text-dim); }
@@ -4542,11 +4542,11 @@ html[data-nf-style="glass"] .nf-qa.arm { background: color-mix(in srgb, var(--nf
 .nf-rng input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 5px color-mix(in srgb, var(--nf-accent) 30%, transparent); }
 .nf-rng input[type="range"]:disabled { opacity: .4; }
 
-/* --- переключатели с длинными подписями: сетка вместо переноса букв --- */
+/* --- toggles with long labels: grid instead of breaking letters --- */
 .nf-seg.nf-seg-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(104px, 1fr)); }
 .nf-seg.nf-seg-grid button { height: 32px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* --- мобильная версия: безопасная зона, шапка, бургер --- */
+/* --- mobile version: safe area, header, burger --- */
 header { padding-top: calc(6px + env(safe-area-inset-top, 0px)); padding-left: calc(12px + env(safe-area-inset-left, 0px)); padding-right: calc(12px + env(safe-area-inset-right, 0px)); }
 @media (max-width: 899px) {
 	header { max-height: 100vh; max-height: 100dvh; min-height: calc(52px + env(safe-area-inset-top, 0px)); }
@@ -4559,8 +4559,8 @@ header { padding-top: calc(6px + env(safe-area-inset-top, 0px)); padding-left: c
 }
 
 
-/* ======== v20261101i: жесты и мобильный обзор ======== */
-/* старый кэшированный экран входа: пустой кружок «?» там не нужен */
+/* ======== v20261101i: gestures and mobile overview ======== */
+/* old cached sign-in screen: the empty "?" circle isn't needed there */
 body.nf-blank .nf-hint { display: none !important; }
 
 #nf-ptr { position: fixed; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 8px); z-index: 3000; width: 38px; height: 38px; margin-left: -19px; border-radius: 50%; pointer-events: none; opacity: 0; transform: translateY(calc(var(--pull, 0px) - 46px));
@@ -4573,17 +4573,17 @@ body.nf-blank .nf-hint { display: none !important; }
 
 @media (max-width: 899px) {
 	html { overscroll-behavior-y: contain; -webkit-tap-highlight-color: transparent; }
-	/* полоса «Сейчас»: горизонтальная лента со снапом вместо сетки 2×N */
+	/* "Now" strip: horizontal snapping row instead of a 2×N grid */
 	.nf-live-grid { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; margin: 0 -10px; padding: 2px 10px 10px; scrollbar-width: none; }
 	.nf-live-grid::-webkit-scrollbar { display: none; }
 	.nf-live-grid > .nf-tile { flex: 0 0 min(46vw, 190px); scroll-snap-align: start; min-width: 0; }
-	/* плитка нажимается как кнопка */
+	/* the tile is tappable like a button */
 	.nf-live-grid > .nf-tile:active { transform: scale(.97); }
 	.nf-tile, .nf-qa, #nf-tabbar button { touch-action: manipulation; }
 	.nf-quick-b { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 	.nf-quick-b .nf-qa { justify-content: center; min-height: 46px; }
 
-	/* таблицы мониторинга -> карточки */
+	/* monitoring tables -> cards */
 	html .nfm .nfm-table thead { display: none; }
 	html .nfm .nfm-table, html .nfm .nfm-table tbody { display: block; width: 100%; }
 	html .nfm .nfm-table tr { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 12px; padding: 10px 4px; border-bottom: 1px solid color-mix(in srgb, var(--nf-text) 10%, transparent); }
@@ -4596,7 +4596,7 @@ body.nf-blank .nf-hint { display: none !important; }
 	.nfm-note-s { display: block; flex-basis: 100%; }
 }
 
-/* ======== v20261101j: переключатель периода в окне графика и нижняя панель у края ======== */
+/* ======== v20261101j: period switcher in the chart window and bottom bar at the edge ======== */
 .nf-dseg button { flex: 1 1 auto; white-space: nowrap; }
 @media (max-width: 640px) {
 	.nf-dlg-h { flex-wrap: wrap; gap: 8px 12px; }
@@ -4607,7 +4607,7 @@ body.nf-blank .nf-hint { display: none !important; }
 }
 
 @media (max-width: 899px) {
-	/* панель прижата к нижнему краю и закрывает всё под собой, включая безопасную зону */
+	/* the bar is pinned to the bottom edge and covers everything beneath, including the safe area */
 	#nf-tabbar { left: 0; right: 0; bottom: 0; gap: 0; padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); border-radius: 22px 22px 0 0; border-bottom: 0;
 		background: color-mix(in srgb, var(--nf-flyout, var(--nf-card)) 94%, transparent); box-shadow: 0 -6px 24px rgba(0, 0, 0, .16); }
 	#nf-tabbar button { padding: 8px 2px 6px; }
@@ -4615,7 +4615,7 @@ body.nf-blank .nf-hint { display: none !important; }
 	.cbi-page-actions { bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
 }
 
-/* ======== v20261101k: прозрачная нижняя панель ======== */
+/* ======== v20261101k: transparent bottom bar ======== */
 @media (max-width: 899px) {
 	#nf-tabbar {
 		background: color-mix(in srgb, var(--nf-flyout, var(--nf-card)) 38%, transparent);
@@ -4628,7 +4628,7 @@ body.nf-blank .nf-hint { display: none !important; }
 	html[data-nf-glass="off"] #nf-tabbar { -webkit-backdrop-filter: none; backdrop-filter: none; background: color-mix(in srgb, var(--nf-flyout, var(--nf-card)) 88%, transparent); }
 }
 
-/* ======== v20261101l: нижняя панель-«капсула» в стиле Telegram ======== */
+/* ======== v20261101l: Telegram-style "capsule" bottom bar ======== */
 @media (max-width: 899px) {
 	#nf-tabbar {
 		left: 12px; right: 12px; bottom: calc(6px + env(safe-area-inset-bottom, 0px));
@@ -4649,7 +4649,7 @@ body.nf-blank .nf-hint { display: none !important; }
 	html[data-nf-glass="off"] #nf-tabbar { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--nf-flyout, var(--nf-card)); }
 }
 
-/* ======== v20261101m: «Сохранить и применить» читаем в теме «Стекло» ======== */
+/* ======== v20261101m: "Save & Apply" readable in the "Glass" theme ======== */
 html[data-nf-style="glass"] .cbi-page-actions {
 	background: color-mix(in srgb, var(--nf-flyout, var(--nf-card)) 78%, transparent) !important;
 	-webkit-backdrop-filter: blur(24px) saturate(1.8); backdrop-filter: blur(24px) saturate(1.8);
@@ -4668,7 +4668,7 @@ html[data-nf-style="glass"] .cbi-page-actions .cbi-dropdown.cbi-button-apply > u
 html[data-nf-style="glass"] .cbi-page-actions .cbi-dropdown.btn > ul > li[selected] { font-weight: 600; opacity: 1; }
 html[data-nf-style="glass"] .cbi-page-actions .cbi-dropdown.cbi-button-apply:hover,
 html[data-nf-style="glass"] .cbi-page-actions .cbi-button-apply:hover { background: var(--nf-accent-hover, var(--nf-accent)) !important; filter: brightness(1.06); }
-/* открытый список вариантов («Применить без проверки» и т.п.) — плотная подложка */
+/* open option list ("Apply unchecked" etc.) — solid backdrop */
 html[data-nf-style="glass"] .cbi-page-actions .cbi-dropdown[open] > ul.dropdown { background: var(--nf-flyout, var(--nf-card)) !important; }
 html[data-nf-style="glass"] .cbi-page-actions .cbi-dropdown[open] > ul.dropdown > li { color: var(--nf-text) !important; }
 html[data-nf-style="glass"] .cbi-page-actions .cbi-button-save,
@@ -4676,9 +4676,9 @@ html[data-nf-style="glass"] .cbi-page-actions .cbi-button-reset,
 html[data-nf-style="glass"] .cbi-page-actions .cbi-button-negative { background: color-mix(in srgb, var(--nf-flyout, var(--nf-card)) 70%, transparent); }
 
 
-/* ======== v20261101n: карточки вместо таблиц настроек и крупные зоны нажатия (телефон) ======== */
+/* ======== v20261101n: cards instead of settings tables and large tap targets (phone) ======== */
 @media (max-width: 899px) {
-	/* строки таблиц LuCI -> карточки, подписи столбцов берутся из data-title */
+	/* LuCI table rows -> cards, column labels are taken from data-title */
 	html .cbi-section-table, html .table.cbi-section-table { display: block; border: 0; background: transparent; }
 	html .cbi-section-table .tr.cbi-section-table-titles, html .cbi-section-table .tr.table-titles, html .cbi-section-table .tr.cbi-section-table-descr { display: none; }
 	html .cbi-section-table .tr.cbi-section-table-row, html .table .tr.cbi-rowstyle-1, html .table .tr.cbi-rowstyle-2 {
@@ -4694,7 +4694,7 @@ html[data-nf-style="glass"] .cbi-page-actions .cbi-button-negative { background:
 	html .cbi-section-table .td.cbi-section-actions > div { display: grid; grid-template-columns: repeat(auto-fit, minmax(104px, 1fr)); gap: 8px; }
 	html .cbi-section-table .td.cbi-section-actions .cbi-button, html .cbi-section-table .td.cbi-section-actions .btn { width: 100%; margin: 0; }
 
-	/* крупные зоны нажатия (44 px) */
+	/* large tap targets (44 px) */
 	html .cbi-button, html button.btn, html .btn, html input[type="button"], html input[type="submit"], html input[type="reset"] { min-height: 44px; padding-top: 0; padding-bottom: 0; touch-action: manipulation; }
 	html select, html input[type="text"], html input[type="password"], html input[type="number"], html input[type="search"], html input[type="email"], html input[type="url"], html .cbi-dropdown { min-height: 44px; }
 	html .cbi-dropdown > ul > li, html .cbi-dropdown[open] > ul.dropdown > li { min-height: 44px; display: flex; align-items: center; }
@@ -4706,27 +4706,27 @@ html[data-nf-style="glass"] .cbi-page-actions .cbi-button-negative { background:
 @keyframes nf-pulse { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--nf-accent) 55%, transparent); } 50% { box-shadow: 0 0 0 10px transparent; } }
 .nf-qa.nf-pulse { animation: nf-pulse 1.1s ease-in-out 3; outline: 2px solid var(--nf-accent); outline-offset: 2px; }
 
-/* ======== v20261101o: кнопки по центру, одна кнопка применения, читаемые окна ======== */
+/* ======== v20261101o: centered buttons, a single apply button, readable windows ======== */
 @media (max-width: 899px) {
 	html .cbi-button:not(.cbi-dropdown), html button.btn:not(.cbi-dropdown) { justify-content: center; align-items: center; text-align: center; }
-	/* закрытый список показывает только выбранный пункт (раньше «Сохранить и применить» и «Применить без проверки» склеивались) */
+	/* a closed list shows only the selected item (previously "Save & Apply" and "Apply unchecked" ran together) */
 	html .cbi-dropdown:not([open]) > ul > li:not([selected]) { display: none !important; }
-	/* внизу страницы остаётся одна кнопка «Сохранить и применить» */
+	/* only one "Save & Apply" button remains at the bottom of the page */
 	html .cbi-page-actions .cbi-dropdown > ul > li:not(:first-child),
 	html .cbi-page-actions .cbi-dropdown[open] > ul.dropdown > li:not(:first-child) { display: none !important; }
 	html .cbi-page-actions .cbi-dropdown > ul > li:first-child { display: flex !important; justify-content: center; align-items: center; width: 100%; text-align: center; }
 	html .cbi-page-actions .cbi-dropdown > .open, html .cbi-page-actions .cbi-dropdown > .more { display: none !important; }
 	html .cbi-page-actions .cbi-dropdown { text-align: center; }
 }
-/* окна поверх затемнения (клиент Wi-Fi, диагностика…): плотная подложка, чтобы текст читался в любой теме и тоне стекла */
+/* windows over the dimmed overlay (Wi-Fi client, diagnostics…): solid backdrop so text is readable in any theme and glass tint */
 html[data-nf-style="glass"] .modal:not(.login) {
 	background: color-mix(in srgb, var(--nf-flyout, var(--nf-card, #fff)) 94%, transparent) !important;
 	color: var(--nf-text);
 }
 html[data-nf-style="glass"] .modal:not(.login) > .button-row { background: transparent !important; }
 
-/* ======== v20261101p: списки выбора, нижняя панель, время по центру ======== */
-/* выпадающий список выбора рисует система: цвета берём из её же палитры, чтобы текст не сливался с фоном */
+/* ======== v20261101p: select lists, bottom bar, centered time ======== */
+/* the select dropdown is drawn by the system: take colors from its own palette so text doesn't blend into the background */
 select, select option, select optgroup { color-scheme: inherit; }
 select option, select optgroup { background-color: Canvas; color: CanvasText; }
 html[data-darkmode="true"] select option, html[data-darkmode="true"] select optgroup { background-color: #2b2b2b; color: #f3f3f3; }
@@ -4736,7 +4736,7 @@ html[data-darkmode="false"] select option, html[data-darkmode="false"] select op
 .nf-time::-webkit-datetime-edit { padding: 0; }
 @media (max-width: 899px) {
 	.nf-time { height: 44px; width: 104px; padding: 0 8px; font-size: 16px; }
-	/* нижняя панель страницы: главная кнопка на всю ширину, две вторичные в ряд, всё по центру */
+	/* page bottom bar: primary button full width, two secondary ones in a row, all centered */
 	:where(html) .cbi-page-actions { display: grid; }
 	html .cbi-page-actions { grid-template-columns: 1fr 1fr; gap: 8px; align-items: stretch; padding: 10px 12px; justify-items: stretch; }
 	html .cbi-page-actions > * { float: none !important; margin: 0 !important; width: 100%; }
@@ -4748,7 +4748,7 @@ html[data-darkmode="false"] select option, html[data-darkmode="false"] select op
 	html .cbi-page-actions .cbi-dropdown > ul > li:first-child { padding: 0 12px; min-height: 44px; }
 }
 
-/* v20261101p: на телефоне окно настроек — поверх всего, кнопки «Закрыть/Сохранить» всегда видны */
+/* v20261101p: on phones the settings window is on top of everything, "Close/Save" buttons always visible */
 @media (max-width: 899px) {
 	body.modal-overlay-active #nf-tabbar, body.modal-overlay-active #nf-sheet { display: none !important; }
 	#modal_overlay { -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
@@ -4762,38 +4762,38 @@ html[data-darkmode="false"] select option, html[data-darkmode="false"] select op
 	}
 	html .modal:not(.login) > .button-row > button { width: 100%; min-height: 44px; display: flex; align-items: center; justify-content: center; text-align: center; margin: 0 !important; }
 }
-/* v20261101p: время по расписанию — две строки «подпись — поле», цифры по центру */
+/* v20261101p: scheduled time — two "label — field" rows, digits centered */
 .nf-pop-times[data-on] { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px 12px; }
 .nf-pop-times .nf-time { justify-self: end; width: 112px; text-align: center; }
 .nf-pop-times .nf-time::-webkit-datetime-edit { flex: none; text-align: center; }
-/* v20261101q: подписи кнопок монитора не переносятся */
+/* v20261101q: monitor button labels don't wrap */
 .nfm-btn, .nfm button { white-space: nowrap; width: auto; min-width: max-content; }
 
-/* ======== v20261102a: страницы LuCI на телефоне ======== */
+/* ======== v20261102a: LuCI pages on phones ======== */
 @media (max-width: 899px) {
-	/* карточки интерфейсов не шире экрана, кнопки переносятся */
+	/* interface cards no wider than the screen, buttons wrap */
 	html .ifacebox { width: 100% !important; max-width: 100%; min-width: 0; box-sizing: border-box; margin-left: 0; margin-right: 0; }
 	html .ifacebox-body { overflow-wrap: anywhere; }
 	html .ifacebox .cbi-button-row, html .ifacebox-body > div:last-child:has(> .cbi-button) { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
 	html .ifacebox .cbi-button { width: 100%; margin: 0; }
-	/* списки значений (DNS, домены): поле на всю ширину, «+» — отдельная кнопка справа */
+	/* value lists (DNS, domains): field full width, "+" is a separate button on the right */
 	html .cbi-dynlist > .add-item { gap: 6px; align-items: stretch; }
 	html .cbi-dynlist > .add-item > input { flex: 1 1 0; min-width: 0; box-sizing: border-box; }
 	html .cbi-dynlist > .add-item > button, html .cbi-dynlist > .add-item > .cbi-button-add { flex: 0 0 44px; width: 44px; min-width: 44px; padding: 0; display: flex; align-items: center; justify-content: center; }
-	/* панель фильтра и кнопок на странице «Пакеты» */
+	/* filter and button bar on the "Software" page */
 	html .controls { display: grid; gap: 10px; }
 	html .controls > div { display: grid; gap: 8px; margin: 0; }
 	html .controls > div > label { display: block; }
 	html .controls .cbi-button, html .controls button, html .controls input[type="text"] { width: 100%; min-height: 44px; display: flex; align-items: center; justify-content: center; text-align: center; margin: 0; }
 	html .controls input[type="text"] { display: block; text-align: left; }
-	/* нижняя панель плотнее закрывает контент под собой */
+	/* bottom bar covers the content beneath it more tightly */
 	html[data-nf-style="glass"] .cbi-page-actions { background: color-mix(in srgb, var(--nf-flyout, var(--nf-card, #fff)) 90%, transparent) !important; }
-	/* длинные значения не раздвигают страницу */
+	/* long values don't stretch the page */
 	html #maincontent { overflow-wrap: anywhere; }
 	html #maincontent textarea, html #maincontent pre { max-width: 100%; box-sizing: border-box; }
 }
 
-/* v20261102b: экспорт и импорт настроек вида */
+/* v20261102b: export and import of appearance settings */
 .nf-pop .nf-pop-io { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
 .nf-pop .nf-pop-io button { height: 36px; padding: 0 8px; display: flex; align-items: center; justify-content: center; text-align: center; white-space: nowrap; background: var(--nf-ctrl); color: var(--nf-text); border: 1px solid var(--nf-stroke); border-bottom-color: var(--nf-stroke-strong); border-radius: 4px; cursor: pointer; font: inherit; font-size: calc(13px * var(--nf-fsz, 1)); }
 .nf-pop .nf-pop-io button:hover { background: var(--nf-ctrl-hover); }
@@ -4803,7 +4803,7 @@ html[data-darkmode="false"] select option, html[data-darkmode="false"] select op
 @media (max-width: 899px) { .nf-pop .nf-pop-io button { height: 44px; border-radius: 12px; } }
 .nf-pop .nf-pop-io input[type="file"] { display: none !important; }
 
-/* v20261102c: «О теме» и подсказка об обновлении */
+/* v20261102c: "About theme" and update hint */
 .nf-pop .nf-ver { font-size: calc(13px * var(--nf-fsz, 1)); color: var(--nf-text); margin: 2px 0 6px; }
 .nf-pop .nf-pop-about { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--nf-stroke); }
 .nf-pop .nf-pop-io a.nf-pop-btn { height: 36px; padding: 0 8px; display: flex; align-items: center; justify-content: center; text-align: center; white-space: nowrap; text-decoration: none; background: var(--nf-ctrl); color: var(--nf-text); border: 1px solid var(--nf-stroke); border-bottom-color: var(--nf-stroke-strong); border-radius: 4px; font-size: calc(13px * var(--nf-fsz, 1)); }
@@ -4812,9 +4812,9 @@ html[data-darkmode="false"] select option, html[data-darkmode="false"] select op
 .nf-pers-main.nf-has-upd { position: relative; }
 .nf-pers-main.nf-has-upd::after { content: ""; position: absolute; top: 4px; right: 4px; width: 9px; height: 9px; border-radius: 50%; background: var(--nf-accent, #0067c0); box-shadow: 0 0 0 2px var(--nf-card, #fff); }
 
-/* ======== v20261102e: мобильные правки ======== */
+/* ======== v20261102e: mobile fixes ======== */
 @media (max-width: 899px) {
-	/* окно настроек темы целиком над нижней панелью: видны «Проверить сейчас», «Страница релизов», «Сбросить» */
+	/* theme settings window fully above the bottom bar: "Check now", "Releases page", "Reset" are visible */
 	body.nf-has-tabbar .nf-pop {
 		bottom: calc(96px + env(safe-area-inset-bottom, 0px));
 		max-height: calc(100vh - 176px - env(safe-area-inset-bottom, 0px));
@@ -4823,7 +4823,7 @@ html[data-darkmode="false"] select option, html[data-darkmode="false"] select op
 		padding-bottom: 20px;
 	}
 
-	/* заголовки вкладок: «таблетки» в стиле темы вместо плоской белой полосы */
+	/* tab headers: theme-style "pills" instead of a flat white strip */
 	html .tabs, html .cbi-tabmenu {
 		display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px; padding: 0;
 		background: none !important; border: 0; box-shadow: none;
@@ -4849,22 +4849,22 @@ html[data-darkmode="false"] select option, html[data-darkmode="false"] select op
 	html .tabs > li.active::after, html .cbi-tabmenu > li.cbi-tab::after { display: none; }
 }
 
-/* ======== v20261103f: без дёрганий при опросе, таблица Wi-Fi клиентов, длинные значения на телефоне ======== */
-/* собственная анимация LuCI (.fade-in) тоже проигрывалась заново при каждом обновлении блока */
+/* ======== v20261103f: no jitter on polling, Wi-Fi clients table, long values on phones ======== */
+/* LuCI's own animation (.fade-in) also replayed on every block refresh */
 html[data-nf-settled] .fade-in { animation: none; }
 
-/* список Wi-Fi клиентов: MAC-адрес и сигнал не переносятся по символам (раньше MAC разваливался на 4 строки) */
+/* Wi-Fi client list: MAC address and signal don't wrap per character (previously the MAC broke into 4 lines) */
 #view .assoclist .td:nth-of-type(2), #view .assoclist .th:nth-of-type(2),
 #view .assoclist .td:nth-of-type(4), #view .assoclist .th:nth-of-type(4) { white-space: nowrap; overflow-wrap: normal !important; word-break: normal !important; font-variant-numeric: tabular-nums; }
 
-/* телефон: длинная строка без пробелов (IPv6-адрес, имя хоста) в текстовой ячейке таблицы переносится, а не растягивает страницу.
-   Ячейки с полями, списками и кнопками не трогаем: им нужен прежний nowrap. */
+/* phone: a long string without spaces (IPv6 address, hostname) in a text table cell wraps instead of stretching the page.
+   Cells with fields, lists and buttons are left alone: they need the previous nowrap. */
 @media (max-width: 899px) {
 	html .table .td, html .table .th { min-width: 0; overflow-wrap: anywhere; }
 	html .table.cbi-section-table .td.cbi-section-table-cell:not(:has(input, select, textarea, button, .cbi-dropdown, .cbi-checkbox)) { white-space: normal; }
 }
 
-/* v20261103f: окна обновления из интерфейса (доступна версия, прогресс, установлено, что нового) */
+/* v20261103f: in-UI update windows (version available, progress, installed, what's new) */
 .nf-upd-modal { position: fixed; inset: 0; z-index: 10050; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(0, 0, 0, .45); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .nf-upd-box { width: min(460px, 100%); max-height: 86vh; overflow-y: auto; box-sizing: border-box; padding: 22px 22px 18px; border-radius: 12px; background: var(--nf-card, #fff); color: var(--nf-text, #1b1b1b); border: 1px solid var(--nf-stroke, rgba(0, 0, 0, .12)); box-shadow: 0 24px 64px rgba(0, 0, 0, .35); }
 .nf-upd-box.wide { width: min(560px, 100%); }
@@ -4884,7 +4884,7 @@ html[data-nf-settled] .fade-in { animation: none; }
 .nf-upd-btns button.nf-upd-go { background: var(--nf-accent, #0067c0); border-color: transparent; color: #fff; }
 @media (max-width: 899px) { .nf-upd-btns button { min-height: 44px; border-radius: 12px; flex: 1; } .nf-upd-box { padding: 18px 16px 14px; } }
 html.nf-upd-open { overflow: hidden; }
-/* v20261105h: красивое окно обновления и «Что нового» */
+/* v20261105h: nice update window and "What's new" */
 .nf-upd-modal { animation: nf-upd-fade .25s ease both; }
 .nf-upd-box.nf-upd-card { width: min(580px, 100%); padding: 0; overflow: hidden; display: flex; flex-direction: column; border-radius: 18px; animation: nf-upd-pop .38s cubic-bezier(.2, .9, .3, 1.15) both; }
 .nf-upd-hero { position: relative; display: flex; gap: 16px; align-items: center; padding: 24px 24px 20px; color: #fff; background: radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--nf-accent, #0067c0) 100%, #fff 0%) 0%, color-mix(in srgb, var(--nf-accent, #0067c0) 55%, #1a1033) 100%); overflow: hidden; flex: none; }
@@ -4946,8 +4946,8 @@ html[data-darkmode="true"] .nf-cl-b.warn { color: #fca5a5; }
 }
 @media (prefers-reduced-motion: reduce) { .nf-upd-modal, .nf-upd-box.nf-upd-card, .nf-upd-more.open { animation: none !important; } }
 
-/* ======== v20261103f: компактная нижняя панель «Применить / Сохранить / Сброс» на телефонах ======== */
-/* Размеры считаются от ширины и высоты экрана, поэтому панель аккуратна и на маленьком SE/mini, и на Pro Max, и на Android с любым масштабом. */
+/* ======== v20261103f: compact "Apply / Save / Reset" bottom bar on phones ======== */
+/* Sizes are derived from screen width and height, so the bar looks tidy on a small SE/mini, on a Pro Max and on Android at any zoom. */
 @media (max-width: 899px) {
 	:where(html) .cbi-page-actions { display: flex; }
 	html .cbi-page-actions {
@@ -4964,23 +4964,23 @@ html[data-darkmode="true"] .nf-cl-b.warn { color: #fca5a5; }
 	}
 	html .cbi-page-actions .cbi-dropdown > ul > li:first-child { min-height: var(--nf-abh); padding: 0 clamp(6px, 2vw, 12px); font-size: inherit; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 }
-/* очень узкие экраны: подписи чуть короче по месту */
+/* very narrow screens: labels slightly shorter where needed */
 @media (max-width: 340px) {
 	html .cbi-page-actions { gap: 4px; padding: 6px; }
 	html .cbi-page-actions .cbi-button, html .cbi-page-actions button { padding: 0 4px; font-size: 12px; }
 }
-/* телефон в горизонтальном положении: панель не должна закрывать пол-экрана, она встаёт в конец страницы */
+/* phone in landscape: the bar must not cover half the screen, it moves to the end of the page */
 @media (max-width: 899px) and (max-height: 520px) {
 	html .cbi-page-actions { position: static; margin-top: 12px; box-shadow: none; }
 }
 @media (max-width: 899px) {
-	/* длинная подпись «Сохранить и применить» переносится на две строки, а не обрезается */
+	/* the long "Save & Apply" label wraps onto two lines instead of being truncated */
 	html .cbi-page-actions > .cbi-dropdown, html .cbi-page-actions > .cbi-button-apply, html .cbi-page-actions > .cbi-button-primary,
 	html .cbi-page-actions .cbi-dropdown > ul > li:first-child { white-space: normal; text-overflow: clip; line-height: 1.1; overflow-wrap: normal; word-break: normal; hyphens: none; }
 	html .cbi-page-actions > .cbi-dropdown > ul { height: 100%; display: flex !important; }
 }
 
-/* ======== v20261103f: карточка «Трафик по приложениям» ======== */
+/* ======== v20261103f: "Traffic by application" card ======== */
 html[data-nf-ov-apps="off"] .nf-apps { display: none !important; }
 .nf-apps-b { display: flex; flex-direction: column; padding-bottom: 10px; }
 .nf-apps-bar { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; padding: 2px 0 10px; }
@@ -5044,7 +5044,7 @@ html[data-nf-ov-apps="off"] .nf-apps { display: none !important; }
  .nf-apps-dev { flex:1 1 100%; }
 }
 
-/* ======== v20261103f: из чего состоит «Прочее» ======== */
+/* ======== v20261103f: what "Other" consists of ======== */
 .nf-apps-sub { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 0 0 10px; color: var(--nf-text-dim); font-size: calc(12px * var(--nf-fsz, 1)); }
 .nf-apps-chip { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 2px 9px; border-radius: 999px; background: color-mix(in srgb, var(--nf-text) 8%, transparent); color: var(--nf-text); }
 .nf-apps-chip b { font-weight: 600; margin-left: 2px; }
@@ -5081,7 +5081,7 @@ html[data-nf-ov-apps="off"] .nf-apps { display: none !important; }
   .nf-apps-r { grid-template-columns: minmax(120px, 1fr) minmax(70px, 1.4fr) 8.5em 2.8em; gap: 6px 8px; }
 }
  
-/* ======== v20261104a: карточка «Доступ в интернет» ======== */
+/* ======== v20261104a: "Internet access" card ======== */
 html[data-nf-ov-block="off"] .nf-block { display: none !important; }
 .nf-blk-r { display: grid; grid-template-columns: minmax(120px, 1.6fr) minmax(90px, 1fr) auto; gap: 6px 14px; align-items: center; padding: 8px 0; border-top: 1px solid var(--nf-stroke); }
 .nf-blk-b > .nf-blk-r:first-child, .nf-blk-g:first-child .nf-blk-r { border-top: 0; }
@@ -5111,7 +5111,7 @@ html[data-nf-ov-block="off"] .nf-block { display: none !important; }
 .nf-blk-log .ok { color: var(--nf-ok, #3ecf8e); }
 .nf-blk-log i { color: var(--nf-text-dim); font-style: normal; }
 
-/* ======== v20261104a: фон входа по времени суток, плавное появление графиков, размеры карточек ======== */
+/* ======== v20261104a: time-of-day sign-in background, smooth chart appearance, card sizes ======== */
 :root[data-nf-login-bg="tod"][data-nf-tod] body.nf-blank { background: var(--tod-bg, linear-gradient(180deg, #2b3a67, #101828)); }
 html[data-nf-login-bg="tod"][data-nf-tod="dawn"] body.nf-blank { --tod-bg: linear-gradient(180deg, #ffd6a5 0%, #ffb3c1 38%, #9ec5ff 100%); --tod-glow: #fff3b0; }
 html[data-nf-login-bg="tod"][data-nf-tod="day"] body.nf-blank { --tod-bg: linear-gradient(180deg, #5ab2ff 0%, #9bd4ff 55%, #e2f3ff 100%); --tod-glow: #fff7c2; }
@@ -5130,13 +5130,13 @@ html[data-nf-login-bg="tod"][data-nf-tod="day"] .nf-lock, html[data-nf-login-bg=
 html[data-nf-login-bg="tod"][data-nf-tod="dawn"] .nf-lock, html[data-nf-login-bg="tod"][data-nf-tod="dawn"] .nf-lock span { color: #3a2340; text-shadow: none; }
 html[data-nf-login-bg="tod"][data-nf-tod="day"] .nf-lock span, html[data-nf-login-bg="tod"][data-nf-tod="dawn"] .nf-lock span { opacity: .75; }
 
-/* графики и столбцы плавно «вырастают» при первом показе */
+/* charts and bars smoothly "grow" on first display */
 @keyframes nf-grow-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes nf-reveal { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
 html:not([data-nf-motion="off"]) .nf-top-bar i { transform-origin: left center; animation: nf-grow-x .7s cubic-bezier(.2, .7, .2, 1) both; }
 html:not([data-nf-motion="off"]) .nf-spark path { animation: nf-reveal .9s cubic-bezier(.3, .6, .2, 1) both; }
 
-/* размер карточки на «Обзоре»: обычная, широкая (на всю ширину), свёрнутая (только заголовок) */
+/* card size on "Overview": normal, wide (full width), collapsed (header only) */
 .nf-size { width: 24px; height: 24px; padding: 0; margin-left: 2px; border: 0; border-radius: 6px; background: transparent; box-shadow: none; cursor: pointer; opacity: 0; transition: opacity .15s, background-color .15s; color: var(--nf-text-dim); font: inherit; font-size: calc(14px * var(--nf-fsz, 1)); line-height: 1; }
 .nf-size::before { content: "▢"; }
 .nf-size[data-s="wide"]::before { content: "⇔"; }
@@ -5148,12 +5148,12 @@ html:not([data-nf-motion="off"]) .nf-spark path { animation: nf-reveal .9s cubic
 .cbi-section.nf-min > :not(.cbi-title) { display: none !important; }
 .cbi-section.nf-min { padding-bottom: 6px; }
 
-/* ======== v20261105a: вход, стиль «Стекло»: без лишних панелей за полями ввода ======== */
+/* ======== v20261105a: sign-in, "Glass" style: no extra panels behind input fields ======== */
 html[data-nf-style="glass"] .modal.login form, html[data-nf-style="glass"] .modal.login .cbi-section-node, html[data-nf-style="glass"] .modal.login .cbi-value-field, html[data-nf-style="glass"] .modal.login .nf-row {
 	background: transparent !important; border: 0 !important; box-shadow: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 html[data-nf-style="glass"] .modal.login .cbi-section, html[data-nf-style="glass"] .modal.login .cbi-map { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 
-/* ======== v20261105b: IP/MAC без переносов, один столбец, своя картинка и выбор карточек на входе ======== */
+/* ======== v20261105b: IP/MAC without wrapping, single column, custom picture and card selection on sign-in ======== */
 #view .td.nf-nw, #view td.nf-nw, #view .td[data-title*="IPv4"], #view .td[data-title*="MAC"] { overflow-wrap: normal !important; word-break: keep-all; white-space: nowrap; font-variant-numeric: tabular-nums; }
 @media (min-width: 900px) { html[data-nf-ov-wide="on"] #view:has(> .cbi-section.fade-in) { grid-template-columns: minmax(0, 1fr); } }
 
@@ -5170,11 +5170,11 @@ html[data-nf-login-bg="tod"][data-nf-tod="night"] .nf-lock span { opacity: .75; 
 .nf-st-speed b { letter-spacing: -.2px; }
 .nf-st span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 html[data-nf-login-bg="tod"] body.nf-blank .modal.login label.cbi-value-title, html[data-nf-login-bg="tod"] body.nf-blank .modal.login .nf-row label { color: var(--nf-text); opacity: .88; }
-/* без привязки к классу из JS: LuCI пересобирает строки каждые 5 секунд, и пока скрипт не успел их пометить, таблица «прыгала» */
+/* no dependency on a JS class: LuCI rebuilds rows every 5 seconds, and until the script marked them the table "jumped" */
 #view .table:has(.nf-nw, .td[data-title*="MAC"], .td[data-title*="IPv4"]) .td, #view .table:has(.nf-nw, .td[data-title*="MAC"], .td[data-title*="IPv4"]) .th { overflow-wrap: normal !important; white-space: nowrap; }
 #view .table:has(.nf-nw, .td[data-title*="MAC"], .td[data-title*="IPv4"]) .td:first-child { width: auto; }
 
-/* ======== v20261105c: кнопка «Закрыть» в окне персонализации ======== */
+/* ======== v20261105c: "Close" button in the personalization window ======== */
 .nf-pop-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .nf-pop-x { flex: none; width: 36px; height: 36px; margin: -6px -8px -6px 0; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--nf-text); font-size: 32px; font-weight: 300; line-height: 1; cursor: pointer; box-shadow: none; }
 .nf-pop-x:hover, .nf-pop-x:focus-visible { background: var(--nf-hover); outline: 0; }
@@ -5183,7 +5183,7 @@ html[data-nf-login-bg="tod"] body.nf-blank .modal.login label.cbi-value-title, h
 	.nf-pop-x { width: 44px; height: 44px; margin: -8px -10px -8px 0; }
 }
 
-/* ======== v20261105d: компактные «Применить / Сохранить / Сброс» на странице Tachyon ======== */
+/* ======== v20261105d: compact "Apply / Save / Reset" on the Tachyon page ======== */
 html body #cbi-tachyon ~ .cbi-page-actions { display: flex; }
 html body #view > .cbi-page-actions,
 html body #cbi-tachyon ~ .cbi-page-actions {
@@ -5214,7 +5214,7 @@ html body #cbi-tachyon ~ .cbi-page-actions .cbi-dropdown.btn > ul { padding: 0 8
 	html body #cbi-tachyon ~ .cbi-page-actions > * { flex: 1 1 0 !important; min-height: 38px !important; padding: 0 8px !important; font-size: 13px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 }
 
-/* ======== v20261105f: страница «Устройства» (карта сети, карточки, группы) ======== */
+/* ======== v20261105f: "Devices" page (network map, cards, groups) ======== */
 .nf-dv { display: block; }
 .nf-dv-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-bottom: 8px; }
 .nf-dv-top h2 { margin: 0; }
@@ -5288,9 +5288,9 @@ html[data-nf-motion="off"] .nf-dv-link.busy { animation: none; }
 #view .nf-dv-svg .nf-dv-node .lb { font-size: 13px !important; fill: var(--nf-text) !important; }
 #view .nf-dv-svg .nf-dv-node .sp { font-size: 12px !important; fill: var(--nf-accent) !important; }
 
-/* ======== v20261105g: macOS, редактор темы, палитры графиков, фоны входа ======== */
+/* ======== v20261105g: macOS, theme editor, chart palettes, sign-in backgrounds ======== */
 
-/* ---- стиль macOS ---- */
+/* ---- macOS style ---- */
 html[data-nf-style="mac"] {
 	--font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Inter, "Segoe UI", system-ui, sans-serif;
 	--nf-bg: #f5f5f7; --nf-bg-glow: #f5f5f7; --nf-bg-glow2: #f5f5f7;
@@ -5310,7 +5310,7 @@ html[data-nf-style="mac"][data-darkmode="true"] {
 	--nf-text: #f5f5f7; --nf-text-dim: #a1a1a6; --nf-header-bg: rgba(30, 30, 30, .72);
 	--nf-shadow-card: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
 }
-html[data-nf-style="mac"] body:not(.nf-blank) { background: transparent; }   /* плоский фон даёт html; иначе body закрывает волны и «северное сияние» и они видны только у меню */
+html[data-nf-style="mac"] body:not(.nf-blank) { background: transparent; }   /* html provides the flat background; otherwise body covers the waves and "aurora" and they're only visible next to the menu */
 html[data-nf-style="mac"] header, html[data-nf-style="mac"] .nf-tabbar { -webkit-backdrop-filter: saturate(180%) blur(22px); backdrop-filter: saturate(180%) blur(22px); }
 html[data-nf-style="mac"] .cbi-section, html[data-nf-style="mac"] fieldset.cbi-section, html[data-nf-style="mac"] .nf-tile, html[data-nf-style="mac"] .modal {
 	border-color: transparent !important; box-shadow: var(--nf-shadow-card) !important; }
@@ -5330,7 +5330,7 @@ html[data-nf-style="mac"] .cbi-section .table .th { background: transparent; tex
 html[data-nf-style="mac"] .nf-seg { border-radius: 9px; background: color-mix(in srgb, var(--nf-text) 7%, transparent); padding: 2px; }
 html[data-nf-style="mac"] .nf-seg button[aria-pressed="true"] { background: var(--nf-card); box-shadow: 0 1px 3px rgba(0, 0, 0, .18); color: var(--nf-text); }
 
-/* ---- редактор своей темы ---- */
+/* ---- custom theme editor ---- */
 .nf-ed-open { display: block; width: 100%; margin: 6px 0 4px; height: 36px; border-radius: var(--nf-radius-sm); border: 1px dashed var(--nf-accent); background: color-mix(in srgb, var(--nf-accent) 9%, transparent); color: var(--nf-text); cursor: pointer; font: inherit; }
 .nf-ed-open:hover { background: color-mix(in srgb, var(--nf-accent) 16%, transparent); }
 .nf-ed { width: 320px; bottom: 62px; left: 12px; z-index: 1001; }
@@ -5346,13 +5346,13 @@ html[data-nf-style="mac"] .nf-seg button[aria-pressed="true"] { background: var(
 .nf-ed-code { width: 100%; box-sizing: border-box; font: 12px/1.35 var(--font-mono); resize: vertical; word-break: break-all; }
 @media (max-width: 899px) { .nf-ed { left: 8px; right: 8px; width: auto; bottom: 8px; max-height: 78vh; } }
 
-/* ---- палитры графиков (данные рисуются классами nfm-c-*, nf-c-*) ---- */
+/* ---- chart palettes (data drawn with nfm-c-*, nf-c-* classes) ---- */
 :root[data-nf-gpal="vivid"] { --nf-g-down: #0a84ff; --nf-g-up: #30d158; --nf-g-3: #bf5af2; --nf-g-4: #ff9f0a; --nf-g-bad: #ff453a; --nf-g-warn: #ffd60a; }
 :root[data-nf-gpal="mono"] { --nf-g-down: var(--nf-text); --nf-g-up: var(--nf-text-dim); --nf-g-3: color-mix(in srgb, var(--nf-text) 45%, transparent); --nf-g-4: color-mix(in srgb, var(--nf-text) 28%, transparent);  --nf-g-temp: color-mix(in srgb, var(--nf-text) 60%, transparent);}
 :root[data-nf-gpal="warm"] { --nf-g-down: #f97316; --nf-g-up: #eab308; --nf-g-3: #ef4444; --nf-g-4: #ec4899;  --nf-g-temp: #f59e0b;}
 :root[data-nf-gpal="cool"] { --nf-g-down: #06b6d4; --nf-g-up: #6366f1; --nf-g-3: #14b8a6; --nf-g-4: #8b5cf6;  --nf-g-temp: #0ea5e9;}
 
-/* ---- фоны экрана входа: дождь, закат, своё фото ---- */
+/* ---- sign-in screen backgrounds: rain, sunset, own photo ---- */
 html[data-nf-login-bg="rain"] body.nf-blank { background: linear-gradient(180deg, #2b3548 0%, #151b28 100%); }
 html[data-nf-login-bg="rain"] body.nf-blank::before { content: ""; position: fixed; inset: -20% 0 0 0; z-index: -1; pointer-events: none; opacity: .55;
 	background: repeating-linear-gradient(104deg, transparent 0 22px, rgba(190, 215, 255, .5) 22px 23px, transparent 23px 47px), repeating-linear-gradient(104deg, transparent 0 61px, rgba(190, 215, 255, .35) 61px 62px, transparent 62px 97px);
@@ -5370,7 +5370,7 @@ html[data-nf-login-bg="photo"] body.nf-blank::before { content: ""; position: fi
 html[data-nf-login-bg="photo"] .nf-lock, html[data-nf-login-bg="photo"] .nf-lock span { color: #fff; text-shadow: 0 1px 8px rgba(0, 0, 0, .55); }
 html[data-nf-motion="off"][data-nf-login-bg="rain"] body.nf-blank::before, html[data-nf-motion="off"][data-nf-login-bg="sunset"] body.nf-blank::before { animation: none !important; }
 
-/* ---- растягивание карточек за уголок ---- */
+/* ---- resizing cards by the corner ---- */
 .cbi-section[data-nf-card] { position: relative; }
 .nf-rs { position: absolute; right: 4px; bottom: 4px; width: 20px; height: 20px; border-radius: 6px; cursor: nwse-resize; touch-action: none; opacity: 0; transition: opacity .15s; z-index: 2;
 	background: linear-gradient(135deg, transparent 0 52%, var(--nf-text-dim) 52% 58%, transparent 58% 70%, var(--nf-text-dim) 70% 76%, transparent 76%); }
@@ -5382,7 +5382,7 @@ html[data-nf-motion="off"][data-nf-login-bg="rain"] body.nf-blank::before, html[
 html:not([data-nf-motion="off"]) .cbi-section[data-nf-card] { transition: min-height .12s ease; }
 .nf-resizing { transition: none !important; }
 
-/* ---- линейные значки устройств и приложений ---- */
+/* ---- line icons for devices and applications ---- */
 .nf-ic { fill: none !important; stroke: currentColor !important; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex: none; overflow: visible; }
 .nf-ic * { fill: none; stroke: currentColor; }
 .nf-dv-node .nf-ic, .nf-dv-hub .nf-ic { color: var(--nf-text); }
@@ -5392,12 +5392,12 @@ html:not([data-nf-motion="off"]) .cbi-section[data-nf-card] { transition: min-he
 .nf-dv-item.off .ic, .nf-dv-item.gone .ic { color: var(--nf-text-dim); background: var(--nf-hover); }
 .nf-apps-n .nf-ic { width: 18px; height: 18px; color: var(--c); }
 
-/* v20261105j: стиль macOS: на окне входа вложенные блоки без теней и фона (иначе под полями виден второй фон) */
+/* v20261105j: macOS style: on the sign-in window nested blocks have no shadows or background (otherwise a second background shows under the fields) */
 html[data-nf-style="mac"] .modal.login .cbi-map, html[data-nf-style="mac"] .modal.login .cbi-section, html[data-nf-style="mac"] .modal.login .cbi-section-node,
 html[data-nf-style="mac"] body.nf-blank .modal.login .cbi-value { background: transparent !important; box-shadow: none !important; border: 0 !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 html[data-nf-style="mac"] .modal.login .cbi-section::before, html[data-nf-style="mac"] .modal.login .cbi-section::after, html[data-nf-style="mac"] .modal.login .cbi-map::before { display: none !important; }
 
-/* Подключённые клиенты: «Хост» в две строки (имя / IP · MAC), отдельный столбец MAC скрыт */
+/* Connected clients: "Host" on two lines (name / IP · MAC), separate MAC column hidden */
 .nf-hostmerged .th:nth-of-type(2), .nf-hostmerged th:nth-of-type(2), .nf-hostmerged .td:nth-of-type(2), .nf-hostmerged td:nth-of-type(2) { display: none !important; }
 .nf-host { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .nf-h1 { font-weight: 600; overflow-wrap: anywhere; line-height: 1.3; }
@@ -5405,17 +5405,17 @@ html[data-nf-style="mac"] .modal.login .cbi-section::before, html[data-nf-style=
 .nf-h2 { font-size: calc(12px * var(--nf-fsz, 1)); color: var(--nf-text-dim); font-variant-numeric: tabular-nums; line-height: 1.3; overflow-wrap: anywhere; }
 .nf-h2m, .nf-h1ip .nf-h2m { color: var(--nf-text-dim); font-weight: 400; font-size: .9em; white-space: nowrap; }
 
-/* v20261106b: число столбцов «Обзора» (1, 2, 3): карточки текут по колонкам сверху вниз, пустых мест нет */
+/* v20261106b: number of "Overview" columns (1, 2, 3): cards flow down the columns top to bottom, no empty gaps */
 .nf-live-acts { display: inline-flex; gap: 14px; align-items: baseline; flex-wrap: wrap; justify-content: flex-end; }
 .nf-colsel { display: inline-flex; align-items: baseline; gap: 2px; font-size: calc(12px * var(--nf-fsz, 1)); color: var(--nf-text-dim); }
 .nf-colsel > span { margin-right: 4px; }
 .nf-colsel .nf-linkbtn { padding: 2px 6px; border-radius: 6px; }
 .nf-colsel .nf-linkbtn.on { background: color-mix(in srgb, var(--nf-accent) 18%, transparent); font-weight: 700; text-decoration: none; }
-/* раскладка столбцов считается в nightfall-overview.js (applyColumns) */
-/* macOS: меню без размытия и своего фона, чтобы волны шли под ним без обрыва */
+/* column layout is computed in nightfall-overview.js (applyColumns) */
+/* macOS: menu without blur or its own background so the waves run under it without a break */
 @media (min-width: 900px) { html[data-nf-style="mac"] header { background: transparent !important; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none; } }
 
-/* ---- v1.2.8: вкладки персонализации ---- */
+/* ---- v1.2.8: personalization tabs ---- */
 .nf-tabs { display: flex; gap: 2px; padding: 3px; margin: 0 0 12px; background: var(--nf-card-alt); border: 1px solid var(--nf-stroke); border-radius: 8px; }
 .nf-tabs button { flex: 1; height: 30px; padding: 0 4px; font: inherit; font-size: calc(13px * var(--nf-fsz, 1)); background: transparent; color: var(--nf-text); border: 0 !important; border-radius: 6px; box-shadow: none !important; cursor: pointer; white-space: nowrap; }
 .nf-tabs button:hover { background: var(--nf-hover); }
@@ -5426,24 +5426,24 @@ html[data-nf-style="mac"] .modal.login .cbi-section::before, html[data-nf-style=
 .nf-pop .nf-pane > .nf-pop-sec:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
 .nf-pop .nf-sync-note:empty { display: none; }
 @media (max-width: 899px) {
-	/* то, что на телефоне не работает, скрыто */
+	/* things that don't work on phones are hidden */
 	.nf-pop .nf-desk, .nf-colsel { display: none !important; }
 	.nf-tabs button { height: 38px; }
-	/* «Сохранить и применить» и соседние кнопки: помещаются в одну строку */
+	/* "Save & Apply" and neighboring buttons fit on one line */
 	:where(html) .cbi-page-actions .cbi-button, :where(html) .cbi-page-actions .btn, :where(html) .cbi-page-actions .cbi-dropdown { font-size: 12.5px; padding-left: 8px; padding-right: 8px; min-width: 0; white-space: nowrap; letter-spacing: -.01em; }
 	.nf-live-acts { gap: 8px; }
-	/* нижняя панель всегда у края экрана, даже если мобильный браузер меняет высоту окна */
+	/* the bottom bar always sits at the screen edge, even if the mobile browser changes the viewport height */
 	body #nf-tabbar { position: fixed !important; top: auto !important; transform: translateZ(0); -webkit-transform: translateZ(0); will-change: transform; z-index: 2500; }
 }
 .nf-pop .nf-pop-io { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .nf-pop .nf-pop-io button, .nf-pop .nf-pop-io .nf-pop-btn { min-width: 0; white-space: normal; line-height: 1.15; height: auto; min-height: 36px; padding: 4px 6px; font-size: calc(12.5px * var(--nf-fsz, 1)); }
 
-/* ---- v1.2.8+: память «Свободно», тёмная тема без кричащих пятен, выравнивание «Что нового», кнопки внизу на телефоне ---- */
-/* «Свободно»: чем больше свободного, тем зеленее; мало — красный (обратно обычным полосам, где красный = занято) */
+/* ---- v1.2.8+: "Free" memory, dark theme without loud spots, "What's new" alignment, bottom buttons on phones ---- */
+/* "Free": the more free, the greener; little left — red (opposite of the usual bars, where red = used) */
 .cbi-progressbar[data-nf-free="ok"] > div { background: var(--nf-g-up, #13a10e) !important; }
 .cbi-progressbar[data-nf-free="mid"] > div { background: #e0a800 !important; }
 .cbi-progressbar[data-nf-free="low"] > div { background: var(--nf-g-bad, #d13438) !important; }
-/* тёмная тема: цвета полос и плашек мягче */
+/* dark theme: softer bar and badge colors */
 html[data-darkmode="true"] .cbi-progressbar > div { filter: saturate(.7) brightness(.9); }
 html[data-darkmode="true"] .nf-upd-hero { background: radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--nf-accent, #0067c0) 48%, #14161c) 0%, color-mix(in srgb, var(--nf-accent, #0067c0) 24%, #14121f) 100%); }
 html[data-darkmode="true"] .nf-upd-chip.new { background: rgba(255, 255, 255, .88); }
@@ -5453,11 +5453,11 @@ html[data-darkmode="true"] .nf-upd-card .nf-cl-v { color: color-mix(in srgb, var
 html[data-darkmode="true"] .nf-cl-b.new { background: rgba(16, 185, 129, .12); color: #5fd0a6; }
 html[data-darkmode="true"] .nf-cl-b.imp { background: rgba(59, 130, 246, .13); color: #93b9f0; }
 html[data-darkmode="true"] .nf-cl-b.fix { background: rgba(245, 158, 11, .12); color: #e3b960; }
-/* «Что нового»: плашка и текст на одной базовой линии, колонка плашек одинаковой ширины */
+/* "What's new": badge and text on one baseline, badge column of equal width */
 .nf-cl-row { align-items: baseline; }
 .nf-cl-b { margin-top: 0; width: 84px; min-width: 84px; padding: 1px 6px; line-height: 1.5; align-self: baseline; }
 .nf-cl-x { text-align: left; flex: 1 1 auto; }
-/* кнопки «Сохранить и применить / Сохранить / Сброс» на телефоне: всегда видны целиком */
+/* "Save & Apply / Save / Reset" buttons on phones: always fully visible */
 @media (max-width: 899px) {
 	html body .cbi-page-actions { flex-wrap: nowrap; gap: 6px; padding: 8px; align-items: stretch; }
 	html body .cbi-page-actions > *, html body #view > .cbi-page-actions > *, html body #cbi-tachyon ~ .cbi-page-actions > * {
@@ -5471,7 +5471,7 @@ html[data-darkmode="true"] .nf-cl-b.fix { background: rgba(245, 158, 11, .12); c
 }
 .cbi-progressbar[data-nf-free="dim"] > div { background: color-mix(in srgb, var(--nf-text) 38%, transparent) !important; }
 
-/* ---- полоса заполнения в стиле темы ---- */
+/* ---- theme-style fill bar ---- */
 .cbi-progressbar { height: 8px !important; border-radius: 999px; box-shadow: inset 0 1px 2px rgba(0, 0, 0, .18); }
 .cbi-progressbar > div { border-radius: 999px; background-image: linear-gradient(180deg, rgba(255, 255, 255, .34), rgba(255, 255, 255, 0) 62%) !important; box-shadow: 0 0 9px -1px color-mix(in srgb, currentColor 0%, transparent); }
 .cbi-progressbar[data-nf-free="ok"] { --pbc: var(--nf-g-up, #13a10e); }
@@ -5483,19 +5483,19 @@ html[data-nf-style="mac"] .cbi-progressbar { height: 6px !important; box-shadow:
 html[data-nf-style="mac"] .cbi-progressbar > div { background-image: none !important; }
 html[data-nf-radius="sharp"] .cbi-progressbar, html[data-nf-radius="sharp"] .cbi-progressbar > div { border-radius: 2px; }
 
-/* полосы заполнения плавно вырастают при открытии страницы (не повторяется при обновлении данных) */
+/* fill bars grow smoothly when the page opens (not repeated on data refresh) */
 @keyframes nf-pb-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 html:not([data-nf-motion="off"]):not([data-nf-settled]) .cbi-progressbar > div { transform-origin: left center; animation: nf-pb-grow .9s cubic-bezier(.2, .7, .2, 1) .15s both; }
 @media (prefers-reduced-motion: reduce) { .cbi-progressbar > div { animation: none !important; } }
 
-/* ---- v1.3.0: палитры графиков ---- */
+/* ---- v1.3.0: chart palettes ---- */
 :root[data-nf-gpal="sunset"] { --nf-g-down: #ff7a59; --nf-g-up: #ffb347; --nf-g-3: #ff4d8d; --nf-g-4: #9b5de5; --nf-g-temp: #ff9a3c; }
 :root[data-nf-gpal="neon"] { --nf-g-down: #00f0ff; --nf-g-up: #ff2bd6; --nf-g-3: #b6ff00; --nf-g-4: #ffe600; --nf-g-temp: #ff8c00; }
 :root[data-nf-gpal="pastel"] { --nf-g-down: #8ecae6; --nf-g-up: #ffb5a7; --nf-g-3: #b7e4c7; --nf-g-4: #cdb4db; --nf-g-temp: #ffd6a5; }
 :root[data-nf-gpal="nord"] { --nf-g-down: #88c0d0; --nf-g-up: #a3be8c; --nf-g-3: #b48ead; --nf-g-4: #ebcb8b; --nf-g-temp: #d08770; }
 :root[data-nf-gpal="dracula"] { --nf-g-down: #8be9fd; --nf-g-up: #50fa7b; --nf-g-3: #ff79c6; --nf-g-4: #f1fa8c; --nf-g-temp: #ffb86c; }
 
-/* ---- живые фоны ---- */
+/* ---- live backgrounds ---- */
 html[data-nf-bg="mesh"] body::before {
 	inset: -25%; opacity: .8; filter: blur(60px) saturate(1.3);
 	background:
@@ -5537,7 +5537,7 @@ html[data-nf-bg="neon"] body::before {
 html[data-nf-motion="off"][data-nf-bg="mesh"] body::before, html[data-nf-motion="off"][data-nf-bg="drift"] body::before, html[data-nf-motion="off"][data-nf-bg="drift"] body::after, html[data-nf-motion="off"][data-nf-bg="neon"] body::before { animation: none !important; }
 @media (prefers-reduced-motion: reduce) { html[data-nf-bg="mesh"] body::before, html[data-nf-bg="drift"] body::before, html[data-nf-bg="drift"] body::after, html[data-nf-bg="neon"] body::before { animation: none; } }
 
-/* ---- графики: линия «дорисовывается» при открытии страницы ---- */
+/* ---- charts: the line "draws itself" when the page opens ---- */
 @keyframes nf-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 @keyframes nf-fadein { from { opacity: 0; } to { opacity: 1; } }
 html:not([data-nf-motion="off"]):not([data-nf-settled]) svg path.l[pathLength] { stroke-dasharray: 1; animation: nf-draw 1.2s cubic-bezier(.3, .6, .2, 1) .1s both; }
@@ -5546,7 +5546,7 @@ html:not([data-nf-motion="off"]):not([data-nf-settled]) svg path.a { animation: 
 .nf-presets button { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 
 /* ======== v1.4.0 ======== */
-/* --- графики: толщина, сетка, цвет по нагрузке, блик --- */
+/* --- charts: thickness, grid, load-based color, glint --- */
 html[data-nf-lw="1"] .nf-spark path, html[data-nf-lw="1"] svg path.l { stroke-width: 1px; }
 html[data-nf-lw="2"] .nf-spark path, html[data-nf-lw="2"] svg path.l { stroke-width: 1.6px; }
 html[data-nf-lw="3"] .nf-spark path, html[data-nf-lw="3"] svg path.l { stroke-width: 2.6px; }
@@ -5558,7 +5558,7 @@ html[data-nf-thr="on"] .nf-tile[data-lvl="mid"] .nf-spark path { stroke: #e0a800
 html[data-nf-thr="on"] .nf-tile[data-lvl="bad"] .nf-spark linearGradient { color: var(--nf-g-bad, #d13438); }
 html[data-nf-thr="on"] .nf-tile[data-lvl="bad"] .nf-spark path { stroke: var(--nf-g-bad, #d13438); color: var(--nf-g-bad, #d13438); }
 html[data-nf-thr="on"] .nf-tile[data-lvl] .nf-spark path.a { stroke: none; }
-/* --- плавная смена страницы, точка «Онлайн», волна на кнопках --- */
+/* --- smooth page change, "Online" dot, ripple on buttons --- */
 @keyframes nf-page { from { opacity: 0; } to { opacity: 1; } }
 html:not([data-nf-motion="off"]) #view { animation: nf-page .3s ease backwards; }
 @keyframes nf-dotp { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 55%, transparent); } 70%, 100% { box-shadow: 0 0 0 7px transparent; } }
@@ -5569,7 +5569,7 @@ html:not([data-nf-motion="off"]) .nf-badge.ok::before, html:not([data-nf-motion=
 .nf-rp { background-image: radial-gradient(circle at var(--rx, 50%) var(--ry, 50%), rgba(255, 255, 255, var(--ro)) var(--rr), transparent calc(var(--rr) + 1px)) !important; animation: nf-rp .6s ease-out; }
 @media (prefers-reduced-motion: reduce) { .nf-rp, #view, .nf-badge.ok::before, .nf-st-up .nf-dot { animation: none !important; } }
 
-/* --- новые живые фоны --- */
+/* --- new live backgrounds --- */
 html[data-nf-bg="sunset"] body::before, html[data-nf-bg="ocean"] body::before {
 	inset: -25%; opacity: .8; filter: blur(60px) saturate(1.25); animation: nf-mesh 44s ease-in-out infinite alternate; will-change: transform;
 }
@@ -5580,7 +5580,7 @@ html[data-nf-bg="ocean"] body::before { background:
 	radial-gradient(40% 42% at 20% 26%, rgba(14, 165, 233, .5), transparent 70%), radial-gradient(38% 40% at 80% 24%, rgba(20, 184, 166, .45), transparent 70%),
 	radial-gradient(42% 44% at 70% 86%, rgba(59, 130, 246, .5), transparent 70%), radial-gradient(34% 36% at 16% 82%, rgba(34, 211, 238, .35), transparent 70%); }
 html[data-nf-bg="sunset"]:not([data-darkmode="true"]) body::before, html[data-nf-bg="ocean"]:not([data-darkmode="true"]) body::before { opacity: .5; }
-/* снег и дождь (и погода: снег, дождь, гроза) */
+/* snow and rain (and weather: snow, rain, thunderstorm) */
 html[data-nf-bg="snow"] body::before, html[data-nf-bg="weather"][data-nf-wx="snow"] body::before {
 	--s: color-mix(in srgb, #fff 85%, var(--nf-accent));
 	background-image: radial-gradient(2.5px 2.5px at 20px 30px, var(--s), transparent), radial-gradient(2px 2px at 90px 80px, var(--s), transparent), radial-gradient(3px 3px at 150px 20px, var(--s), transparent), radial-gradient(2px 2px at 60px 140px, var(--s), transparent), radial-gradient(2.5px 2.5px at 180px 120px, var(--s), transparent);
@@ -5604,7 +5604,7 @@ html[data-nf-bg="rain"] body::after, html[data-nf-bg="weather"][data-nf-wx="rain
 	background-size: 150px 140px; transform: rotate(8deg) scale(1.2); animation: nf-rain 1.3s linear infinite;
 }
 @keyframes nf-rain { to { background-position: 0 170px; } }
-/* время суток */
+/* time of day */
 html[data-nf-bg="tod"] body::before, html[data-nf-bg="weather"] body::before { transition: opacity 1s; }
 html[data-nf-bg="tod"] body::before { inset: 0; opacity: .75; }
 html[data-nf-bg="tod"][data-nf-tod="dawn"] body::before { background: linear-gradient(180deg, rgba(255, 183, 120, .55), rgba(255, 140, 170, .3) 55%, transparent); }
@@ -5612,7 +5612,7 @@ html[data-nf-bg="tod"][data-nf-tod="day"] body::before { background: linear-grad
 html[data-nf-bg="tod"][data-nf-tod="dusk"] body::before { background: linear-gradient(180deg, rgba(255, 130, 90, .5), rgba(160, 90, 200, .32) 55%, transparent); }
 html[data-nf-bg="tod"][data-nf-tod="night"] body::before { background: linear-gradient(180deg, rgba(20, 30, 90, .6), rgba(60, 40, 120, .25) 60%, transparent); }
 html[data-nf-bg="tod"]:not([data-darkmode="true"]) body::before { opacity: .55; }
-/* погода: цвет неба + осадки поверх */
+/* weather: sky color + precipitation on top */
 html[data-nf-bg="weather"] body::after { content: ""; position: fixed; inset: 0; z-index: -2; pointer-events: none; opacity: .7; }
 html[data-nf-bg="weather"][data-nf-wx="sun"] body::after { background: radial-gradient(60% 50% at 85% 0%, rgba(255, 200, 80, .5), transparent 70%), linear-gradient(180deg, rgba(110, 180, 255, .25), transparent 60%); }
 html[data-nf-bg="weather"][data-nf-wx="clear"] body::after { background: linear-gradient(180deg, rgba(20, 30, 90, .55), rgba(60, 40, 120, .2) 60%, transparent); }
@@ -5628,28 +5628,28 @@ html[data-nf-motion="off"][data-nf-bg] body::before, html[data-nf-motion="off"][
 html[data-nf-bg="weather"][data-nf-wx="rain"] body::after, html[data-nf-bg="weather"][data-nf-wx="storm"] body::after { background-color: rgba(90, 105, 135, .22); }
 html[data-nf-bg="weather"][data-nf-wx="snow"] body::after { background-color: rgba(170, 190, 220, .16); }
 
-/* координаты погоды и выбор города */
+/* weather coordinates and city selection */
 .nf-wx-ll { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; }
 .nf-wx-ll label { display: flex; flex-direction: column; gap: 3px; font-size: calc(12px * var(--nf-fsz, 1)); color: var(--nf-text-dim); }
 .nf-wx-ll input { width: 100%; height: 32px; padding: 0 8px; }
 .nf-pop select.nf-sel { width: 100%; }
-/* диалоги («Применение изменений…», «Нет изменений для применения») всегда видны целиком */
+/* dialogs ("Applying configuration changes…", "There are no changes to apply") always fully visible */
 #modal_overlay { display: flex; align-items: flex-start; justify-content: center; padding: calc(env(safe-area-inset-top, 0px) + 12px) 12px calc(env(safe-area-inset-bottom, 0px) + 12px); z-index: 3000; }
 #modal_overlay > .modal { margin: auto; width: min(100%, 540px); max-height: 100%; overflow: auto; }
 @media (max-width: 899px) { .nf-pop .nf-seg.nf-seg-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
-/* бегущий блик: короткий светлый отрезок едет по линии (отдельная линия-копия, поэтому обновление данных его не рвёт) */
+/* moving glint: a short light segment travels along the line (a separate copy of the line, so data refresh doesn't break it) */
 .nf-spark path.s { fill: none; stroke: #fff; stroke-opacity: 0; stroke-dasharray: 26 4000; stroke-dashoffset: 26; stroke-linecap: round; pointer-events: none; animation: none; }
 html[data-nf-shine="on"]:not([data-nf-motion="off"]) .nf-spark path.s { stroke-opacity: .85; animation: nf-glint 4.5s cubic-bezier(.4, 0, .6, 1) infinite; }
 @keyframes nf-glint { 0% { stroke-dashoffset: 26; } 65%, 100% { stroke-dashoffset: -520; } }
 @media (prefers-reduced-motion: reduce) { .nf-spark path.s { display: none; } }
 
-/* плавная смена темы: класс ставится на 0.6 с при переключении настроек */
+/* smooth theme change: the class is set for 0.6 s when settings are switched */
 html.nf-tx:not([data-nf-motion="off"]) *, html.nf-tx:not([data-nf-motion="off"]) *::before, html.nf-tx:not([data-nf-motion="off"]) *::after {
 	transition: background-color .45s ease, color .45s ease, border-color .45s ease, fill .45s ease, stroke .45s ease, box-shadow .45s ease !important;
 }
 
-/* телефон: компактный Обзор и отступы под вырез/полосу жестов (iPhone) */
+/* phone: compact Overview and padding for the notch/gesture bar (iPhone) */
 @media (max-width: 600px) {
 	html body .nf-live-grid { gap: 8px; }
 	html body .nf-tile { padding: 10px 12px; }
@@ -5659,7 +5659,7 @@ html.nf-tx:not([data-nf-motion="off"]) *, html.nf-tx:not([data-nf-motion="off"])
 	html body #maincontent, html body .main-right { padding-left: max(12px, env(safe-area-inset-left, 0px)); padding-right: max(12px, env(safe-area-inset-right, 0px)); }
 }
 
-/* значки у заголовков групп в панели персонализации */
+/* icons next to group headers in the personalization panel */
 .nf-pop .nf-pop-l[data-ic]::before { content:''; display:inline-block; width:13px; height:13px; margin-right:6px; vertical-align:-2px; background:currentColor; opacity:.75; -webkit-mask:var(--ic) center/contain no-repeat; mask:var(--ic) center/contain no-repeat; }
 .nf-pop .nf-pop-l[data-ic='style'] { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3a9 9 0 1 0 0 18c1.5 0 2-1 1.5-2-.6-1.2.2-2.5 1.6-2.5H18a3 3 0 0 0 3-3C21 7 17 3 12 3z'/%3E%3Ccircle cx='7.5' cy='11' r='1'/%3E%3Ccircle cx='11' cy='7' r='1'/%3E%3Ccircle cx='16' cy='8' r='1'/%3E%3C/svg%3E"); }
 .nf-pop .nf-pop-l[data-ic='mode'] { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z'/%3E%3C/svg%3E"); }
@@ -5672,7 +5672,7 @@ html.nf-tx:not([data-nf-motion="off"]) *, html.nf-tx:not([data-nf-motion="off"])
 .nf-pop .nf-pop-l[data-ic='ov'] { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='7' height='9' rx='1'/%3E%3Crect x='14' y='3' width='7' height='5' rx='1'/%3E%3Crect x='14' y='12' width='7' height='9' rx='1'/%3E%3Crect x='3' y='16' width='7' height='5' rx='1'/%3E%3C/svg%3E"); }
 .nf-pop .nf-pop-l[data-ic='ui'] { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6h16M4 12h16M4 18h16'/%3E%3C/svg%3E"); }
 
-/* кольцо загрузки в углу плиток Обзора (процессор, температура, память) */
+/* load ring in the corner of Overview tiles (CPU, temperature, memory) */
 @property --ringp { syntax: '<number>'; inherits: true; initial-value: 0; }
 html[data-nf-ring="on"] .nf-tile[data-tile="cpu"],
 html[data-nf-ring="on"] .nf-tile[data-tile="temp"],
@@ -5688,7 +5688,7 @@ html[data-nf-ring="on"] .nf-tile[data-tile="mem"]::after {
 }
 html[data-nf-ring="on"][data-nf-motion="off"] .nf-tile { transition: none; }
 
-/* сезонные фоны: гирлянда (Новый год) и листопад (осень) */
+/* seasonal backgrounds: garland (New Year) and falling leaves (autumn) */
 html[data-nf-bg="garland"] body::before {
 	--s: color-mix(in srgb, #fff 85%, var(--nf-accent));
 	background-image: radial-gradient(2.5px 2.5px at 20px 30px, var(--s), transparent), radial-gradient(2px 2px at 90px 80px, var(--s), transparent), radial-gradient(3px 3px at 150px 20px, var(--s), transparent), radial-gradient(2px 2px at 60px 140px, var(--s), transparent);
@@ -5718,7 +5718,7 @@ html[data-nf-bg="leaves"] body::after {
 html[data-nf-motion="off"][data-nf-bg="garland"] body::before, html[data-nf-motion="off"][data-nf-bg="leaves"] body::before,
 html[data-nf-motion="off"][data-nf-bg="garland"] body::after, html[data-nf-motion="off"][data-nf-bg="leaves"] body::after { animation: none; }
 
-/* порядок плиток «Сейчас» задаётся в настройках (переменные --nf-ord-*) */
+/* order of "Now" tiles is set in settings (--nf-ord-* variables) */
 .nf-live-grid .nf-tile[data-tile="net"] { order: var(--nf-ord-net, 0); }
 .nf-live-grid .nf-tile[data-tile="wan"] { order: var(--nf-ord-wan, 1); }
 .nf-live-grid .nf-tile[data-tile="cpu"] { order: var(--nf-ord-cpu, 2); }
@@ -5731,14 +5731,14 @@ html[data-nf-motion="off"][data-nf-bg="garland"] body::after, html[data-nf-motio
 .nf-live-grid .nf-tile[data-tile="sig"] { order: var(--nf-ord-sig, 9); }
 .nf-live-grid .nf-tile[data-tile="day"] { order: var(--nf-ord-day, 10); }
 .nf-live-grid .nf-tile[data-tile="stor"] { order: var(--nf-ord-stor, 11); }
-/* скрытые плитки (настройка «Плитки Сейчас»): список в атрибуте через пробел */
+/* hidden tiles ("Now tiles" setting): space-separated list in an attribute */
 html[data-nf-hide~="net"] .nf-live-grid .nf-tile[data-tile="net"], html[data-nf-hide~="wan"] .nf-live-grid .nf-tile[data-tile="wan"],
 html[data-nf-hide~="cpu"] .nf-live-grid .nf-tile[data-tile="cpu"], html[data-nf-hide~="temp"] .nf-live-grid .nf-tile[data-tile="temp"],
 html[data-nf-hide~="mem"] .nf-live-grid .nf-tile[data-tile="mem"], html[data-nf-hide~="ct"] .nf-live-grid .nf-tile[data-tile="ct"],
 html[data-nf-hide~="up"] .nf-live-grid .nf-tile[data-tile="up"], html[data-nf-hide~="cli"] .nf-live-grid .nf-tile[data-tile="cli"],
 html[data-nf-hide~="loss"] .nf-live-grid .nf-tile[data-tile="loss"], html[data-nf-hide~="sig"] .nf-live-grid .nf-tile[data-tile="sig"],
 html[data-nf-hide~="day"] .nf-live-grid .nf-tile[data-tile="day"], html[data-nf-hide~="stor"] .nf-live-grid .nf-tile[data-tile="stor"] { display: none; }
-/* без атрибута (старый кэш) новые плитки скрыты по умолчанию */
+/* without the attribute (old cache) new tiles are hidden by default */
 html:not([data-nf-hide]) .nf-live-grid .nf-tile[data-tile="ct"], html:not([data-nf-hide]) .nf-live-grid .nf-tile[data-tile="up"], html:not([data-nf-hide]) .nf-live-grid .nf-tile[data-tile="cli"], html:not([data-nf-hide]) .nf-live-grid .nf-tile[data-tile="loss"], html:not([data-nf-hide]) .nf-live-grid .nf-tile[data-tile="sig"], html:not([data-nf-hide]) .nf-live-grid .nf-tile[data-tile="day"], html:not([data-nf-hide]) .nf-live-grid .nf-tile[data-tile="stor"] { display: none; }
 .nf-pop .nf-ord-vis { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; }
 .nf-pop .nf-ord-vis input { width: 16px; height: 16px; flex: none; accent-color: var(--nf-accent); }
@@ -5751,7 +5751,7 @@ html:not([data-nf-hide]) .nf-live-grid .nf-tile[data-tile="ct"], html:not([data-
 .nf-pop .nf-thr-d { width: 8px; height: 8px; border-radius: 50%; background: #e0a800; }
 .nf-pop .nf-thr-d.bad { background: #d13438; }
 
-/* узкие экраны (iPhone SE/XR и меньше): «Сохранить и применить» на отдельной строке, остальное — две половины */
+/* narrow screens (iPhone SE/XR and smaller): "Save & Apply" on its own line, the rest as two halves */
 @media (max-width: 430px) {
 	html body .cbi-page-actions, html body #view > .cbi-page-actions, html body #cbi-tachyon ~ .cbi-page-actions { flex-wrap: wrap !important; }
 	html body .cbi-page-actions > .cbi-button-apply, html body .cbi-page-actions > .cbi-dropdown, html body .cbi-page-actions > .cbi-button-primary,
@@ -5760,12 +5760,12 @@ html:not([data-nf-hide]) .nf-live-grid .nf-tile[data-tile="ct"], html:not([data-
 	html body #view > .cbi-page-actions > .cbi-button-save, html body #view > .cbi-page-actions > .cbi-button-reset, html body #view > .cbi-page-actions > .cbi-button-negative { flex: 1 1 calc(50% - 6px) !important; }
 	html body .cbi-page-actions .cbi-dropdown > ul > li:first-child { white-space: nowrap !important; }
 }
-/* кнопки сетки настроек: текст не переносится по буквам */
+/* settings grid buttons: text doesn't wrap per letter */
 .nf-pop .nf-seg.nf-seg-grid button { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: calc(12.5px * var(--nf-fsz, 1)); padding-left: 4px; padding-right: 4px; }
 .nf-pop .nf-pop-io button { width: 100%; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .nf-pop .nf-pop-io:has(> button:only-child) { grid-template-columns: 1fr; }
 
-/* ======== сцены: горы, город, космос, лава, синтвейв (фон страниц и входа) ======== */
+/* ======== scenes: mountains, city, space, lava, synthwave (page and sign-in background) ======== */
 html[data-nf-bg="mountains"] body::before, html[data-nf-login-bg="mountains"] body.nf-blank::before { content: ""; position: fixed; z-index: -1; pointer-events: none; inset: 0; background-image: radial-gradient(60% 42% at 50% 100%, color-mix(in srgb, var(--nf-accent) 30%, transparent), transparent 75%), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='200' viewBox='0 0 900 200' preserveAspectRatio='none'%3E%3Cpolygon fill='rgba%2850%2C66%2C150%2C.68%29' points='0%2C200 0%2C111 10%2C119 20%2C130 30%2C143 40%2C155 50%2C166 60%2C174 70%2C178 80%2C178 90%2C174 100%2C169 110%2C164 120%2C161 130%2C158 140%2C157 150%2C156 160%2C155 170%2C153 180%2C151 190%2C149 200%2C148 210%2C148 220%2C149 230%2C151 240%2C151 250%2C150 260%2C145 270%2C136 280%2C125 290%2C113 300%2C101 310%2C91 320%2C86 330%2C84 340%2C85 350%2C88 360%2C93 370%2C97 380%2C102 390%2C106 400%2C111 410%2C117 420%2C124 430%2C131 440%2C137 450%2C141 460%2C143 470%2C141 480%2C138 490%2C135 500%2C133 510%2C133 520%2C137 530%2C145 540%2C154 550%2C163 560%2C171 570%2C177 580%2C180 590%2C180 600%2C179 610%2C177 620%2C174 630%2C170 640%2C165 650%2C159 660%2C150 670%2C140 680%2C129 690%2C118 700%2C110 710%2C106 720%2C105 730%2C107 740%2C112 750%2C116 760%2C119 770%2C120 780%2C118 790%2C114 800%2C110 810%2C106 820%2C103 830%2C101 840%2C101 850%2C101 860%2C101 870%2C102 880%2C103 890%2C105 900%2C111 900%2C200'/%3E%3C/svg%3E"), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='260' viewBox='0 0 1200 260'%3E%3Cpolygon fill='rgba%2895%2C115%2C205%2C.52%29' points='0%2C260 0%2C203 10%2C193 20%2C181 30%2C175 40%2C171 50%2C165 60%2C158 70%2C161 80%2C164 90%2C166 100%2C166 110%2C164 120%2C161 130%2C157 140%2C160 150%2C163 160%2C164 170%2C164 180%2C161 190%2C157 200%2C150 210%2C141 220%2C130 230%2C121 240%2C117 250%2C121 260%2C124 270%2C127 280%2C128 290%2C127 300%2C125 310%2C132 320%2C140 330%2C147 340%2C153 350%2C158 360%2C171 370%2C183 380%2C194 390%2C202 400%2C209 410%2C213 420%2C215 430%2C214 440%2C212 450%2C208 460%2C203 470%2C206 480%2C207 490%2C206 500%2C204 510%2C200 520%2C194 530%2C186 540%2C177 550%2C176 560%2C178 570%2C181 580%2C190 590%2C198 600%2C205 610%2C209 620%2C212 630%2C212 640%2C210 650%2C206 660%2C200 670%2C193 680%2C186 690%2C186 700%2C183 710%2C179 720%2C173 730%2C165 740%2C155 750%2C143 760%2C130 770%2C115 780%2C100 790%2C98 800%2C104 810%2C110 820%2C114 830%2C120 840%2C131 850%2C139 860%2C146 870%2C151 880%2C154 890%2C155 900%2C160 910%2C169 920%2C175 930%2C181 940%2C184 950%2C185 960%2C184 970%2C180 980%2C175 990%2C169 1000%2C161 1010%2C158 1020%2C159 1030%2C169 1040%2C180 1050%2C190 1060%2C198 1070%2C205 1080%2C209 1090%2C211 1100%2C212 1110%2C211 1120%2C215 1130%2C221 1140%2C225 1150%2C227 1160%2C227 1170%2C224 1180%2C219 1190%2C212 1200%2C203 1200%2C260'/%3E%3C/svg%3E"), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='300' viewBox='0 0 1600 300'%3E%3Cpolygon fill='rgba%28130%2C150%2C230%2C.42%29' points='0%2C300 0%2C220 10%2C225 20%2C228 30%2C228 40%2C227 50%2C224 60%2C219 70%2C213 80%2C208 90%2C208 100%2C208 110%2C213 120%2C223 130%2C231 140%2C237 150%2C241 160%2C243 170%2C244 180%2C243 190%2C240 200%2C235 210%2C237 220%2C238 230%2C238 240%2C235 250%2C231 260%2C224 270%2C216 280%2C205 290%2C193 300%2C179 310%2C164 320%2C148 330%2C137 340%2C137 350%2C139 360%2C141 370%2C142 380%2C141 390%2C139 400%2C135 410%2C134 420%2C141 430%2C146 440%2C150 450%2C156 460%2C166 470%2C175 480%2C182 490%2C188 500%2C191 510%2C193 520%2C193 530%2C192 540%2C189 550%2C184 560%2C179 570%2C184 580%2C198 590%2C211 600%2C222 610%2C233 620%2C241 630%2C248 640%2C252 650%2C254 660%2C255 670%2C253 680%2C249 690%2C244 700%2C243 710%2C243 720%2C242 730%2C239 740%2C234 750%2C227 760%2C218 770%2C208 780%2C196 790%2C183 800%2C180 810%2C177 820%2C177 830%2C181 840%2C184 850%2C185 860%2C185 870%2C183 880%2C179 890%2C173 900%2C165 910%2C156 920%2C144 930%2C132 940%2C119 950%2C127 960%2C134 970%2C140 980%2C144 990%2C147 1000%2C149 1010%2C149 1020%2C150 1030%2C159 1040%2C168 1050%2C176 1060%2C183 1070%2C195 1080%2C208 1090%2C220 1100%2C230 1110%2C238 1120%2C244 1130%2C248 1140%2C249 1150%2C249 1160%2C246 1170%2C242 1180%2C236 1190%2C232 1200%2C232 1210%2C231 1220%2C228 1230%2C224 1240%2C218 1250%2C214 1260%2C217 1270%2C219 1280%2C219 1290%2C217 1300%2C215 1310%2C213 1320%2C216 1330%2C218 1340%2C218 1350%2C217 1360%2C214 1370%2C208 1380%2C201 1390%2C191 1400%2C180 1410%2C166 1420%2C152 1430%2C137 1440%2C127 1450%2C119 1460%2C109 1470%2C99 1480%2C103 1490%2C116 1500%2C129 1510%2C140 1520%2C150 1530%2C159 1540%2C166 1550%2C172 1560%2C181 1570%2C193 1580%2C204 1590%2C213 1600%2C220 1600%2C300'/%3E%3C/svg%3E");
 		background-repeat: no-repeat, repeat-x, repeat-x, repeat-x; background-position: 0 0, 0 100%, 0 100%, 0 100%; background-size: auto, auto 26vh, auto 38vh, auto 50vh; animation: nf-mtn 420s linear infinite; will-change: background-position; }
 html[data-nf-bg="mountains"] body::after, html[data-nf-login-bg="mountains"] body.nf-blank::after { content: ""; position: fixed; z-index: -1; pointer-events: none; inset: 0; background: radial-gradient(120% 60% at 80% 0%, rgba(255,170,120,.16), transparent 60%), linear-gradient(180deg, color-mix(in srgb, var(--nf-accent) 10%, transparent), transparent 55%); }
@@ -5824,7 +5824,7 @@ html:not([data-darkmode="true"])[data-nf-login-bg="space"] body.nf-blank::after 
 html:not([data-darkmode="true"])[data-nf-login-bg="space"] body.nf-blank::before { opacity: .9; }
 html:not([data-darkmode="true"])[data-nf-login-bg="cyber"] body.nf-blank::after { opacity: .9; filter: saturate(1.2) brightness(.85); }
 
-/* ======== Обзор: живее карточки и плитки ======== */
+/* ======== Overview: livelier cards and tiles ======== */
 html[data-nf-ov-live="on"] .nf-tile, html .nf-live-grid .nf-tile {
 	background-image: linear-gradient(135deg, color-mix(in srgb, var(--nf-accent) 10%, transparent), transparent 62%);
 	transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
@@ -5836,17 +5836,17 @@ html[data-nf-ov-badges="on"] .nf-live-grid .nf-tile[data-lvl="mid"] { box-shadow
 @media (hover: none) { html .nf-live-grid .nf-tile:hover { transform: none; } }
 html[data-nf-motion="off"] .nf-live-grid .nf-tile:hover { transform: none; }
 
-/* ======== значки: градиентные и крупные (Вид → Значки) ======== */
+/* ======== icons: gradient and large (View → Icons) ======== */
 html[data-nf-ic="duo"] .nf-ci { background: linear-gradient(135deg, var(--nf-accent), color-mix(in srgb, var(--nf-accent) 45%, #c026d3)); }
 html[data-nf-ic="big"] .nf-ci { width: 22px; height: 22px; vertical-align: -5px; }
 html[data-nf-ic="big"] .nfm-tab.nfm-ti::before { width: 17px; height: 17px; }
 
-/* ======== анимированный логотип на экране входа ======== */
+/* ======== animated logo on the sign-in screen ======== */
 @keyframes nf-logo-pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--nf-accent) 55%, transparent), 0 0 0 0 color-mix(in srgb, var(--nf-accent) 35%, transparent); } 70% { box-shadow: 0 0 0 16px transparent, 0 0 0 0 color-mix(in srgb, var(--nf-accent) 35%, transparent); } 100% { box-shadow: 0 0 0 16px transparent, 0 0 0 30px transparent; } }
 html:not([data-nf-motion="off"]) body.nf-blank .modal.login::before { animation: nf-logo-pulse 3.2s ease-out infinite; }
 @media (prefers-reduced-motion: reduce) { body.nf-blank .modal.login::before { animation: none !important; } }
 
-/* ======== Табло ======== */
+/* ======== Dashboard ======== */
 .nf-board { position: fixed; inset: 0; z-index: 4000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2vh; padding: 4vh 4vw; cursor: pointer; color: var(--nf-text);
 	background: color-mix(in srgb, var(--nf-bg, #101218) 72%, transparent); -webkit-backdrop-filter: blur(26px) saturate(1.3); backdrop-filter: blur(26px) saturate(1.3); animation: nf-bd-in .35s ease both; }
 @keyframes nf-bd-in { from { opacity: 0; transform: scale(1.03); } to { opacity: 1; transform: none; } }
@@ -5877,7 +5877,7 @@ html[data-nf-motion="off"] .nf-board { animation: none; }
 .nf-qr-sub, .nf-qr-note { opacity: .65; font-size: 12px; margin-top: 2px; }
 .nf-qr-note { margin-top: 12px; text-align: center; }
 
-/* ======== v1.10: Дождь по стеклу, Ночной лес, Туманные горы, Подводный мир, Живой фон ======== */
+/* ======== v1.10: Rain on glass, Night forest, Misty mountains, Underwater, Live background ======== */
 html[data-nf-bg="rainglass"] body::before, html[data-nf-login-bg="rainglass"] body.nf-blank::before { content: ""; position: fixed; z-index: -1; pointer-events: none; inset: 0; background: radial-gradient(circle at 12% 72%, rgba(255,170,60,0.34) 0 38px, transparent 40px), radial-gradient(circle at 22% 80%, rgba(255,90,140,0.34) 0 52px, transparent 54px), radial-gradient(circle at 38% 68%, rgba(70,200,255,0.34) 0 30px, transparent 32px), radial-gradient(circle at 55% 84%, rgba(255,220,90,0.34) 0 46px, transparent 48px), radial-gradient(circle at 68% 70%, rgba(150,110,255,0.34) 0 40px, transparent 42px), radial-gradient(circle at 82% 82%, rgba(255,130,80,0.34) 0 58px, transparent 60px), radial-gradient(circle at 92% 66%, rgba(80,230,200,0.34) 0 34px, transparent 36px), radial-gradient(circle at 46% 58%, rgba(255,255,255,0.20) 0 22px, transparent 24px), linear-gradient(180deg, #0a1020 0%, #16233b 60%, #22304a 100%); filter: blur(2px); }
 html[data-nf-bg="rainglass"] body::after, html[data-nf-login-bg="rainglass"] body.nf-blank::after { content: ""; position: fixed; z-index: -1; pointer-events: none; inset: 0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='720' viewBox='0 0 360 720'%3E%3Cpath d='M78 574 Q81 593 78 612' stroke='rgba(220,235,255,.30)' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='78' cy='612' rx='3.4000000000000004' ry='4.6' fill='rgba(220,235,255,.30)'/%3E%3Ccircle cx='77.2' cy='610.8' r='.9' fill='rgba(255,255,255,.9)'/%3E%3Cpath d='M70 450 Q73 494 70 537' stroke='rgba(220,235,255,.30)' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='70' cy='537' rx='3.4000000000000004' ry='4.6' fill='rgba(220,235,255,.30)'/%3E%3Ccircle cx='69.2' cy='535.8' r='.9' fill='rgba(255,255,255,.9)'/%3E%3Cpath d='M343 362 Q346 390 343 418' stroke='rgba(220,235,255,.30)' stroke-width='1' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='343' cy='418' rx='3.2' ry='4.4' fill='rgba(220,235,255,.30)'/%3E%3Ccircle cx='342.2' cy='416.8' r='.9' fill='rgba(255,255,255,.9)'/%3E%3Cpath d='M259 -20 Q262 20 259 59' stroke='rgba(220,235,255,.30)' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='259' cy='59' rx='3.4000000000000004' ry='4.6' fill='rgba(220,235,255,.30)'/%3E%3Ccircle cx='258.2' cy='57.8' r='.9' fill='rgba(255,255,255,.9)'/%3E%3Cpath d='M321 -87 Q324 -27 321 32' stroke='rgba(220,235,255,.30)' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='321' cy='32' rx='3.4000000000000004' ry='4.6' fill='rgba(220,235,255,.30)'/%3E%3Ccircle cx='320.2' cy='30.8' r='.9' fill='rgba(255,255,255,.9)'/%3E%3Cpath d='M146 159 Q149 212 146 264' stroke='rgba(220,235,255,.30)' stroke-width='1' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='146' cy='264' rx='3.2' ry='4.4' fill='rgba(220,235,255,.30)'/%3E%3Ccircle cx='145.2' cy='262.8' r='.9' fill='rgba(255,255,255,.9)'/%3E%3Cpath d='M172 29 Q175 45 172 61' stroke='rgba(220,235,255,.30)' stroke-width='1' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='172' cy='61' rx='3.2' ry='4.4' fill='rgba(220,235,255,.30)'/%3E%3Ccircle cx='171.2' cy='59.8' r='.9' fill='rgba(255,255,255,.9)'/%3E%3Cpath d='M342 553 Q345 569 342 584' stroke='rgba(220,235,255,.30)' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='342' cy='584' rx='3.4000000000000004' ry='4.6' fill='rgba(220,235,255,.30)'/%3E%3Ccircle cx='341.2' cy='582.8' r='.9' fill='rgba(255,255,255,.9)'/%3E%3Cpath d='M120 429 Q123 446 120 462' stroke='rgba(220,235,255,.30)' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='120' cy='462' rx='3.8000000000000003' ry='5.0' fill='rgba(220,235,255,.30)'/%3E%3Ccircle cx='119.2' cy='460.8' r='.9' fill='rgba(255,255,255,.9)'/%3E%3C/svg%3E"), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='520' height='1040' viewBox='0 0 520 1040'%3E%3Cpath d='M499 876 Q502 895 499 913' stroke='rgba(200,225,255,.22)' stroke-width='1' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='499' cy='913' rx='3.2' ry='4.4' fill='rgba(200,225,255,.22)'/%3E%3Ccircle cx='498.2' cy='911.8' r='.9' fill='rgba(255,255,255,.8)'/%3E%3Cpath d='M53 348 Q56 374 53 399' stroke='rgba(200,225,255,.22)' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='53' cy='399' rx='3.8000000000000003' ry='5.0' fill='rgba(200,225,255,.22)'/%3E%3Ccircle cx='52.2' cy='397.8' r='.9' fill='rgba(255,255,255,.8)'/%3E%3Cpath d='M424 646 Q427 681 424 715' stroke='rgba(200,225,255,.22)' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='424' cy='715' rx='3.4000000000000004' ry='4.6' fill='rgba(200,225,255,.22)'/%3E%3Ccircle cx='423.2' cy='713.8' r='.9' fill='rgba(255,255,255,.8)'/%3E%3Cpath d='M320 140 Q323 194 320 247' stroke='rgba(200,225,255,.22)' stroke-width='1' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='320' cy='247' rx='3.2' ry='4.4' fill='rgba(200,225,255,.22)'/%3E%3Ccircle cx='319.2' cy='245.8' r='.9' fill='rgba(255,255,255,.8)'/%3E%3Cpath d='M307 677 Q310 702 307 727' stroke='rgba(200,225,255,.22)' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='307' cy='727' rx='3.4000000000000004' ry='4.6' fill='rgba(200,225,255,.22)'/%3E%3Ccircle cx='306.2' cy='725.8' r='.9' fill='rgba(255,255,255,.8)'/%3E%3Cpath d='M336 337 Q339 385 336 432' stroke='rgba(200,225,255,.22)' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='336' cy='432' rx='3.4000000000000004' ry='4.6' fill='rgba(200,225,255,.22)'/%3E%3Ccircle cx='335.2' cy='430.8' r='.9' fill='rgba(255,255,255,.8)'/%3E%3Cpath d='M288 902 Q291 945 288 988' stroke='rgba(200,225,255,.22)' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='288' cy='988' rx='3.8000000000000003' ry='5.0' fill='rgba(200,225,255,.22)'/%3E%3Ccircle cx='287.2' cy='986.8' r='.9' fill='rgba(255,255,255,.8)'/%3E%3Cpath d='M147 918 Q150 935 147 952' stroke='rgba(200,225,255,.22)' stroke-width='1' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='147' cy='952' rx='3.2' ry='4.4' fill='rgba(200,225,255,.22)'/%3E%3Ccircle cx='146.2' cy='950.8' r='.9' fill='rgba(255,255,255,.8)'/%3E%3C/svg%3E"), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 300 300'%3E%3Ccircle cx='127' cy='284' r='2' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='126.4' cy='283.4' r='0.7' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='195' cy='248' r='4.5' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='193.7' cy='246.7' r='1.6' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='39' cy='12' r='3.4' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='38.0' cy='11.0' r='1.2' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='138' cy='288' r='2' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='137.4' cy='287.4' r='0.7' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='104' cy='246' r='4.5' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='102.7' cy='244.7' r='1.6' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='287' cy='249' r='3.4' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='286.0' cy='248.0' r='1.2' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='83' cy='124' r='2' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='82.4' cy='123.4' r='0.7' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='273' cy='205' r='1.5' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='272.6' cy='204.6' r='0.5' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='38' cy='87' r='4.5' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='36.6' cy='85.7' r='1.6' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='27' cy='160' r='1.5' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='26.6' cy='159.6' r='0.5' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='143' cy='248' r='4.5' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='141.7' cy='246.7' r='1.6' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='204' cy='224' r='3.4' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='203.0' cy='223.0' r='1.2' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='233' cy='74' r='2.6' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='232.2' cy='73.2' r='0.9' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='55' cy='24' r='2' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='54.4' cy='23.4' r='0.7' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='259' cy='117' r='2.6' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='258.2' cy='116.2' r='0.9' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='229' cy='160' r='3.4' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='228.0' cy='159.0' r='1.2' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='265' cy='203' r='4.5' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='263.6' cy='201.7' r='1.6' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='185' cy='279' r='4.5' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='183.7' cy='277.6' r='1.6' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='214' cy='124' r='2.6' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='213.2' cy='123.2' r='0.9' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='20' cy='149' r='4.5' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='18.6' cy='147.7' r='1.6' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='89' cy='173' r='4.5' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='87.7' cy='171.7' r='1.6' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='59' cy='114' r='4.5' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='57.6' cy='112.7' r='1.6' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='142' cy='151' r='1.5' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='141.6' cy='150.6' r='0.5' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='38' cy='252' r='3.4' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='37.0' cy='251.0' r='1.2' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='51' cy='182' r='1.5' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='50.5' cy='181.6' r='0.5' fill='rgba(255,255,255,.7)'/%3E%3Ccircle cx='216' cy='83' r='1.5' fill='rgba(210,230,255,.16)'/%3E%3Ccircle cx='215.6' cy='82.5' r='0.5' fill='rgba(255,255,255,.7)'/%3E%3C/svg%3E"); background-size: 360px 720px, 520px 1040px, 300px 300px; animation: nf-rg 16s linear infinite; }
 @keyframes nf-rg { to { background-position: 0 720px, 0 1040px, 0 0; } }
@@ -5913,7 +5913,7 @@ html:not([data-darkmode="true"])[data-nf-bg="underwater"] body::after, html:not(
 html[data-nf-motion="off"] html[data-nf-bg="rainglass"] body::before,, html[data-nf-motion="off"] html[data-nf-login-bg="rainglass"] body.nf-blank::before,, html[data-nf-motion="off"] html[data-nf-bg="rainglass"] body::after,, html[data-nf-motion="off"] html[data-nf-login-bg="rainglass"] body.nf-blank::after,, html[data-nf-motion="off"] html[data-nf-bg="forest"] body::before,, html[data-nf-motion="off"] html[data-nf-login-bg="forest"] body.nf-blank::before,, html[data-nf-motion="off"] html[data-nf-bg="forest"] body::after,, html[data-nf-motion="off"] html[data-nf-login-bg="forest"] body.nf-blank::after,, html[data-nf-motion="off"] html[data-nf-bg="fogmount"] body::before,, html[data-nf-motion="off"] html[data-nf-login-bg="fogmount"] body.nf-blank::before,, html[data-nf-motion="off"] html[data-nf-bg="fogmount"] body::after,, html[data-nf-motion="off"] html[data-nf-login-bg="fogmount"] body.nf-blank::after,, html[data-nf-motion="off"] html[data-nf-bg="underwater"] body::before,, html[data-nf-motion="off"] html[data-nf-login-bg="underwater"] body.nf-blank::before,, html[data-nf-motion="off"] html[data-nf-bg="underwater"] body::after,, html[data-nf-motion="off"] html[data-nf-login-bg="underwater"] body.nf-blank::after,, html[data-nf-motion="off"] html[data-nf-bg="live"] body::before,, html[data-nf-motion="off"] html[data-nf-login-bg="live"] body.nf-blank::before,, html[data-nf-motion="off"] html[data-nf-bg="live"] body::after,, html[data-nf-motion="off"] html[data-nf-login-bg="live"] body.nf-blank::after { animation: none !important; }
 @media (prefers-reduced-motion: reduce) { html[data-nf-bg="rainglass"] body::before, html[data-nf-login-bg="rainglass"] body.nf-blank::before, html[data-nf-bg="rainglass"] body::after, html[data-nf-login-bg="rainglass"] body.nf-blank::after, html[data-nf-bg="forest"] body::before, html[data-nf-login-bg="forest"] body.nf-blank::before, html[data-nf-bg="forest"] body::after, html[data-nf-login-bg="forest"] body.nf-blank::after, html[data-nf-bg="fogmount"] body::before, html[data-nf-login-bg="fogmount"] body.nf-blank::before, html[data-nf-bg="fogmount"] body::after, html[data-nf-login-bg="fogmount"] body.nf-blank::after, html[data-nf-bg="underwater"] body::before, html[data-nf-login-bg="underwater"] body.nf-blank::before, html[data-nf-bg="underwater"] body::after, html[data-nf-login-bg="underwater"] body.nf-blank::after, html[data-nf-bg="live"] body::before, html[data-nf-login-bg="live"] body.nf-blank::before, html[data-nf-bg="live"] body::after, html[data-nf-login-bg="live"] body.nf-blank::after { animation: none !important; } }
 
-/* ======== v1.10: подсветка карточек и каскад плиток ======== */
+/* ======== v1.10: card highlight and tile cascade ======== */
 html .cbi-section, html fieldset.cbi-section, html .nfm .nfm-card, html .nf-ov-card { transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease; }
 html .cbi-section:hover, html fieldset.cbi-section:hover, html .nfm .nfm-card:hover { border-color: color-mix(in srgb, var(--nf-accent) 38%, var(--nf-border, transparent)); box-shadow: 0 10px 30px -16px color-mix(in srgb, var(--nf-accent) 60%, transparent); }
 html .nf-live-grid .nf-tile:active, html .cbi-section:active, html .nfm .nfm-card:active { border-color: color-mix(in srgb, var(--nf-accent) 60%, var(--nf-border, transparent)); box-shadow: 0 0 0 2px color-mix(in srgb, var(--nf-accent) 28%, transparent); }
@@ -5923,10 +5923,10 @@ html:not([data-nf-motion="off"]):not([data-nf-settled]) .nf-live-grid .nf-tile:n
 html:not([data-nf-motion="off"]):not([data-nf-settled]) .nf-live-grid .nf-tile:nth-child(4) { animation-delay: .15s; }
 html:not([data-nf-motion="off"]):not([data-nf-settled]) .nf-live-grid .nf-tile:nth-child(5) { animation-delay: .20s; }
 
-/* мини-графики плиток: без прямоугольного фона (правило #view div[style] > svg красило их) */
+/* tile mini-charts: no rectangular background (the #view div[style] > svg rule was coloring them) */
 #view .nf-live-grid .nf-tile > svg.nf-spark, #view .nf-tile[style] > svg.nf-spark, #view .nf-live-grid svg.nf-spark { background: none !important; background-color: transparent !important; }
 
-/* ======== v1.10.2: кнопки-ссылки над плитками («Табло», «QR Wi-Fi», «Сбросить порядок») как мягкие «таблетки» ======== */
+/* ======== v1.10.2: link buttons above tiles ("Dashboard", "Wi-Fi QR", "Reset order") as soft "pills" ======== */
 html .nf-live-acts .nf-linkbtn, html .nf-qr-h .nf-linkbtn {
 	padding: 4px 11px; border-radius: 999px; border: 1px solid transparent; text-decoration: none; box-shadow: none; outline: none;
 	background: color-mix(in srgb, var(--nf-accent) 8%, transparent) !important; color: var(--nf-accent);
@@ -5942,7 +5942,7 @@ html .nf-colsel .nf-linkbtn { padding: 3px 9px; }
 html .nf-colsel .nf-linkbtn.on { background: color-mix(in srgb, var(--nf-accent) 26%, transparent) !important; border-color: color-mix(in srgb, var(--nf-accent) 45%, transparent); }
 html[data-nf-motion="off"] .nf-live-acts .nf-linkbtn { transition: none; }
 
-/* ======== v1.10.3: единая подсветка при наведении, как в Мониторе, теперь на Обзоре и других страницах ======== */
+/* ======== v1.10.3: unified hover highlight, as in the Monitor, now on Overview and other pages ======== */
 html { --nf-hl-line: color-mix(in srgb, var(--nf-accent) 45%, transparent); --nf-hl-glow: 0 10px 30px -16px color-mix(in srgb, var(--nf-accent) 65%, transparent); --nf-hl-ring: 0 0 0 3px color-mix(in srgb, var(--nf-accent) 22%, transparent); }
 html #view .cbi-section, html #view fieldset.cbi-section, html #view .nfm-card, html #view .nf-tile { transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease; }
 html #view > .cbi-section:hover, html #view > fieldset.cbi-section:hover, html #view .cbi-section[data-nf-card]:hover, html #view .nfm-card:hover, html #view .nf-live-grid .nf-tile:hover {
@@ -5954,7 +5954,7 @@ html .nf-pop button:hover:not(.on):not([disabled]) { box-shadow: inset 0 0 0 1px
 html #view .ifacebox:hover, html #view .nf-tile:focus-visible, html #view .nfm-card:focus-within { border-color: var(--nf-hl-line); }
 @media (hover: none) { html #view > .cbi-section:hover, html #view .nfm-card:hover { box-shadow: none !important; border-color: inherit !important; } }
 
-/* ======== v1.10.4: единый стиль интерактива: пилюля, строки, порты, переключатели, ползунки ======== */
+/* ======== v1.10.4: unified interactive style: pill, rows, ports, toggles, sliders ======== */
 .nf-pill { position: absolute; left: 0; top: 0; width: 0; height: 0; z-index: 0; pointer-events: none; opacity: 0; border-radius: 10px;
 	background: color-mix(in srgb, var(--nf-accent) 15%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--nf-accent) 30%, transparent);
 	transition: transform .34s cubic-bezier(.3, .8, .2, 1), width .34s cubic-bezier(.3, .8, .2, 1), height .34s cubic-bezier(.3, .8, .2, 1), opacity .2s ease; }
@@ -5970,7 +5970,7 @@ html[data-nf-nav="mini"] header .nf-pill { display: none; }
 html[data-nf-style="glass"] .nfm-tabs .nf-pill { border-radius: 999px; }
 html[data-nf-motion="off"] .nf-pill { transition: none; }
 
-/* строки таблиц и устройств: подсвечивается вся строка */
+/* table and device rows: the whole row is highlighted */
 html #view .nf-blk-r, html #view .table .tr, html .nfm .nfm-table tbody tr { transition: background-color .2s ease, box-shadow .2s ease; }
 html #view .nf-blk-r:hover { background: color-mix(in srgb, var(--nf-accent) 8%, transparent); box-shadow: inset 3px 0 0 var(--nf-accent); border-radius: 10px; }
 html #view .table .tr:not(.table-titles):not(.cbi-section-table-titles):hover > .td { background: color-mix(in srgb, var(--nf-accent) 8%, transparent); }
@@ -5980,13 +5980,13 @@ html .nfm .nfm-table tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 v
 html .nfm .nfm-table tbody tr:hover td:last-child { border-radius: 0 8px 8px 0; }
 @media (hover: none) { html #view .nf-blk-r:hover, html #view .table .tr:hover > .td, html .nfm .nfm-table tbody tr:hover td { background: transparent; box-shadow: none; } }
 
-/* значки портов */
+/* port icons */
 html #view .ifacebox { transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease; }
 html #view .ifacebox:hover { transform: translateY(-2px); border-color: var(--nf-hl-line, var(--nf-accent)); box-shadow: 0 10px 22px -14px color-mix(in srgb, var(--nf-accent) 70%, transparent); }
 @media (hover: none) { html #view .ifacebox:hover { transform: none; } }
 html[data-nf-motion="off"] #view .ifacebox:hover { transform: none; }
 
-/* переключатели и ползунки */
+/* toggles and sliders */
 .cbi-checkbox > input[type="checkbox"]::after { transition: left .22s cubic-bezier(.3, .8, .2, 1), transform .15s ease, background-color .15s; }
 .cbi-checkbox > input[type="checkbox"]:hover::after { transform: scale(1.18); }
 .cbi-checkbox > input[type="checkbox"]:active::after { transform: scale(1.35); }
@@ -6000,7 +6000,7 @@ input[type="range"]:hover::-webkit-slider-thumb { transform: scale(1.12); box-sh
 input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.2); }
 input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: inset 0 0 0 5px var(--nf-accent), 0 0 0 5px color-mix(in srgb, var(--nf-accent) 30%, transparent); }
 
-/* ======== v1.10.5: полоска строки не перекрывает текст; подсказки портов не обрезаются ======== */
+/* ======== v1.10.5: row stripe doesn't cover text; port tooltips aren't clipped ======== */
 html #view .nf-blk-r { padding-left: 12px; padding-right: 6px; margin: 0 -6px 0 -12px; }
 html #view .nf-blk-r:hover { box-shadow: inset 2px 0 0 var(--nf-accent); }
 html #view .table .tr:not(.table-titles):not(.cbi-section-table-titles):hover > .td:first-child { box-shadow: inset 2px 0 0 var(--nf-accent); }
@@ -6011,7 +6011,7 @@ html .nfm .nfm-table tbody tr:hover td:first-child { box-shadow: inset 2px 0 0 v
 	html #view .ifacebox .cbi-tooltip { z-index: 1200; }
 }
 
-/* ======== v1.11: светлые варианты старых сценических фонов ======== */
+/* ======== v1.11: light variants of the old scene backgrounds ======== */
 html:not([data-darkmode="true"])[data-nf-bg="mountains"] body::before, html:not([data-darkmode="true"])[data-nf-login-bg="mountains"] body.nf-blank::before { opacity: 1; filter: brightness(1.75) saturate(1.25); }
 html:not([data-darkmode="true"])[data-nf-bg="mountains"] body::after, html:not([data-darkmode="true"])[data-nf-login-bg="mountains"] body.nf-blank::after { opacity: 1; background: radial-gradient(90% 50% at 78% 8%, rgba(255,226,170,.75), transparent 60%), linear-gradient(180deg, #86b9f5 0%, #c6dcf8 45%, #fbe0d2 82%, #fff0d8 100%); z-index: -2; }
 html:not([data-darkmode="true"])[data-nf-bg="city"] body::before, html:not([data-darkmode="true"])[data-nf-login-bg="city"] body.nf-blank::before { opacity: 1; filter: brightness(1.9) saturate(.9); }
@@ -6022,7 +6022,7 @@ html:not([data-darkmode="true"])[data-nf-bg="lava"] body::before, html:not([data
 html:not([data-darkmode="true"])[data-nf-bg="cyber"] body::before, html:not([data-darkmode="true"])[data-nf-login-bg="cyber"] body.nf-blank::before { opacity: 1; }
 html:not([data-darkmode="true"])[data-nf-bg="cyber"] body::after, html:not([data-darkmode="true"])[data-nf-login-bg="cyber"] body.nf-blank::after { opacity: 1; }
 
-/* ======== v1.11.0: плашка нового устройства, переключатель «Топ клиентов», кольца без данных, гостевая сеть, переходы страниц ======== */
+/* ======== v1.11.0: new device banner, "Top clients" switcher, rings without data, guest network, page transitions ======== */
 .nf-newdev { display: flex; align-items: center; gap: 12px; margin: 0 0 12px; padding: 10px 14px; border-radius: 14px; border: 1px solid color-mix(in srgb, #e0a800 55%, transparent);
 	background: linear-gradient(90deg, color-mix(in srgb, #e0a800 16%, transparent), transparent 80%); animation: nf-rise .4s cubic-bezier(.2, .7, .2, 1) both; }
 .nf-newdev[hidden] { display: none; }
@@ -6049,7 +6049,7 @@ html[data-nf-ring="on"] .nf-tile[data-lvl=""]::after { display: none; }
 .nf-qr-box .nf-linkbtn:hover { background: color-mix(in srgb, var(--nf-accent) 20%, transparent); border-color: color-mix(in srgb, var(--nf-accent) 40%, transparent); }
 .nf-qr-box .nf-linkbtn[disabled] { opacity: .5; cursor: default; }
 
-/* плавные переходы между страницами (Chrome, Edge, Safari 18.2+): меню остаётся на месте, содержимое мягко сменяется */
+/* smooth page transitions (Chrome, Edge, Safari 18.2+): the menu stays in place, the content changes softly */
 @media (prefers-reduced-motion: no-preference) {
 	@view-transition { navigation: auto; }
 	header { view-transition-name: nf-side; }
@@ -6064,17 +6064,17 @@ html[data-nf-ring="on"] .nf-tile[data-lvl=""]::after { display: none; }
 html[data-nf-motion="off"]::view-transition-group(*), html[data-nf-motion="off"]::view-transition-old(*), html[data-nf-motion="off"]::view-transition-new(*) { animation: none !important; }
 
 /* ======== v1.11.1 ======== */
-/* «Скругление углов» работает и у стиля macOS: его собственные значения раньше перебивали выбор «Острые / Круглые» */
+/* "Corner rounding" also works with the macOS style: its own values used to override the "Sharp / Round" choice */
 html[data-nf-style="mac"][data-nf-radius="sharp"] { --nf-radius: 2px; --nf-radius-sm: 1px; --nf-radius-in: 2px; }
 html[data-nf-style="mac"][data-nf-radius="round"] { --nf-radius: 22px; --nf-radius-sm: 10px; --nf-radius-in: 14px; }
 html[data-nf-radius="sharp"] .nf-tile, html[data-nf-radius="sharp"] .nf-newdev, html[data-nf-radius="sharp"] .nfm .nfm-card, html[data-nf-radius="sharp"] .nfm .nfm-tile, html[data-nf-radius="sharp"] .nf-pop { border-radius: var(--nf-radius); }
 html[data-nf-radius="sharp"] .nf-linkbtn, html[data-nf-radius="sharp"] .nf-live-acts .nf-linkbtn { border-radius: 2px; }
 
-/* названия тем в панели «Персонализация» переносятся на вторую строку, а не обрезаются */
+/* theme names in the "Personalization" panel wrap onto a second line instead of being truncated */
 .nf-pop .nf-seg.nf-presets button, .nf-pop .nf-seg.nf-seg-grid button { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.15; height: auto; min-height: 34px; padding: 5px 4px; overflow-wrap: break-word; word-break: normal; }
 .nf-pop .nf-seg.nf-presets { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
-/* плашка «Новое устройство»: кнопки — мягкие «таблетки», без серого прямоугольника при наведении */
+/* "New device" banner: buttons are soft "pills", no gray rectangle on hover */
 html .nf-newdev .nf-linkbtn {
 	padding: 5px 12px; border-radius: 999px; border: 1px solid transparent; text-decoration: none; box-shadow: none; outline: none; white-space: nowrap;
 	background: color-mix(in srgb, var(--nf-accent) 10%, transparent) !important; color: var(--nf-accent); cursor: pointer;
@@ -6088,7 +6088,7 @@ html .nf-newdev .nf-linkbtn:focus-visible { border-color: var(--nf-accent); }
 html .nf-newdev .nf-linkbtn[disabled] { opacity: .5; cursor: default; }
 html[data-nf-radius="sharp"] .nf-newdev .nf-linkbtn { border-radius: 2px; }
 
-/* «Сейчас» на телефоне: заголовок и кнопки не вылезают за экран, кнопки переносятся */
+/* "Now" on phones: header and buttons don't overflow the screen, buttons wrap */
 @media (max-width: 899px) {
 	html body .nf-live, html body .nf-live-h { max-width: 100%; min-width: 0; }
 	html body .nf-live-h { flex-direction: column; align-items: stretch; gap: 6px; }
@@ -6097,7 +6097,7 @@ html[data-nf-radius="sharp"] .nf-newdev .nf-linkbtn { border-radius: 2px; }
 }
 
 /* ======== v1.12.1 ======== */
-/* «Топ клиентов»: переключатель «Сейчас / За сутки» — ровный сегмент без переносов, колонки строк выровнены */
+/* "Top clients": the "Now / Last 24h" switcher is a clean segment without wrapping, row columns aligned */
 html .nf-top-m { display: inline-flex; flex: 0 0 auto; gap: 2px; padding: 3px; border-radius: 999px; background: color-mix(in srgb, var(--nf-text) 7%, transparent); border: 1px solid var(--nf-stroke); }
 html .nf-top-m .nf-linkbtn { white-space: nowrap; padding: 4px 12px; font-size: calc(12px * var(--nf-fsz, 1)); line-height: 1.2; border-radius: 999px; border: 1px solid transparent; background: transparent !important; box-shadow: none; text-decoration: none; color: var(--nf-text-dim); }
 html .nf-top-m .nf-linkbtn:hover { color: var(--nf-text); background: color-mix(in srgb, var(--nf-text) 8%, transparent) !important; }
@@ -6114,14 +6114,14 @@ html .nf-top-b .nf-top-d span { font-size: calc(11px * var(--nf-fsz, 1)); color:
 }
 
 /* ======== v1.13.0 ======== */
-/* окно «Нет изменений для применения» и другие статусные окна LuCI: пустой заголовок не занимает строку, значок стоит в одну линию с текстом */
+/* "There are no changes to apply" window and other LuCI status windows: empty title takes no line, icon sits in line with the text */
 html #modal_overlay > .modal.alert-message { padding: 14px 20px 14px 52px; min-height: 0; display: flex; flex-direction: column; justify-content: center; }
 html #modal_overlay > .modal.alert-message > h4:empty { display: none; }
 html #modal_overlay > .modal.alert-message::before { top: 50%; margin-top: -10px; }
 html #modal_overlay > .modal.alert-message > p { margin: 0; line-height: 1.45; }
 html #modal_overlay > .modal.alert-message > p + p { margin-top: 6px; }
 
-/* v1.14.0: «Сейчас» — раскладки, «Топ клиентов» с мини-графиками и значками устройств */
+/* v1.14.0: "Now" — layouts, "Top clients" with mini-charts and device icons */
 @media (max-width: 899px) { .nf-colsel.nf-laysel { display: inline-flex !important; } }
 .nf-top-g { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .nf-top-sp { height: 22px; min-width: 0; }
@@ -6138,7 +6138,7 @@ html .nf-top-b .nf-top-r > .nf-top-g { min-width: 60px; }
 .nf-top-n b .nf-dv-t { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: inherit; font-size: inherit; }
 .nf-top-n b .nf-edit { flex: none; margin-left: 0; }
 html .nf-top-b .nf-top-r { grid-template-columns: minmax(130px, 2fr) minmax(44px, .8fr) 104px 76px; column-gap: 12px; }
-/* карточка узкая (три столбца «Обзора», планшет): строка перестраивается по ширине самой карточки, а не окна */
+/* narrow card (three "Overview" columns, tablet): the row reflows by the card's own width, not the window's */
 .nf-top { container-type: inline-size; container-name: nftop; }
 @container nftop (max-width: 480px) {
 	html .nf-top .nf-top-t { flex-wrap: wrap; gap: 6px 10px; }
@@ -6149,7 +6149,7 @@ html .nf-top-b .nf-top-r { grid-template-columns: minmax(130px, 2fr) minmax(44px
 }
 @media (max-width: 640px) { .nf-top-g { grid-column: 1 / -1; order: 3; } html .nf-top-b .nf-top-r { grid-template-columns: minmax(0, 1fr) auto; } html .nf-top-b .nf-top-r > .nf-top-g { grid-column: 1 / -1; } }
 
-/* v1.14.1: «Доступ в интернет» — вкладки по состоянию и группам, поиск, ручная проверка */
+/* v1.14.1: "Internet access" — tabs by state and group, search, manual check */
 .nf-blk-h { display: flex; flex-direction: column; gap: 8px; padding: 2px 0 8px; }
 .nf-blk-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
 .nf-blk-tabs .nf-linkbtn { display: inline-flex; align-items: center; gap: 6px; }
@@ -6161,7 +6161,7 @@ html .nf-top-b .nf-top-r { grid-template-columns: minmax(130px, 2fr) minmax(44px
 .nf-blk-more { display: block; margin: 8px auto 0; }
 .nf-blk-n b { display: flex; align-items: center; gap: 6px; min-width: 0; }
 .nf-blk-n b .nf-dv-t { color: inherit; font-size: inherit; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-/* карточка узкая (три столбца «Обзора»): строка устройства перестраивается по ширине карточки, кнопки не уходят за край */
+/* narrow card (three "Overview" columns): the device row reflows by card width, buttons don't go past the edge */
 .nf-block { container-type: inline-size; container-name: nfblk; }
 @container nfblk (max-width: 520px) {
 	html .nf-blk-r { grid-template-columns: minmax(0, 1fr) auto; }
@@ -6169,7 +6169,7 @@ html .nf-top-b .nf-top-r { grid-template-columns: minmax(130px, 2fr) minmax(44px
 	html .nf-blk-a { grid-column: 2; grid-row: 1 / span 2; }
 }
 
-/* v1.15: симметричные ряды плиток в раскладках «Дом» и «Админ»; ширина считается по самой полосе, а не по окну */
+/* v1.15: symmetric tile rows in the "Home" and "Admin" layouts; width is computed from the strip itself, not the window */
 .nf-live { container-type: inline-size; container-name: nflive; }
 @container nflive (min-width: 960px) {
 	html[data-nf-lay="admin"] .nf-live-grid, html[data-nf-lay="home"] .nf-live-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
@@ -6179,7 +6179,7 @@ html .nf-top-b .nf-top-r { grid-template-columns: minmax(130px, 2fr) minmax(44px
 	html[data-nf-lay="home"] .nf-live-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 .nf-tile[data-tile="day"] .nf-tile-v { font-size: calc(var(--nf-tile-fs, 24px) * .86); }
-/* «Доступ в интернет»: вкладки и «Проверить сейчас» — такие же таблетки, как кнопки «Раскладка» */
+/* "Internet access": tabs and "Check now" are the same pills as the "Layout" buttons */
 html .nf-blk-tabs .nf-linkbtn, html .nf-blk-tools .nf-linkbtn {
 	padding: 4px 11px; border-radius: 999px; border: 1px solid transparent; text-decoration: none; box-shadow: none; outline: none;
 	background: color-mix(in srgb, var(--nf-accent) 8%, transparent) !important; color: var(--nf-accent);
@@ -6194,7 +6194,7 @@ html .nf-blk-tools .nf-linkbtn[disabled] { opacity: .6; cursor: progress; }
 html .nf-blk-tools .nf-linkbtn.spin::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 6px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; vertical-align: -1px; animation: nf-spin .7s linear infinite; }
 @keyframes nf-spin { to { transform: rotate(360deg); } }
 html[data-nf-motion="off"] .nf-blk-tools .nf-linkbtn.spin::before { animation: none; }
-/* окна «Аптайм» и «Хранилище» */
+/* "Uptime" and "Storage" windows */
 .nf-info { display: grid; gap: 8px; }
 .nf-info-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; background: color-mix(in srgb, var(--nf-text) 5%, transparent); font-size: calc(13px * var(--nf-fsz, 1)); }
 .nf-info-row > span:first-child { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
@@ -6204,10 +6204,10 @@ html[data-nf-motion="off"] .nf-blk-tools .nf-linkbtn.spin::before { animation: n
 .nf-info-bar i { display: block; height: 100%; border-radius: 3px; background: var(--nf-accent); }
 .nf-info-bar i.mid { background: #e0a800; } .nf-info-bar i.low { background: #e5534b; }
 
-/* ======== v1.15.1: окна на iPhone ======== */
-/* Веб-приложение на iPhone занимает весь экран, включая зону под строкой состояния («чёлка») и индикатор «Домой». Раньше окно
-   прижималось к краю экрана, и шапка с названием и крестиком оказывалась под строкой состояния. Теперь у окон есть отступы
-   безопасной зоны, а шапка с крестиком закреплена и остаётся на виду при прокрутке. */
+/* ======== v1.15.1: windows on iPhone ======== */
+/* The web app on iPhone takes the whole screen, including the area under the status bar ("notch") and the "Home" indicator. Previously the window
+   was pressed to the screen edge, and the header with the title and close button ended up under the status bar. Now windows have
+   safe-area padding, and the header with the close button is sticky and stays visible while scrolling. */
 .nf-dlg-bg, .nf-qr-ov, .nf-upd-modal {
 	padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
 }
@@ -6218,7 +6218,7 @@ html[data-nf-motion="off"] .nf-blk-tools .nf-linkbtn.spin::before { animation: n
 @media (max-width: 640px) {
 	.nf-dlg { padding: 18px 16px 20px; }
 	.nf-dlg-h { margin: -18px -16px 12px; padding: 18px 16px 10px; }
-	/* строки со списками (Wi‑Fi клиенты, дни): подпись на всю ширину, полоса и значение под ней */
+	/* rows with lists (Wi‑Fi clients, days): label full width, bar and value below it */
 	.nf-info-row { flex-wrap: wrap; row-gap: 6px; }
 	.nf-info-row > span:first-child { flex: 1 1 8em; min-width: min(100%, 8em); }
 	.nf-info-row .nf-info-bar { flex: 1 1 70px; }
@@ -6226,10 +6226,10 @@ html[data-nf-motion="off"] .nf-blk-tools .nf-linkbtn.spin::before { animation: n
 }
 .nf-qr-box, .nf-upd-box { max-height: 100%; overscroll-behavior: contain; }
 
-/* ======== v1.15.2: окна LuCI на экране монитора (#83) ======== */
-/* Раньше все окна были шириной 540 px: поиск сетей Wi-Fi обрезался справа, кнопку «Подключение к сети» приходилось искать
-   прокруткой, а окна «Изменить» были тесными. Теперь ширина зависит от содержимого: подтверждения остаются компактными,
-   формы шире, окно со списком сетей ещё шире. На телефоне окно по-прежнему занимает всю ширину экрана. */
+/* ======== v1.15.2: LuCI windows on a desktop monitor (#83) ======== */
+/* Previously all windows were 540 px wide: the Wi-Fi network scan was cut off on the right, the "Join Network" button had to be found
+   by scrolling, and the "Edit" windows were cramped. Now the width depends on the content: confirmations stay compact,
+   forms are wider, the network list window is wider still. On phones the window still takes the full screen width. */
 #modal_overlay > .modal { --nf-mw: 540px; width: min(100%, var(--nf-mw)); max-width: none; }
 #modal_overlay > .modal.cbi-modal, #modal_overlay > .modal.uci-dialog,
 #modal_overlay > .modal:not(.login):has(.cbi-tabcontainer, .cbi-section-table, .cbi-map) { --nf-mw: 900px; }
@@ -6238,15 +6238,15 @@ html[data-nf-motion="off"] .nf-blk-tools .nf-linkbtn.spin::before { animation: n
 	#modal_overlay > .modal { max-height: calc(100% - 24px); }
 	.modal.scan .table .td, .modal.scan .table .th { padding-left: 12px; padding-right: 12px; }
 	.modal.scan .table .td.cbi-section-actions, .modal.scan .table .th.cbi-section-actions { white-space: nowrap; width: 1%; }
-	.modal.scan .table .td[data-title="BSSID"], .modal.scan .table .td[data-title="Канал"] { white-space: nowrap; }
+	.modal.scan .table .td[data-title="BSSID"], .modal.scan .table .td[data-title="Канал"], .modal.scan .table .td[data-title="Channel"] { white-space: nowrap; }
 }
 
-/* ======== v1.15.3: «Здесь пока что пусто» по центру, окна со списками на всю ширину, панель сохранения ======== */
-/* Пустая строка таблицы («Здесь пока что пусто», «Сканирование…»). Блок внутри display:table занимал только
-   ширину первого столбца, и надпись смещалась влево (#83). Решение как в родной теме LuCI: строка имеет
-   фиксированную высоту, а ячейка вынимается из потока и растягивается на всю ширину таблицы
-   (у .table position: relative). Высота не зависит от содержимого, поэтому таблица не «плавает»
-   при обновлении данных (аренды DHCP, поиск сетей). Работает одинаково в Chrome, Firefox и Safari. */
+/* ======== v1.15.3: centered "No entries", full-width list windows, save bar ======== */
+/* Empty table row ("This section contains no values yet", "Scanning…"). A block inside display:table only took
+   the width of the first column, and the text shifted left (#83). Solution as in the stock LuCI theme: the row has
+   a fixed height, and the cell is taken out of the flow and stretched across the whole table width
+   (.table has position: relative). The height doesn't depend on content, so the table doesn't "float"
+   on data refresh (DHCP leases, network scan). Works the same in Chrome, Firefox and Safari. */
 .table .tr.placeholder { display: table-row; width: auto; height: 112px; }
 .table .tr.placeholder > .td {
 	position: absolute; left: 0; right: 0; bottom: 0; width: auto !important; height: 112px; box-sizing: border-box;
@@ -6254,8 +6254,8 @@ html[data-nf-motion="off"] .nf-blk-tools .nf-linkbtn.spin::before { animation: n
 	background: transparent !important;
 }
 .table .tr.placeholder:has(.spinning), .table .tr.placeholder:has(.spinning) > .td { height: 76px; }
-/* Загрузка/сканирование («Сканирование беспроводных сетей…»): LuCI делает <em class="spinning">, и на него попадал большой значок
-   пустого состояния (круг 46 px), который налезал на текст. Здесь вместо него обычный маленький индикатор слева от текста. */
+/* Loading/scanning ("Scanning for wireless networks…"): LuCI renders <em class="spinning">, and it used to get the large
+   empty-state icon (46 px circle), which overlapped the text. Here a regular small spinner to the left of the text is used instead. */
 .table .tr.placeholder > .td em.spinning {
 	position: relative; display: inline-flex; align-items: center; justify-content: center;
 	padding: 10px 0 10px 32px !important; text-align: left;
@@ -6267,18 +6267,18 @@ html[data-nf-motion="off"] .nf-blk-tools .nf-linkbtn.spin::before { animation: n
 }
 .table .tr.placeholder > .td em:has(.spinning)::before { display: none; }
 @media (max-width: 899px) {
-	/* на телефоне таблицы настроек — карточки (display: block), там строка снова обычный блок */
+	/* on phones settings tables are cards (display: block), there the row is a normal block again */
 	html .table.cbi-section-table .tr.placeholder { display: block; height: auto; margin: 0; padding: 0; border: 0; background: none; }
 	html .table.cbi-section-table .tr.placeholder > .td { position: static; height: auto; padding: 26px 16px; flex: none; }
 }
 
-/* Окно со списком (поиск сетей Wi‑Fi и т. п.): если в нём таблица из пяти и более столбцов, оно
-   растягивается как в родной теме. Сработает и пока идёт сканирование, когда строк ещё нет. */
+/* List window (Wi‑Fi network scan etc.): if it contains a table with five or more columns, it
+   stretches as in the stock theme. Also works while scanning is in progress and there are no rows yet. */
 #modal_overlay > .modal:not(.login):not(.alert-message):has(.table .th:nth-child(5), .table .tr.placeholder .spinning) { --nf-mw: 1100px; }
 #modal_overlay > .modal:has(.table .th:nth-child(5)) .table { width: 100%; }
 #modal_overlay > .modal:has(.table .th:nth-child(5)) { overflow-x: auto; }
 
-/* Панель «Сохранить и применить / Сохранить / Сброс» на компьютере */
+/* "Save & Apply / Save / Reset" bar on desktop */
 @media (min-width: 900px) {
 	.cbi-page-actions {
 		display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px;
@@ -6297,7 +6297,7 @@ html[data-nf-motion="off"] .nf-blk-tools .nf-linkbtn.spin::before { animation: n
 		box-shadow: 0 6px 18px color-mix(in srgb, var(--nf-accent) 42%, transparent); transform: translateY(-1px);
 	}
 	.cbi-page-actions .cbi-button-apply:active, .cbi-page-actions .cbi-dropdown.cbi-button-apply:active { transform: none; box-shadow: none; }
-	/* вторичные кнопки: светлые, с небольшим значком */
+	/* secondary buttons: light, with a small icon */
 	.cbi-page-actions .cbi-button-save, .cbi-page-actions .cbi-button-reset, .cbi-page-actions .cbi-button-negative {
 		display: inline-flex; align-items: center; justify-content: center; gap: 8px;
 		background: color-mix(in srgb, var(--nf-text) 5%, transparent);
@@ -6316,12 +6316,12 @@ html[data-nf-motion="off"] .nf-blk-tools .nf-linkbtn.spin::before { animation: n
 	.modal .cbi-page-actions { padding: 0; }
 }
 
-/* Окно входа: правило ширины окон LuCI (id) перебивало ширину карточки входа, и она растягивалась до 540 px,
-   а поля прижимались к левому краю. Возвращаем исходный размер 380 px. */
+/* Sign-in window: the LuCI window width rule (id) overrode the sign-in card width, stretching it to 540 px,
+   and the fields were pushed to the left edge. Restore the original 380 px size. */
 body.nf-blank #modal_overlay > .modal.login { --nf-mw: 380px; width: 100%; max-width: 380px; }
 
-/* Телефон: строка «Здесь пока что пусто» всегда на всю ширину карточки и по центру. Flex-правила mobile.css (flex: 1 1 50%
-   у .td) и карточный вид таблиц сжимали её до половины ширины, и надпись оказывалась в левой части карточки. */
+/* Phone: the "No entries" row is always full card width and centered. The mobile.css flex rules (flex: 1 1 50%
+   on .td) and the card view of tables squeezed it to half width, and the text ended up in the left part of the card. */
 @media (max-width: 899px), (max-device-width: 854px) {
 	html .table .tr.placeholder { display: block !important; position: static !important; flex: 0 0 100% !important; width: 100% !important; max-width: none !important; height: auto !important; margin: 0 !important; padding: 0 !important; border: 0 !important; background: none !important; }
 	html .table .tr.placeholder::before, html .table .tr.placeholder::after { content: none !important; display: none !important; }
@@ -6348,28 +6348,28 @@ body.nf-blank #modal_overlay > .modal.login { --nf-mw: 380px; width: 100%; max-w
 	}
 }
 
-/* Расписание блокировки: окна с днями недели (v1.17.0) */
+/* Blocking schedule: windows with days of the week (v1.17.0) */
 .nf-dv-sched { margin: 10px 0 0; padding: 10px 0 0; border-top: 1px solid var(--nf-border, rgba(127,127,127,.25)); }
 .nf-dv-win > span { flex: 1 1 auto; }
 .nf-dv-days label { display: inline-flex; align-items: center; gap: 4px; padding: 2px 6px; border-radius: 6px; cursor: pointer; }
 
-/* v1.17.1 (#98): на некоторых телефонах (Realme GT7) слова в кнопках рвались по буквам из-за word-break: break-all у button.
-   Переносим только по пробелам, а слово разбиваем, лишь когда оно совсем не помещается. */
+/* v1.17.1 (#98): on some phones (Realme GT7) words in buttons broke per letter because of word-break: break-all on button.
+   Wrap only at spaces, and break a word only when it doesn't fit at all. */
 button, input[type="button"], input[type="reset"], input[type="submit"], .cbi-button, .nf-linkbtn { word-break: normal; overflow-wrap: break-word; }
 .nf-linkbtn, .nf-colsel > span { white-space: nowrap; }
 .nf-colsel { flex-wrap: wrap; row-gap: 4px; }
 .nf-live-acts { row-gap: 6px; }
 
-/* Расписание в карточке «Доступ в интернет» (#92) */
+/* Schedule in the "Internet access" card (#92) */
 .nf-blk-win > span { flex: 1 1 auto; }
 .nf-blk-days label { display: inline-flex; align-items: center; gap: 4px; padding: 2px 6px; border-radius: 6px; cursor: pointer; }
 .nf-blk-sched.nf-blk-days input[type="checkbox"], .nf-dv-row.nf-dv-days input[type="checkbox"] { margin: 0; flex: none; width: 14px; min-width: 14px; height: 14px; }
 
-/* v1.17.2: индикатор в окне «Применение изменений…» крупнее и по центру строки */
+/* v1.17.2: spinner in the "Applying configuration changes…" window is larger and centered in the row */
 #modal_overlay .modal .spinning:not(em), #modal_overlay .alert-message.spinning:not(em) { padding-left: 52px !important; min-height: 32px; display: flex; align-items: center; }
 #modal_overlay .modal .spinning:not(em)::before, #modal_overlay .alert-message.spinning:not(em)::before { width: 28px; height: 28px; top: calc(50% - 14px); left: 12px; }
 
-/* v1.18.0: своя карточка «Температуры» вместо штатной */
+/* v1.18.0: custom "Temperatures" card instead of the stock one */
 #view > .cbi-section.nf-stock-hidden { display: none !important; }
 .nf-tt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
 .nf-tt { padding: 12px 14px 10px; border-radius: 14px; background: color-mix(in srgb, var(--nf-text) 5%, transparent); border: 1px solid color-mix(in srgb, var(--nf-text) 9%, transparent); min-width: 0; }
@@ -6385,7 +6385,7 @@ button, input[type="button"], input[type="reset"], input[type="submit"], .cbi-bu
 .nf-tt .nf-spark { height: 64px; margin: 8px 0 4px; }
 .nf-tt-m { color: var(--nf-text-dim); font-size: calc(11px * var(--nf-fsz, 1)); }
 
-/* v1.18.2: раскладка «Температур» по числу датчиков; подсказки у плиток портов убраны (обрезались, цифры те же, что на плитке) */
+/* v1.18.2: "Temperatures" layout by sensor count; port tile tooltips removed (they were clipped, same numbers as on the tile) */
 .nf-tt-grid[data-lay="main3"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .nf-tt-grid[data-lay="main3"] > .nf-tt-main { grid-column: 1 / -1; }
 .nf-tt-main .nf-tt-v { font-size: calc(34px * var(--nf-fsz, 1)); }
@@ -6398,12 +6398,12 @@ button, input[type="button"], input[type="reset"], input[type="submit"], .cbi-bu
 .ifacebox[data-nf-port] .cbi-tooltip { display: none !important; }
 .ifacebox[data-nf-port] .cbi-tooltip-container, .ifacebox[data-nf-port] [class*="tooltip"] { cursor: default; }
 
-/* v1.20.0: «Выключить учёт» — аккуратная кнопка вместо ссылки с серой подложкой */
+/* v1.20.0: "Disable accounting" — a neat button instead of a link with a gray background */
 .nf-apps-f .nf-apps-stop { flex: none; align-self: center; margin-left: auto; padding: 5px 14px; min-height: 0; border: 1px solid var(--nf-stroke); border-radius: 8px; background: color-mix(in srgb, var(--nf-text) 6%, transparent) !important; box-shadow: none; color: var(--nf-text); font: inherit; font-size: .92em; line-height: 1.3; text-decoration: none; cursor: pointer; }
 .nf-apps-f .nf-apps-stop:hover, .nf-apps-f .nf-apps-stop:focus-visible { border-color: var(--nf-accent); background: color-mix(in srgb, var(--nf-accent) 14%, transparent) !important; text-decoration: none; }
 
 
-/* ---- v1.26.0: спокойный «Обзор»: строка-вывод, меню «Вид», режим раскладки, свёрнутые карточки ---- */
+/* ---- v1.26.0: calm "Overview": summary line, "View" menu, layout mode, collapsed cards ---- */
 .nf-verdict { --nf-vd: #3ddc84; display: flex; align-items: center; gap: 12px; margin: 0 0 12px; padding: 12px 16px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--nf-vd) 45%, transparent); background: color-mix(in srgb, var(--nf-vd) 12%, transparent); }
 .nf-verdict[data-k="warn"] { --nf-vd: #f5a623; } .nf-verdict[data-k="bad"] { --nf-vd: #ff5d5d; }
 .nf-vd { width: 12px; height: 12px; flex: none; border-radius: 50%; background: var(--nf-vd); box-shadow: 0 0 10px var(--nf-vd); }
@@ -6414,7 +6414,7 @@ button, input[type="button"], input[type="reset"], input[type="submit"], .cbi-bu
 .nf-viewlist .nf-colsel { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 8px; }
 .nf-editnote { display: none; margin: 0 0 10px; padding: 8px 12px; border-radius: 10px; font-size: calc(12px * var(--nf-fsz, 1)); color: var(--nf-text-dim); border: 1px dashed var(--nf-accent); }
 html[data-nf-edit] .nf-editnote { display: block; }
-/* значки перемещения, закрепления и размера видны только в режиме раскладки */
+/* move, pin and size icons are visible only in layout mode */
 html:not([data-nf-edit]) .nf-grip, html:not([data-nf-edit]) .nf-pin, html:not([data-nf-edit]) .nf-size, html:not([data-nf-edit]) .nf-rs { display: none !important; }
 html[data-nf-edit] .nf-grip, html[data-nf-edit] .nf-pin, html[data-nf-edit] .nf-size { opacity: 1 !important; }
 html[data-nf-edit] .cbi-section[data-nf-card] { outline: 1px dashed color-mix(in srgb, var(--nf-accent) 55%, transparent); outline-offset: 2px; }
@@ -6926,7 +6926,7 @@ body.nf-blank .modal.login > .spinning::before {
 	margin: 0 !important;
 }
 
-/* v20261117a: блок резервного копирования в персонализации */
+/* v20261117a: backup block in personalization */
 .nf-pop .nf-backup-sec { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--nf-stroke); }
 .nf-pop .nf-backup-sec .nf-pop-ionote { white-space: pre-line; overflow-wrap: anywhere; text-align: left; line-height: 1.45; }
 .nf-pop .nf-backup-sec button:disabled { opacity: .55; cursor: wait; }

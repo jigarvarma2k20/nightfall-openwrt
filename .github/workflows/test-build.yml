@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Версия тестового архива"
+        description: "Test archive version"
         required: true
         type: string
         default: "v1.29.0-alpha.3-router-log-diagnostics"

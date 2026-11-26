@@ -66,7 +66,7 @@ BEGIN {
       app=cls(host)
       if (app=="") {
         fallback=sld(host)
-        if (fallback!="" && fallback ~ /\./) app="Прочее · " fallback
+        if (fallback!="" && fallback ~ /\./) app="Other · " fallback
       }
       put(tolower(a[1]),app,a[3],host)
     }
@@ -84,7 +84,7 @@ BEGIN {
   if(v !~ /^[0-9a-fA-F.:]+$/) next
   host=tolower(chain ? cur : name); sub(/\.$/,"",host)
   app=cls(host)
-  if(app=="") { fallback=sld(host); if(fallback!="" && fallback ~ /\./) app="Прочее · " fallback }
+  if(app=="") { fallback=sld(host); if(fallback!="" && fallback ~ /\./) app="Other · " fallback }
   if(app!="") put(tolower(v),app,now,host)
 }
 END {

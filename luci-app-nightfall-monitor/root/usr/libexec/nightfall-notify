@@ -1,11 +1,11 @@
 #!/bin/sh
-# Nightfall: уведомления в Telegram.
-#   nightfall-notify send ТЕКСТ   — отправить сообщение (только если TG=1)
-#   nightfall-notify test         — отправить проверочное сообщение (JSON-ответ для интерфейса)
-#   nightfall-notify chatid       — найти chat id по последнему сообщению боту (JSON-ответ)
-# Настройки читаются из /etc/nightfall-monitor.conf: TG, TG_TOKEN, TG_CHAT, TG_PROXY (например socks5h://127.0.0.1:1080), TG_IFACE (интерфейс VPN, например wg0: запросы пойдут через него).
-# Не более 30 сообщений в час, чтобы при сбое не завалить чат.
-# Для тестов: NF_CONF, NF_DIR, NF_CURL (команда вместо curl).
+# Nightfall: Telegram notifications.
+#   nightfall-notify send TEXT    — send a message (only if TG=1)
+#   nightfall-notify test         — send a test message (JSON response for the UI)
+#   nightfall-notify chatid       — find the chat id from the last message to the bot (JSON response)
+# Settings are read from /etc/nightfall-monitor.conf: TG, TG_TOKEN, TG_CHAT, TG_PROXY (for example socks5h://127.0.0.1:1080), TG_IFACE (VPN interface, for example wg0: requests will go through it).
+# At most 30 messages per hour so a failure does not flood the chat.
+# For tests: NF_CONF, NF_DIR, NF_CURL (command used instead of curl).
 CONF=${NF_CONF:-/etc/nightfall-monitor.conf}
 DIR=${NF_DIR:-/tmp/nightfall}
 CURL=${NF_CURL:-curl}
@@ -16,24 +16,24 @@ TG=$(cfg TG); TOKEN=$(cfg TG_TOKEN); CHAT=$(cfg TG_CHAT); PROXY=$(cfg TG_PROXY);
 
 fail() { printf '{"ok":false,"error":"%s"}\n' "$1"; exit 1; }
 
-# api МЕТОД [аргументы curl]: токен передаётся через stdin, чтобы не светиться в списке процессов
+# api METHOD [curl arguments]: the token is passed via stdin so it does not show up in the process list
 api() {
 	m=$1; shift
-	command -v "$CURL" >/dev/null 2>&1 || { echo '{"ok":false,"description":"не найден curl (apk add curl)"}'; return 0; }
-	# прокси (в нём может быть логин и пароль) и интерфейс тоже идут через stdin, а не аргументами
+	command -v "$CURL" >/dev/null 2>&1 || { echo '{"ok":false,"description":"curl not found (apk add curl)"}'; return 0; }
+	# the proxy (it may contain a login and password) and the interface also go via stdin, not as arguments
 	{ printf 'url = "https://api.telegram.org/bot%s/%s"\n' "$TOKEN" "$m"
 	  [ -n "$PROXY" ] && printf 'proxy = "%s"\n' "$PROXY"
 	  [ -n "$IFACE" ] && printf 'interface = "%s"\n' "$IFACE"; } | "$CURL" -sS -m "${NF_TMO:-25}" -K - "$@" 2>&1
 }
 
-explain() {  # разбор ответа Telegram: печатает текст ошибки
+explain() {  # parse the Telegram response: prints the error text
 	d=$(printf '%s' "$1" | sed -n 's/.*"description":"\([^"]*\)".*/\1/p' | head -n 1)
 	[ -n "$d" ] || d=$(printf '%s' "$1" | head -c 160 | tr -d '"\\\n')
-	[ -n "$d" ] || d="нет ответа от api.telegram.org (проверьте доступ или укажите прокси)"
+	[ -n "$d" ] || d="no response from api.telegram.org (check access or set a proxy)"
 	printf '%s' "$d"
 }
 
-post() {  # post ТЕКСТ [КНОПКИ_JSON] -> 0 если доставлено; ответ в $RESP
+post() {  # post TEXT [BUTTONS_JSON] -> 0 if delivered; response in $RESP
 	t=$(mktemp 2>/dev/null || echo "$DIR/tg.msg"); printf '%s' "$1" > "$t"
 	if [ -n "$2" ]; then
 		RESP=$(api sendMessage --data-urlencode "chat_id=$CHAT" --data-urlencode "text@$t" --data-urlencode "reply_markup=$2")
@@ -55,28 +55,28 @@ send)
 	fi
 	[ "${cnt:-0}" -lt 30 ] || exit 0
 	echo "$now" >> "$rf"
-	# сразу после загрузки сеть может быть ещё не готова: до трёх попыток
+	# right after boot the network may not be ready yet: up to three attempts
 	for try in 1 2 3; do post "$HOST: $2" "$3" && exit 0; [ -n "$NF_NOSLEEP" ] || sleep 20; done
 	exit 1 ;;
 test)
-	[ -n "$TOKEN" ] || fail "не указан токен бота"
-	[ -n "$CHAT" ] || fail "не указан chat id"
-	if post "✅ $HOST: проверка связи. Уведомления Nightfall работают."; then printf '{"ok":true}\n'
+	[ -n "$TOKEN" ] || fail "bot token is not set"
+	[ -n "$CHAT" ] || fail "chat id is not set"
+	if post "✅ $HOST: connection test. Nightfall notifications are working."; then printf '{"ok":true}\n'
 	else fail "$(explain "$RESP")"; fi ;;
 chatid)
-	[ -n "$TOKEN" ] || fail "не указан токен бота"
+	[ -n "$TOKEN" ] || fail "bot token is not set"
 	RESP=$(api getUpdates)
 	case "$RESP" in *'"ok":true'*) ;; *) fail "$(explain "$RESP")" ;; esac
 	id=$(printf '%s' "$RESP" | sed -n 's/.*"chat":{"id":\(-\{0,1\}[0-9]\{1,\}\).*/\1/p' | tail -n 1)
-	[ -n "$id" ] || fail "Бот пока ничего не получал. Откройте бота в Telegram, нажмите Start или напишите ему любое сообщение и повторите."
+	[ -n "$id" ] || fail "The bot has not received anything yet. Open the bot in Telegram, press Start or send it any message, then try again."
 	printf '{"ok":true,"chat":"%s"}\n' "$id" ;;
-raw)       # raw МЕТОД [аргументы curl]: служебный вызов API для nightfall-bot
+raw)       # raw METHOD [curl arguments]: internal API call for nightfall-bot
 	[ -n "$TOKEN" ] || exit 1
 	m=$2; shift 2; api "$m" "$@" ;;
-reply)     # reply ТЕКСТ [КНОПКИ_JSON]: ответ в чат без лимита и без приставки (для бота)
+reply)     # reply TEXT [BUTTONS_JSON]: reply to the chat without the limit and without a prefix (for the bot)
 	[ -n "$TOKEN" ] && [ -n "$CHAT" ] || exit 1
-	post "$2" "$3"; rc=$?; printf '%s\n' "$RESP"; exit $rc ;;   # ответ Telegram нужен боту, чтобы запомнить id сообщения
-widget)    # widget ФАЙЛ_HTML ПОДПИСЬ ДАННЫЕ [КНОПКИ_JSON]: интерактивное сообщение (Bot API 10.4), работает только в личном чате
+	post "$2" "$3"; rc=$?; printf '%s\n' "$RESP"; exit $rc ;;   # the bot needs the Telegram response to remember the message id
+widget)    # widget HTML_FILE CAPTION DATA [BUTTONS_JSON]: interactive message (Bot API 10.4), works only in a private chat
 	[ -n "$TOKEN" ] && [ -n "$CHAT" ] || exit 1
 	[ -r "$2" ] || exit 1
 	t=$(mktemp 2>/dev/null || echo "$DIR/tg.msg"); printf '%s' "$3" > "$t"
@@ -87,33 +87,33 @@ widget)    # widget ФАЙЛ_HTML ПОДПИСЬ ДАННЫЕ [КНОПКИ_JSON
 	printf '%s\n' "$RESP"
 	case "$RESP" in *'"ok":true'*) exit 0 ;; esac
 	exit 1 ;;
-edit)      # edit ID_СООБЩЕНИЯ ТЕКСТ [КНОПКИ_JSON]: заменить текст и кнопки существующего сообщения (быстрее и без россыпи сообщений)
+edit)      # edit MESSAGE_ID TEXT [BUTTONS_JSON]: replace the text and buttons of an existing message (faster and without a pile of messages)
 	[ -n "$TOKEN" ] && [ -n "$CHAT" ] || exit 1
 	t=$(mktemp 2>/dev/null || echo "$DIR/tg.msg"); printf '%s' "$3" > "$t"
 	if [ -n "$4" ]; then RESP=$(api editMessageText --data-urlencode "chat_id=$CHAT" -d "message_id=$2" --data-urlencode "text@$t" --data-urlencode "reply_markup=$4")
 	else RESP=$(api editMessageText --data-urlencode "chat_id=$CHAT" -d "message_id=$2" --data-urlencode "text@$t" --data-urlencode 'reply_markup={"inline_keyboard":[]}'); fi
 	rm -f "$t"
 	case "$RESP" in *'"ok":true'*|*'not modified'*) exit 0 ;; esac
-	post "$3" "$4"; rc=$?; printf '%s\n' "$RESP"; exit $rc ;;   # старое сообщение не изменить: пришлём новое и отдадим его id боту (он удалит старое)
-backup)    # создать проверенный локальный архив (USB при доступности) и отправить его в Telegram
-	[ -n "$TOKEN" ] || fail "не указан токен бота"
-	[ -n "$CHAT" ] || fail "не указан chat id"
+	post "$3" "$4"; rc=$?; printf '%s\n' "$RESP"; exit $rc ;;   # the old message cannot be changed: send a new one and give its id to the bot (it deletes the old one)
+backup)    # create a verified local archive (on USB when available) and send it to Telegram
+	[ -n "$TOKEN" ] || fail "bot token is not set"
+	[ -n "$CHAT" ] || fail "chat id is not set"
 	BACKUP_TOOL=${NF_BACKUP_TOOL:-/usr/libexec/nightfall-backup}
-	command -v "$BACKUP_TOOL" >/dev/null 2>&1 || fail "не найден nightfall-backup"
+	command -v "$BACKUP_TOOL" >/dev/null 2>&1 || fail "nightfall-backup not found"
 	BR=$("$BACKUP_TOOL" create 2>&1) || fail "$(printf '%s' "$BR" | tail -n 2 | tr -d '"\\')"
-	ARCHIVE=$(printf '%s\n' "$BR" | sed -n 's/^Резервная копия создана: //p' | tail -n 1)
-	[ -n "$ARCHIVE" ] && [ -f "$ARCHIVE" ] && [ ! -L "$ARCHIVE" ] || fail "резервная копия создана, но архив не найден"
+	ARCHIVE=$(printf '%s\n' "$BR" | sed -n 's/^Backup created: //p' | tail -n 1)
+	[ -n "$ARCHIVE" ] && [ -f "$ARCHIVE" ] && [ ! -L "$ARCHIVE" ] || fail "backup was created, but the archive was not found"
 	n=${ARCHIVE##*/}
 	# Keep a private server-side reference: callback_data must stay short and must never contain a path.
-	mkdir -p "$DIR" || fail "не удалось подготовить каталог состояния"
+	mkdir -p "$DIR" || fail "failed to prepare the state directory"
 	umask 077
 	id="$(date +%s)$(awk 'BEGIN { srand(); printf "%04d", int(rand()*10000) }')"
 	state="$DIR/backup.$id"
 	while [ -e "$state" ] || [ -L "$state" ]; do id="${id}1"; state="$DIR/backup.$id"; done
-	printf '%s\n' "$ARCHIVE" > "$state" || fail "не удалось сохранить ссылку на архив"
+	printf '%s\n' "$ARCHIVE" > "$state" || fail "failed to save the archive reference"
 	chmod 600 "$state" 2>/dev/null
-	kb='{"inline_keyboard":[[{"text":"🔍 Проверить и восстановить","callback_data":"bk:check:'"$id"'"}]]}'
-	RESP=$(api sendDocument -F "chat_id=$CHAT" -F "document=@$ARCHIVE;filename=$n" -F "caption=Проверенная резервная копия Nightfall. Секреты Telegram исключены. Локальная копия сохранена на роутере." -F "reply_markup=$kb")
+	kb='{"inline_keyboard":[[{"text":"🔍 Check and restore","callback_data":"bk:check:'"$id"'"}]]}'
+	RESP=$(api sendDocument -F "chat_id=$CHAT" -F "document=@$ARCHIVE;filename=$n" -F "caption=Verified Nightfall backup. Telegram secrets are excluded. A local copy is kept on the router." -F "reply_markup=$kb")
 	case "$RESP" in *'"ok":true'*) printf '{"ok":true}\n' ;; *) rm -f "$state"; fail "$(explain "$RESP")" ;; esac ;;
 *)
 	echo "usage: nightfall-notify send TEXT [KB] | test | chatid | backup" >&2

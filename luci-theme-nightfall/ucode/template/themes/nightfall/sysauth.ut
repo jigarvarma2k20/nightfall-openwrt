@@ -2,9 +2,9 @@
  Copyright 2022 Jo-Philipp Wich <jo@mein.io>
  Licensed to the public under the Apache License 2.0.
 
- Nightfall: экран входа. Сводка о роутере (связь, время работы, прошивка)
- показывается только клиентам из локальной сети (частные адреса), чтобы
- не отдавать её через интернет, если веб-интерфейс открыт снаружи.
+ Nightfall: sign-in screen. The router summary (connectivity, uptime, firmware)
+ is shown only to clients on the local network (private addresses), so that
+ it is not exposed over the internet if the web interface is reachable from outside.
 -#}
 
 {% include('header', { blank_page: true }) %}
@@ -78,7 +78,7 @@
 			nfnet = 'none';
 		}
 
-		/* последний замер скорости: «время Мбит/с …» */
+		/* last speed test: "time Mbit/s ..." */
 		try {
 			const sl = split(trim(readfile('/tmp/nightfall/speed.log') ?? ''), '\n');
 			const sf = split(sl[length(sl) - 1] ?? '', ' ');
@@ -88,7 +88,7 @@
 		}
 		catch (e) {}
 
-		/* устройства в локальной сети: записи ARP на br-lan */
+		/* devices on the local network: ARP entries on br-lan */
 		try {
 			let n = 0;
 

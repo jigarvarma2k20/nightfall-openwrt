@@ -27,3 +27,42 @@ for (const [oldVersion, newVersion, expected] of cases) {
   }
 }
 console.log('Version precedence tests passed.');
+
+// What's new classifier: English tags/words from CHANGELOG.md plus Russian ones from releases already published on GitHub.
+const kStart = source.indexOf('\tvar CL_TAG = ');
+const kEnd = source.indexOf('\n\tfunction renderChanges(', kStart);
+if (kStart < 0 || kEnd < 0) throw new Error('Changelog classifier was not found');
+const kctx = {};
+vm.runInNewContext(source.slice(kStart, kEnd) + '\nglobalThis.lineKind = lineKind; globalThis.CL_TAG = CL_TAG;', kctx);
+const kinds = [
+  ['[Added] **Router log center**: recognizes syslog levels', 'new', 'New'],
+  ['[New] Something new', 'new', 'New'],
+  ['[Improved] **Monitor settings**: tidier', 'imp', 'Improved'],
+  ['[Fixed] **LuCI navigation**: closes the previous menu', 'fix', 'Fixed'],
+  ['[Important] Diagnostics analyzes existing logs', 'warn', 'Important'],
+  ['[Tests] Added checks for syslog levels', 'imp', 'Improved'],
+  ['Added a backup button', 'new', 'New'],
+  ['Now the panel remembers the tab', 'new', 'New'],
+  ['Fixed the empty table width', 'fix', 'Fixed'],
+  ['Tooltips no longer get clipped', 'fix', 'Fixed'],
+  ['After updating, sign in again', 'warn', 'Important'],
+  ['Faster chart rendering', 'imp', 'Improved'],
+  ['**Bold lead** text', 'new', 'New'],
+  // Russian release notes (already published)
+  ['[Исправлено] **Навигация LuCI**', 'fix', 'Fixed'],
+  ['[Новое] Окно журнала', 'new', 'New'],
+  ['[Важно] После обновления войдите заново', 'warn', 'Important'],
+  ['Исправлена ширина таблиц', 'fix', 'Fixed'],
+  ['Подсказки больше не обрезаются', 'fix', 'Fixed'],
+  ['Добавлена кнопка резервной копии', 'new', 'New'],
+  ['Быстрее рисуются графики', 'imp', 'Improved']
+];
+for (const [line, kind, label] of kinds) {
+  const actual = kctx.lineKind(line);
+  if (actual[0] !== kind || actual[1] !== label) {
+    throw new Error('lineKind(' + JSON.stringify(line) + '): expected ' + kind + '/' + label + ', got ' + actual.join('/'));
+  }
+}
+if ('[Fixed] **X**: y'.replace(kctx.CL_TAG, '') !== '**X**: y') throw new Error('CL_TAG does not strip English tags');
+if ('[Исправлено] X'.replace(kctx.CL_TAG, '') !== 'X') throw new Error('CL_TAG does not strip Russian tags');
+console.log('What\'s new classifier tests passed.');

@@ -14,12 +14,12 @@ const data = {
   day: [
     ['192.0.2.10', 'YouTube', 'VPN', 700, 30],
     ['192.0.2.10', 'YouTube', 'Direct', 200, 10],
-    ['192.0.2.10', 'Прочее · okcdn.ru', 'Direct', 900, 50],
-    ['192.0.2.10', 'Прочее', 'Unknown', 300, 20],
+    ['192.0.2.10', 'Other · okcdn.ru', 'Direct', 900, 50],
+    ['192.0.2.10', 'Other', 'Unknown', 300, 20],
     ['192.0.2.11', 'Telegram', 'VPN', 500, 10]
   ],
   hist: [
-    ['20261117', '192.0.2.10', 'Прочее · rtbcdn.ru', 'Direct', 100, 5],
+    ['20261117', '192.0.2.10', 'Other · rtbcdn.ru', 'Direct', 100, 5],
     ['20261117', '192.0.2.11', 'Telegram', 'VPN', 200, 5]
   ]
 };
@@ -37,9 +37,9 @@ check(result.routes.Unknown === 320, 'device filter + Unknown');
 check(source.includes('k.split(String.fromCharCode(31))'), 'Other chip parser splits the actual unit separator');
 check(source.includes('fmtBytes(r.routes[route])'), 'route badges expose byte totals without hover');
 check(source.includes('nf-apps-other-row'), 'unclassified traffic uses readable structured rows');
-check(source.includes('Общие CDN и конфликтующие домены остаются здесь'), 'UI explains why shared CDNs stay unclassified');
-check(source.includes("'Неизв.'"), 'unknown route label is explicit, not a question mark');
-check(source.includes('IP без DNS-имени'), 'missing DNS is explained separately');
-check(source.includes('Общий IP / CDN'), 'shared CDN conflict is visible');
-check(source.includes('DoH/DoT, внешний DNS'), 'UI lists possible reasons without claiming certainty');
+check(source.includes('Shared CDNs and conflicting domains stay here'), 'UI explains why shared CDNs stay unclassified');
+check(source.includes("'Unkn.'"), 'unknown route label is explicit, not a question mark');
+check(source.includes('IP without a DNS name'), 'missing DNS is explained separately');
+check(source.includes('Shared IP / CDN'), 'shared CDN conflict is visible');
+check(source.includes('DoH/DoT, external DNS'), 'UI lists possible reasons without claiming certainty');
 console.log('Application traffic UI tests: all passed.');

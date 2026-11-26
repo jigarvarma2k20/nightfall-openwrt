@@ -1,7 +1,7 @@
 #!/bin/sh
-# Заглушки роутера для проверок nightfall-sec: sh tools/sec-fixtures.sh КАТАЛОГ (T=каталог)
+# Router stubs for nightfall-sec checks: sh tools/sec-fixtures.sh DIR (T=dir)
 T=${1:-$T}
-# Метки времени формируются относительно текущего запуска: интерфейс показывает недавние события.
+# Timestamps are relative to the current run: the UI shows recent events.
 STAMP=$(date '+%a %b %e %H:%M:%S %Y')
 cat > "$T/log.txt" <<L
 $STAMP authpriv.warn dropbear[111]: Bad password attempt for 'root' from 203.0.113.5:40022
@@ -12,7 +12,7 @@ $STAMP authpriv.info luci: failed login on / for root from 203.0.113.9
 $STAMP authpriv.info luci: accepted login on / for root from 192.168.1.10
 $STAMP daemon.info something: unrelated
 $STAMP kern.err rtw88_8821cu[501]: error beacon valid
-$STAMP user.notice steerd[502]: steer[warn] tunnel: TCP пришёл в устройство (перенаправления к слушателю нет)
+$STAMP user.notice steerd[502]: steer[warn] tunnel: TCP arrived at the device (no redirect to a listener)
 $STAMP daemon.notice tachyon[503]: [info] No subscription rules are due for update
 $STAMP daemon.debug dnsmasq[504]: [debug] query[A] example.net from 192.0.2.10
 $STAMP daemon.warn netifd[601]: Interface 'wan' is now down
@@ -23,7 +23,7 @@ $STAMP cron.err crond[700]: USER root pid 16994 cmd /opt/zapret-manager-luci/bac
 L
 printf '#!/bin/sh\ncat %s\n' "$T/log.txt" > "$T/logread"; chmod +x "$T/logread"
 
-# /proc: слушают sshd на всех адресах, uhttpd на всех, служба только на 127.0.0.1, UDP dns
+# /proc: sshd listens on all addresses, uhttpd on all, a service only on 127.0.0.1, UDP dns
 mkdir -p "$T/proc/net" "$T/proc/201/fd" "$T/proc/202/fd"
 cat > "$T/proc/net/tcp" <<'P'
   sl  local_address rem_address   st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode
@@ -44,7 +44,7 @@ echo dropbear > "$T/proc/201/comm"; ln -s 'socket:[5001]' "$T/proc/201/fd/3"
 echo uhttpd > "$T/proc/202/comm"; ln -s 'socket:[5004]' "$T/proc/202/fd/4"
 
 KNOWN_NOW=$(date +%s)
-printf 'aa:bb:cc:dd:ee:01|Телефон|%s\naa:bb:cc:dd:ee:02|Камера|%s\n' "$((KNOWN_NOW - 3600))" "$((KNOWN_NOW - 1800))" > "$T/known"
+printf 'aa:bb:cc:dd:ee:01|Phone|%s\naa:bb:cc:dd:ee:02|Camera|%s\n' "$((KNOWN_NOW - 3600))" "$((KNOWN_NOW - 1800))" > "$T/known"
 cat > "$T/uci" <<'U'
 #!/bin/sh
 case "$*" in
@@ -96,7 +96,7 @@ printf 'daemon:*::0:::::\nroot::0:0:99999:7:::\n' > "$T/shadow"
 printf '#!/bin/sh\necho "{\\"installed\\":\\"1.0.0\\",\\"latest\\":\\"1.1.0\\",\\"new\\":1}"\n' > "$T/upd"; chmod +x "$T/upd"
 
 
-# nft-заглушка для проверки закрытия адресов
+# nft stub for checking address blocking
 cat > "$T/nft" <<'N'
 #!/bin/sh
 LOG=${NFT_LOG:-/dev/null}
@@ -109,7 +109,7 @@ esac
 exit 0
 N
 chmod +x "$T/nft"
-# журнал DNS (dnsmasq с logqueries)
+# DNS log (dnsmasq with logqueries)
 cat > "$T/dnslog.txt" <<'DNSLOG'
 Mon Nov 16 02:10:01 2026 daemon.info dnsmasq[1]: query[A] www.youtube.com from 192.168.1.10
 Mon Nov 16 02:10:01 2026 daemon.info dnsmasq[1]: forwarded www.youtube.com to 1.1.1.1

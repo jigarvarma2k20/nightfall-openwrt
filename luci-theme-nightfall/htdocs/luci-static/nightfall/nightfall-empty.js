@@ -1,6 +1,6 @@
-/* Пустые строки таблиц на телефоне (v1.17.1): «Здесь пока что пусто» и «Сканирование…» должны занимать всю ширину таблицы
-   и стоять по центру. Стили LuCI и mobile.css местами сжимают ячейку до половины ширины, поэтому, если ячейка заметно уже
-   таблицы, выставляем нужные значения прямо на элементах. Не зависит от имён классов строки: ищем <em> в строке с одной ячейкой. */
+/* Empty table rows on phones (v1.17.1): "This section contains no values yet" and "Scanning…" must span the full table width
+   and be centered. LuCI styles and mobile.css sometimes shrink the cell to half the width, so if the cell is noticeably narrower
+   than the table, we set the needed values directly on the elements. Independent of row class names: we look for <em> in a single-cell row. */
 (function () {
 	'use strict';
 	try {
@@ -33,5 +33,5 @@
 			window.addEventListener('resize', sched); window.addEventListener('load', sched);
 		};
 		if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
-	} catch (e) { /* не мешаем остальной странице */ }
+	} catch (e) { /* do not break the rest of the page */ }
 })();

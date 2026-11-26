@@ -7,7 +7,7 @@ permissions:
   contents: write
 jobs:
   tests:
-    name: Полный CI перед публикацией
+    name: Full CI before publishing
     permissions:
       contents: read
     uses: ./.github/workflows/check.yml
@@ -20,17 +20,17 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Проверить CHANGELOG перед выпуском
+      - name: Check CHANGELOG before release
         run: sh tools/check-release.sh "${GITHUB_REF_NAME}"
-      - name: Убедиться, что тег выпущен из main
+      - name: Make sure the tag was released from main
         run: |
           set -eu
           git fetch origin main
           git merge-base --is-ancestor "$GITHUB_SHA" origin/main || {
-            echo "::error::Релизный тег должен указывать на коммит, уже находящийся в main."
+            echo "::error::The release tag must point to a commit that is already in main."
             exit 1
           }
-      - name: Подготовить заметки релиза из CHANGELOG
+      - name: Prepare release notes from CHANGELOG
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
           awk -v version="$VERSION" '
@@ -47,9 +47,9 @@ jobs:
             END { if (!found) exit 1 }
           ' CHANGELOG.md > release-notes.md
           test -s release-notes.md
-      - name: Собрать архив релиза
+      - name: Build the release archive
         run: VERSION="${GITHUB_REF_NAME}" sh build-release.sh
-      - name: Проверить архив и контрольную сумму
+      - name: Check the archive and checksum
         run: |
           set -eu
           test -s dist/nightfall-root.tar.gz
@@ -60,16 +60,16 @@ jobs:
           ARCHIVE_VERSION=$(tar -xOf dist/nightfall-root.tar.gz ./www/luci-static/nightfall/version.json | sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
           test -n "$ARCHIVE_VERSION"
           test "$ARCHIVE_VERSION" = "$EXPECTED_VERSION" || {
-            echo "::error::Версия в архиве ($ARCHIVE_VERSION) не совпадает с тегом ($EXPECTED_VERSION)."
+            echo "::error::Archive version ($ARCHIVE_VERSION) does not match the tag ($EXPECTED_VERSION)."
             exit 1
           }
-      # Подпись usign тем же инструментом, которым проверяет архив роутер.
-      - name: Подписать архив
+      # Sign with usign, the same tool the router uses to verify the archive.
+      - name: Sign the archive
         env:
           SIGN_KEY: ${{ secrets.NIGHTFALL_SIGN_KEY }}
         run: |
           set -eu
-          [ -n "$SIGN_KEY" ] || { echo "::error::Нет секрета NIGHTFALL_SIGN_KEY, релиз без подписи не выпускаю"; exit 1; }
+          [ -n "$SIGN_KEY" ] || { echo "::error::NIGHTFALL_SIGN_KEY secret is missing; refusing to publish an unsigned release"; exit 1; }
           sudo apt-get install -y cmake >/dev/null
           git clone --depth 1 https://github.com/openwrt/usign.git /tmp/usign
           cmake -S /tmp/usign -B /tmp/usign/b >/dev/null
@@ -79,7 +79,7 @@ jobs:
           /tmp/usign/b/usign -S -m dist/nightfall-root.tar.gz -s /tmp/nf.key -x dist/nightfall-root.tar.gz.sig
           rm -f /tmp/nf.key
           /tmp/usign/b/usign -V -m dist/nightfall-root.tar.gz -p luci-theme-nightfall/root/etc/nightfall-release.pub -x dist/nightfall-root.tar.gz.sig
-      - name: Опубликовать GitHub Release
+      - name: Publish the GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           prerelease: ${{ contains(github.ref_name, '-') }}
@@ -89,7 +89,7 @@ jobs:
             dist/nightfall-root.tar.gz.sig
           body_path: release-notes.md
           generate_release_notes: false
-      - name: Обновить latest.json для стабильного релиза
+      - name: Update latest.json for a stable release
         if: ${{ !contains(github.ref_name, '-') }}
         run: |
           set -eu

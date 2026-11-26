@@ -85,8 +85,8 @@ return baseclass.extend({
 
 			const li = E('li', attrs, [ link, submenu ]);
 
-			/* Развёрнутое меню на компьютере как в Proton: раздел открывается при наведении, клик закрепляет его,
-			   повторный клик закрывает. В свёрнутом виде (значки) всплывающее меню рисует CSS, здесь ничего не делаем. */
+			/* Expanded desktop menu works like Proton: a section opens on hover, a click pins it,
+			   a second click closes it. In the collapsed (icon) view the flyout menu is drawn by CSS; nothing to do here. */
 			if (!level && hasSub) {
 				const hoverMode = () => document.documentElement.getAttribute('data-nf-nav-open') === 'hover' && document.documentElement.getAttribute('data-nf-nav') !== 'mini' &&
 					window.matchMedia('(hover: hover) and (min-width: 900px)').matches;
@@ -95,7 +95,7 @@ return baseclass.extend({
 				link.setAttribute('aria-haspopup', 'true');
 				link.setAttribute('aria-expanded', String(li.classList.contains('open')));
 
-				/* В один момент раскрыт только один раздел верхнего уровня. */
+				/* Only one top-level section is open at a time. */
 				const closePeers = () => {
 					Array.from(li.parentElement.children).forEach(peer => {
 						if (peer === li || !peer.classList.contains('dropdown')) return;
@@ -132,7 +132,7 @@ return baseclass.extend({
 					ev.preventDefault();
 					window.clearTimeout(tin);
 					if (hoverMode() && li.dataset.hov === '1') {
-						delete li.dataset.hov;   /* открыто наведением: клик закрепляет раздел */
+						delete li.dataset.hov;   /* opened by hover: a click pins the section */
 						return;
 					}
 					if (li.classList.contains('open')) {
@@ -164,7 +164,7 @@ return baseclass.extend({
 		if (!input || !menu)
 			return;
 
-		const none = E('li', { 'class': 'nf-nores', 'hidden': '' }, [ 'Ничего не найдено' ]);
+		const none = E('li', { 'class': 'nf-nores', 'hidden': '' }, [ 'Nothing found' ]);
 		menu.appendChild(none);
 
 		const run = () => {

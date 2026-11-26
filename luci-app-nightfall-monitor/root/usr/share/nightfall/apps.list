@@ -1,7 +1,7 @@
-# Nightfall: правила для учёта трафика по приложениям.
-# Формат:  Название|домены через пробел|префиксы IP через пробел (необязательно)
-# Домен совпадает с самим именем и со всеми его поддоменами; * в домене — проверяемый шаблон имени. Префикс IP нужен для сервисов без DNS-запроса (Telegram).
-# Свои правила можно добавить в /etc/nightfall-apps.list (тот же формат): они проверяются первыми.
+# Nightfall: rules for per-app traffic accounting.
+# Format:  Name|domains separated by spaces|IP prefixes separated by spaces (optional)
+# A domain matches the name itself and all its subdomains; * in a domain is a name pattern. An IP prefix is needed for services without a DNS query (Telegram).
+# Custom rules can be added to /etc/nightfall-apps.list (same format): they are checked first.
 YouTube|youtube.com youtu.be googlevideo.com ytimg.com ggpht.com youtube-nocookie.com yt3.ggpht.com youtubei.googleapis.com|
 Telegram|telegram.org t.me telegram.me telegra.ph tdesktop.com telesco.pe cdn-telegram.org|91.108. 149.154.160. 149.154.161. 149.154.162. 149.154.163. 149.154.164. 149.154.165. 149.154.166. 149.154.167. 149.154.168. 149.154.169. 149.154.170. 149.154.171. 2001:b28:f23d: 2001:b28:f23f: 2001:67c:4e8:
 WhatsApp|whatsapp.com whatsapp.net wa.me|
@@ -14,9 +14,9 @@ Spotify|spotify.com scdn.co spotifycdn.com|
 Discord|discord.com discordapp.com discordapp.net discord.gg discord.media|
 Zoom|zoom.us zoom.com zoomgov.com|
 Steam|steampowered.com steamcontent.com steamstatic.com steamcdn-a.akamaihd.net valvesoftware.com|
-ВКонтакте|vk.com vk.ru vkontakte.ru userapi.com mycdn.me vk-cdn.net cdn-vk.ru cdn-vk.com vk-portal.net vk-cdn.me vkcache.com vkcdnservice.com vkcloud-static.ru vktech-static.ru vkusercdn.ru vkuserphoto.ru vkuseraudio.net vkuseraudio.com vkuseraudio.ru vkuserlive.net vkuserlive.com|
-Одноклассники|ok.ru odnoklassniki.ru|
-Яндекс|yandex.ru yandex.net yandex.com ya.ru yastatic.net yandexcloud.net kinopoisk.ru|
+VK|vk.com vk.ru vkontakte.ru userapi.com mycdn.me vk-cdn.net cdn-vk.ru cdn-vk.com vk-portal.net vk-cdn.me vkcache.com vkcdnservice.com vkcloud-static.ru vktech-static.ru vkusercdn.ru vkuserphoto.ru vkuseraudio.net vkuseraudio.com vkuseraudio.ru vkuserlive.net vkuserlive.com|
+Odnoklassniki|ok.ru odnoklassniki.ru|
+Yandex|yandex.ru yandex.net yandex.com ya.ru yastatic.net yandexcloud.net kinopoisk.ru|
 Google|google.com googleapis.com gstatic.com googleusercontent.com gvt1.com gvt2.com gvt1-cn.com google.ru withgoogle.com|
 Apple iCloud|icloud.com me.com|
 Apple|apple.com mzstatic.com cdn-apple.com apple-dns.net aaplimg.com|
@@ -24,16 +24,16 @@ Microsoft|microsoft.com windowsupdate.com windows.com windows.net live.com offic
 Amazon|amazon.com amazonaws.com primevideo.com media-amazon.com|
 X (Twitter)|twitter.com twimg.com x.com t.co|
 Cloudflare|cloudflare.com cloudflare-dns.com|
-Дзен|dzen.ru dzeninfra.ru zen.yandex.ru|
+Dzen|dzen.ru dzeninfra.ru zen.yandex.ru|
 RuStore|rustore.ru rustore.com|
-Госуслуги|gosuslugi.ru gosuslugi.com|
-Т-Банк|tbank.ru t-bank.ru tbank-app.ru|
+Gosuslugi|gosuslugi.ru gosuslugi.com|
+T-Bank|tbank.ru t-bank.ru tbank-app.ru|
 Kaspersky|kaspersky.com kaspersky.ru kaspersky-labs.com|
 Lesta|lesta.ru lesta.games|
 Playrix|playrix.com|
 Skype|skype.com|
 RuTube|rutube.ru rutube.com rtcdn.ru|
-VK Видео|vkvideo.ru vkuservideo.net vkuserlive.net|
+VK Video|vkvideo.ru vkuservideo.net vkuserlive.net|
 MAX|max.ru oneme.ru calls.okcdn.ru videowebrtc.okcdn.ru videostun*.okcdn.ru call*-*.vkuser.net|
 Ozon|ozon.ru ozonusercontent.com ozone.ru ozoncdn.com|
 AliExpress|aliexpress.com alicdn.com|

@@ -1,10 +1,10 @@
-// Дымовой тест: открывает тестовую страницу с темой, раскрывает панель «Персонализация»,
-// проверяет, что оформление применилось, и сохраняет снимок в tools/out/.
+// Smoke test: opens a test page with the theme, opens the Personalization panel,
+// checks that styling is applied and saves a screenshot to tools/out/.
 const { chromium } = require('playwright'); const fs = require('fs'); const path = require('path');
 const N = path.join(__dirname, '..', 'luci-theme-nightfall/htdocs/luci-static/nightfall');
 const OUT = path.join(__dirname, 'out'); fs.mkdirSync(OUT, { recursive: true });
-const page = '<!doctype html><html lang="ru"><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><link rel=stylesheet href="/nightfall/cascade.css"><link rel=stylesheet href="/nightfall/mobile.css"><script>window.L={env:{sessionid:"S1",ubuspath:"/ubus/"}}</script><script src="/nightfall/nightfall.js"></script></head><body><header><div class="nf-pers"><span>P</span></div></header><div id="view"><h2>Обзор</h2></div></body></html>';
-let fail = 0; const bad = m => { console.log('ОШИБКА: ' + m); fail = 1; };
+const page = '<!doctype html><html lang="en"><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><link rel=stylesheet href="/nightfall/cascade.css"><link rel=stylesheet href="/nightfall/mobile.css"><script>window.L={env:{sessionid:"S1",ubuspath:"/ubus/"}}</script><script src="/nightfall/nightfall.js"></script></head><body><header><div class="nf-pers"><span>P</span></div></header><div id="view"><h2>Overview</h2></div></body></html>';
+let fail = 0; const bad = m => { console.log('ERROR: ' + m); fail = 1; };
 (async () => {
 	const b = await chromium.launch();
 	for (const [name, vp] of [['desktop', { width: 1100, height: 800 }], ['mobile', { width: 390, height: 780 }]]) {
@@ -25,12 +25,12 @@ let fail = 0; const bad = m => { console.log('ОШИБКА: ' + m); fail = 1; };
 			const t = document.querySelector('.nf-tabs [data-t]'), pop = document.querySelector('.nf-pop');
 			return { pop: pop && getComputedStyle(pop).display, tabs: !!t, radius: t && getComputedStyle(t).borderRadius, bg: pop && getComputedStyle(pop).backgroundColor };
 		});
-		if (!st.pop || st.pop === 'none') bad(name + ': панель не открылась');
-		if (!st.tabs) bad(name + ': нет вкладок панели');
-		if (!st.radius || st.radius === '0px') bad(name + ': у вкладок нет оформления (CSS усечён?)');
+		if (!st.pop || st.pop === 'none') bad(name + ': panel did not open');
+		if (!st.tabs) bad(name + ': no panel tabs');
+		if (!st.radius || st.radius === '0px') bad(name + ': tabs have no styling (CSS truncated?)');
 		await p.screenshot({ path: path.join(OUT, name + '.png') });
 		await p.close();
 	}
 	await b.close();
-	console.log(fail ? 'ДЫМОВОЙ ТЕСТ НЕ ПРОЙДЕН' : 'ДЫМОВОЙ ТЕСТ ПРОЙДЕН'); process.exit(fail);
+	console.log(fail ? 'SMOKE TEST FAILED' : 'SMOKE TEST PASSED'); process.exit(fail);
 })();

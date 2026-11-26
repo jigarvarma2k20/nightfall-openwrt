@@ -1,10 +1,10 @@
-// Проверка виджетов бота (Bot API 10.4): рисует их в Chromium с подставным TelegramWidget в светлой и тёмной теме,
-// проверяет данные, цвета колец, размеры и сохраняет снимки в tools/out/. Настоящая среда Telegram (QuickJS) строже,
-// поэтому здесь ещё и запрещены сеть и внешние ресурсы.
+// Bot widget test (Bot API 10.4): renders widgets in Chromium with a fake TelegramWidget in light and dark themes,
+// checks data, ring colors and sizes, and saves screenshots to tools/out/. The real Telegram environment (QuickJS) is stricter,
+// so network and external resources are also forbidden here.
 const { chromium } = require('playwright'); const fs = require('fs'); const path = require('path'); const zlib = require('zlib');
 const DIR = path.join(__dirname, '..', 'luci-app-nightfall-monitor/root/usr/share/nightfall/widgets');
 const OUT = path.join(__dirname, 'out'); fs.mkdirSync(OUT, { recursive: true });
-let fail = 0; const bad = m => { console.log('ОШИБКА: ' + m); fail = 1; };
+let fail = 0; const bad = m => { console.log('ERROR: ' + m); fail = 1; };
 const D1 = { h: 'Cudy-WR3000U', c: 12, m: 60, r: 38, t: 61.5, p: 12, d: 10.4, u: 1.2, w: 273000 };
 const D2 = { h: 'Cudy-WR3000U', c: 95, m: 88, r: 92, t: 88, p: -1, d: 0, u: 0, w: 273006 };
 const themes = {
@@ -16,8 +16,8 @@ const themes = {
 	for (const file of fs.readdirSync(DIR).filter(f => f.endsWith('.html'))) {
 		const html = fs.readFileSync(path.join(DIR, file), 'utf8');
 		const z = zlib.deflateSync(Buffer.from(html), { level: 9 }).length;
-		if (Buffer.byteLength(html) > 32768 || z > 4096) bad(file + ': размер ' + Buffer.byteLength(html) + ' (сжатый ' + z + ') выше лимита Telegram');
-		if (/https?:\/\/(?!www\.w3\.org)|<link|<iframe|@import|fetch\(|XMLHttpRequest|WebSocket/.test(html)) bad(file + ': внешние ресурсы или сеть недоступны в песочнице виджета');
+		if (Buffer.byteLength(html) > 32768 || z > 4096) bad(file + ': size ' + Buffer.byteLength(html) + ' (compressed ' + z + ') exceeds the Telegram limit');
+		if (/https?:\/\/(?!www\.w3\.org)|<link|<iframe|@import|fetch\(|XMLHttpRequest|WebSocket/.test(html)) bad(file + ': external resources and network are not available in the widget sandbox');
 		for (const [tn, th] of Object.entries(themes)) {
 			const p = await b.newPage({ viewport: { width: 360, height: 400 }, deviceScaleFactor: 2, colorScheme: th.scheme });
 			const errs = []; p.on('pageerror', e => errs.push(e.message));
@@ -29,7 +29,7 @@ const themes = {
 					onEvent() {}, isProfileAtLeast() { return true; },
 					request(q) { window.__calls.push(q); return new Promise(resolve => setTimeout(() => resolve({ result: JSON.stringify(window.__n ? d2 : d1) }), 80)); },
 				};
-				const st = document.createElement('style');   // тема Telegram: переменные на корневом элементе
+				const st = document.createElement('style');   // Telegram theme: variables on the root element
 				st.textContent = ':root{--tg-theme-text-color:' + th.text + ';--tg-theme-hint-color:' + th.hint + ';background:' + th.bg + '}';
 				document.addEventListener('DOMContentLoaded', () => document.head.appendChild(st));
 			}, [D1, D2, th]);
@@ -41,25 +41,25 @@ const themes = {
 				col: document.getElementById('c').getAttribute('stroke'), dot: document.getElementById('d').className,
 				calls: window.__calls.length, w: document.documentElement.scrollWidth, h: document.body.scrollHeight,
 			}));
-			if (s1.c !== '12%') bad(file + ' ' + tn + ': кольцо процессора показывает ' + s1.c);
-			if (s1.t !== '62 °C') bad(file + ' ' + tn + ': температура ' + s1.t);
-			if (s1.p !== '12 мс') bad(file + ' ' + tn + ': пинг ' + s1.p);
-			if (s1.host !== 'Cudy-WR3000U') bad(file + ' ' + tn + ': имя ' + s1.host);
-			if (s1.col !== '#34c759') bad(file + ' ' + tn + ': цвет при нормальной нагрузке ' + s1.col);
-			if (!/^Работает 3 д 3 ч/.test(s1.f)) bad(file + ' ' + tn + ': время работы «' + s1.f + '»');
-			if (s1.calls !== 1) bad(file + ' ' + tn + ': параллельный запрос при появлении/тапе (' + s1.calls + ' вместо 1)');
-			if (s1.w > 360) bad(file + ' ' + tn + ': горизонтальная прокрутка (' + s1.w + ' px)');
-			if (s1.h > 600) bad(file + ' ' + tn + ': высота ' + s1.h + ' px больше 600');
+			if (s1.c !== '12%') bad(file + ' ' + tn + ': CPU ring shows ' + s1.c);
+			if (s1.t !== '62 °C') bad(file + ' ' + tn + ': temperature ' + s1.t);
+			if (s1.p !== '12 ms') bad(file + ' ' + tn + ': ping ' + s1.p);
+			if (s1.host !== 'Cudy-WR3000U') bad(file + ' ' + tn + ': name ' + s1.host);
+			if (s1.col !== '#34c759') bad(file + ' ' + tn + ': color at normal load ' + s1.col);
+			if (!/^(Up|Uptime|Running):? 3 d 3 h/.test(s1.f)) bad(file + ' ' + tn + ': uptime "' + s1.f + '"');
+			if (s1.calls !== 1) bad(file + ' ' + tn + ': parallel request on show/tap (' + s1.calls + ' instead of 1)');
+			if (s1.w > 360) bad(file + ' ' + tn + ': horizontal scrolling (' + s1.w + ' px)');
+			if (s1.h > 600) bad(file + ' ' + tn + ': height ' + s1.h + ' px exceeds 600');
 			await p.screenshot({ path: path.join(OUT, 'widget-' + file.replace('.html', '') + '-' + tn + '.png') });
 			await p.evaluate(() => { window.__n = 1; }); await p.mouse.click(180, 100); await p.waitForTimeout(300);
 			const s2 = await p.evaluate(() => ({ col: document.getElementById('c').getAttribute('stroke'), dot: document.getElementById('d').className, p: document.getElementById('p').textContent }));
-			if (s2.col !== '#ff453a') bad(file + ' ' + tn + ': высокая нагрузка не покраснела (' + s2.col + ')');
-			if (s2.p !== 'нет' || !/x/.test(s2.dot)) bad(file + ' ' + tn + ': нет связи не показана');
+			if (s2.col !== '#ff453a') bad(file + ' ' + tn + ': high load did not turn red (' + s2.col + ')');
+			if (!/^(none|no|n\/a|—|offline)$/i.test(s2.p) || !/x/.test(s2.dot)) bad(file + ' ' + tn + ': no connection not shown (' + s2.p + ')');
 			await p.screenshot({ path: path.join(OUT, 'widget-' + file.replace('.html', '') + '-' + tn + '-alert.png') });
-			if (errs.length) bad(file + ' ' + tn + ': ошибки JS: ' + errs.join('; '));
+			if (errs.length) bad(file + ' ' + tn + ': JS errors: ' + errs.join('; '));
 			await p.close();
 		}
 	}
 	await b.close();
-	console.log(fail ? 'ТЕСТ ВИДЖЕТОВ НЕ ПРОЙДЕН' : 'ТЕСТ ВИДЖЕТОВ ПРОЙДЕН'); process.exit(fail);
+	console.log(fail ? 'WIDGET TEST FAILED' : 'WIDGET TEST PASSED'); process.exit(fail);
 })();

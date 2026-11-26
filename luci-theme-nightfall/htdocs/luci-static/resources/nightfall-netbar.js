@@ -8,7 +8,7 @@ return baseclass.extend({
 	__init__() {
 		if (!document.body || document.getElementById('nf-netbar')) return;
 
-		const bar = E('div', { 'id': 'nf-netbar', 'title': 'Интернет: нет данных' });
+		const bar = E('div', { 'id': 'nf-netbar', 'title': 'Internet: no data' });
 		document.body.appendChild(bar);
 
 		const tick = () => {
@@ -18,15 +18,15 @@ return baseclass.extend({
 				try { h = JSON.parse(res.stdout); } catch (e) { /* ignore */ }
 				const last = h && h.info && h.info.started ? (h.last || [])[0] : null;
 				const fresh = last && h.now - last[0] <= 90;
-				if (!fresh) { bar.removeAttribute('data-s'); bar.title = 'Интернет: нет данных (сборщик не запущен)'; return; }
+				if (!fresh) { bar.removeAttribute('data-s'); bar.title = 'Internet: no data (collector is not running)'; return; }
 				const wanDown = (h.active || []).some(a => a[0] === 'wan');
 				const ok = last[7] >= 0 && !wanDown;
 				bar.setAttribute('data-s', ok ? 'ok' : 'bad');
-				bar.title = ok ? 'Интернет работает, задержка ' + Math.round(last[7]) + ' мс' : 'Нет связи с интернетом';
+				bar.title = ok ? 'Internet is up, latency ' + Math.round(last[7]) + ' ms' : 'No internet connection';
 			}).catch(() => bar.removeAttribute('data-s'));
 		};
 
-		/* «Живой фон»: скорость WAN → data-nf-load 0…4 (плавно меняет скорость и яркость анимации) */
+		/* "Live" background: WAN speed → data-nf-load 0…4 (smoothly changes animation speed and brightness) */
 		const root = document.documentElement;
 		const live = () => {
 			if (document.hidden || root.getAttribute('data-nf-bg') !== 'live') return;

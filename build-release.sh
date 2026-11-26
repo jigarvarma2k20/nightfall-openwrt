@@ -1,6 +1,6 @@
 #!/bin/sh
-# Собирает dist/nightfall-root.tar.gz — файлы, которые install.sh/install-update.sh раскладывают по роутеру.
-# Запуск из корня репозитория:  sh build-release.sh
+# Builds dist/nightfall-root.tar.gz: the files that install.sh/install-update.sh place on the router.
+# Run from the repository root:  sh build-release.sh
 set -e
 cd "$(dirname "$0")"
 OUT=$(pwd)/dist
@@ -11,7 +11,7 @@ for pkg in luci-theme-nightfall luci-app-nightfall-monitor; do
 	[ -d "$pkg/root" ]   && cp -a "$pkg/root/." "$STAGE/"
 	[ -d "$pkg/ucode" ]  && { mkdir -p "$STAGE/usr/share/ucode/luci"; cp -a "$pkg/ucode/." "$STAGE/usr/share/ucode/luci/"; }
 done
-# ссылки не хранятся в репозитории (ломаются на Windows), создаём их здесь
+# symlinks are not stored in the repository (they break on Windows), so create them here
 ln -s nightfall "$STAGE/www/luci-static/nightfall-light"
 ln -s nightfall "$STAGE/www/luci-static/nightfall-dark"
 ln -s nightfall "$STAGE/usr/share/ucode/luci/template/themes/nightfall-light"
@@ -19,20 +19,20 @@ ln -s nightfall "$STAGE/usr/share/ucode/luci/template/themes/nightfall-dark"
 ln -s /etc/nightfall-prefs.json "$STAGE/www/luci-static/nightfall/prefs.json"
 ln -s /etc/nightfall-logo.json "$STAGE/www/luci-static/nightfall/logo.json"
 ln -s /etc/nightfall-bg.json "$STAGE/www/luci-static/nightfall/bg.json"
-# версия темы для страницы «О теме»: из тега релиза (VERSION=v1.0.4), сборка = сегодняшняя дата
+# theme version for the About page: from the release tag (VERSION=v1.0.4), build = today's date
 V=${VERSION#v}
 [ -n "$V" ] && printf '{ "version": "%s", "build": "%s" }\n' "$V" "$(date -u +%Y%m%d)" > "$STAGE/www/luci-static/nightfall/version.json"
-# версия кэша ассетов в header.ut (?v=…) = номер релиза: после обновления браузер не держит старые CSS и JS
+# asset cache version in header.ut (?v=…) = release number: after an update the browser does not keep old CSS and JS
 H="$STAGE/usr/share/ucode/luci/template/themes/nightfall/header.ut"
 [ -n "$V" ] && [ -f "$H" ] && sed -i -E "s/[0-9]{8}[a-z]/$V/g" "$H"
-# история изменений: тема показывает её после обновления
+# changelog: the theme shows it after an update
 [ -f CHANGELOG.md ] && cp CHANGELOG.md "$STAGE/www/luci-static/nightfall/CHANGELOG.md"
-# права на исполнение (в git на Windows они теряются)
+# execute permissions (lost in git on Windows)
 chmod 755 "$STAGE"/usr/libexec/nightfall-* "$STAGE"/etc/init.d/nightfall-collector "$STAGE"/etc/uci-defaults/* 2>/dev/null || true
 mkdir -p "$OUT"
-# владелец root:root, чтобы файлы на роутере не получили чужой uid
+# owner root:root, so files on the router do not get a foreign uid
 tar --owner=0 --group=0 --numeric-owner -czf "$OUT/nightfall-root.tar.gz" -C "$STAGE" . 2>/dev/null \
 	|| tar -czf "$OUT/nightfall-root.tar.gz" -C "$STAGE" .
-# контрольная сумма: по ней обновление из интерфейса проверяет архив
+# checksum: the in-UI update uses it to verify the archive
 ( cd "$OUT" && sha256sum nightfall-root.tar.gz > nightfall-root.tar.gz.sha256 )
-echo "Готово: $OUT/nightfall-root.tar.gz (+ .sha256)"
+echo "Done: $OUT/nightfall-root.tar.gz (+ .sha256)"

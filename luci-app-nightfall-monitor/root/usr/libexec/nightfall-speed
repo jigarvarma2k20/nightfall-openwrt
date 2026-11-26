@@ -1,10 +1,10 @@
 #!/bin/sh
-# Nightfall speed: замер скорости загрузки самим роутером (без участия браузера).
-#   nightfall-speed start   — запустить замер в фоне (если он ещё не идёт)
-#   nightfall-speed run     — выполнить замер и записать результат (для фона)
-# Результат: строка «время Мбит/с байт секунд фон_КБ/с статус» в /tmp/nightfall/speed.log
-# Файл качается в несколько потоков сразу (SPEED_STREAMS, по умолчанию 4): один поток не загружает быстрый
-# канал, а замер короче секунды раньше ошибочно считался неудачным.
+# Nightfall speed: download speed test run by the router itself (without the browser).
+#   nightfall-speed start   — start a test in the background (if one is not running yet)
+#   nightfall-speed run     — run a test and record the result (for the background)
+# Result: a line "time Mbit/s bytes seconds background_KB/s status" in /tmp/nightfall/speed.log
+# The file is downloaded in several streams at once (SPEED_STREAMS, 4 by default): a single stream does not saturate a fast
+# link, and a test shorter than a second used to be wrongly treated as failed.
 DIR=${NF_DIR:-/tmp/nightfall}
 CONF=${NF_CONF:-/etc/nightfall-monitor.conf}
 SPEED_URL=https://speed.cloudflare.com/__down?bytes=25000000
@@ -19,7 +19,7 @@ LOCK="$DIR/speed.lock"
 
 running() { [ -f "$LOCK" ] && p=$(cat "$LOCK" 2>/dev/null) && [ -n "$p" ] && [ -d "/proc/$p" ]; }
 
-# один поток: печатает число скачанных байт
+# one stream: prints the number of downloaded bytes
 fetch_one() {
 	if command -v uclient-fetch >/dev/null 2>&1; then $TMO uclient-fetch -q -T 8 -O - "$SPEED_URL" 2>/dev/null | wc -c
 	elif command -v curl >/dev/null 2>&1; then $TMO curl -s -m "$SPEED_SECS" "$SPEED_URL" 2>/dev/null | wc -c

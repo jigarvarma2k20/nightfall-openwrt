@@ -61,7 +61,7 @@ awk 'NR > 2 { gsub(/:/, " "); if ($1 == "lo") next
 printf ']'
 
 cc=0; cm=0
-# через cat: BusyBox read читает по байту, а sysctl при этом отдаёт только первую цифру
+# via cat: BusyBox read reads byte by byte, and sysctl then returns only the first digit
 [ -r /proc/sys/net/netfilter/nf_conntrack_count ] && cc=$(cat /proc/sys/net/netfilter/nf_conntrack_count 2>/dev/null)
 [ -r /proc/sys/net/netfilter/nf_conntrack_max ] && cm=$(cat /proc/sys/net/netfilter/nf_conntrack_max 2>/dev/null)
 case "$cc" in ''|*[!0-9]*) cc=0 ;; esac

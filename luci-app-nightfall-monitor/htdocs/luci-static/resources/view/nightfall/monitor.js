@@ -24,7 +24,7 @@ const FULL_EVERY = 5;        /* full (process) sample every N ticks */
 const ALERTS_EVERY = 8;      /* collector alerts / last ping every N ticks */
 const DEVICES_EVERY = 4;     /* per-device traffic every N ticks (network tab) */
 const HIST_EVERY = 8;        /* history charts every N ticks (history tab) */
-const RANGES = { h: [ 'fine', 3600, '1 час' ], d: [ 'coarse', 86400, '24 часа' ], w: [ 'coarse', 604800, '7 дней' ], m: [ 'long', 2592000, '30 дней' ], q: [ 'long', 7776000, '90 дней' ] };
+const RANGES = { h: [ 'fine', 3600, '1 hour' ], d: [ 'coarse', 86400, '24 hours' ], w: [ 'coarse', 604800, '7 days' ], m: [ 'long', 2592000, '30 days' ], q: [ 'long', 7776000, '90 days' ] };
 const STORE_KEY = 'nightfall-monitor-v1';
 
 const callBoard = rpc.declare({ object: 'system', method: 'board' });
@@ -40,33 +40,33 @@ const callInitAction = rpc.declare({ object: 'luci', method: 'setInitAction', pa
 const callServiceList = rpc.declare({ object: 'service', method: 'list', params: [ 'name' ], expect: { '': {} } });
 
 const HOT_WARN = 80, HOT_CRIT = 90, HOT_SECONDS = 60;
-const BANDS = { '2g': '2,4 ГГц', '5g': '5 ГГц', '6g': '6 ГГц', '60g': '60 ГГц' };
+const BANDS = { '2g': '2.4 GHz', '5g': '5 GHz', '6g': '6 GHz', '60g': '60 GHz' };
 
-const nf1 = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 1, minimumFractionDigits: 1 });
-const nf0 = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 });
-const nf2 = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+const nf1 = new Intl.NumberFormat('en-US', { maximumFractionDigits: 1, minimumFractionDigits: 1 });
+const nf0 = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
+const nf2 = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
 
-const PORTS = { 443: 'HTTPS', 80: 'HTTP', 53: 'DNS', 853: 'DNS-over-TLS', 22: 'SSH', 123: 'Время (NTP)', 5228: 'Google Play / push', 5223: 'Apple push',
-	3478: 'Звонки (STUN)', 3479: 'Звонки (STUN)', 1194: 'OpenVPN', 51820: 'WireGuard', 25: 'Почта (SMTP)', 465: 'Почта (SMTP)', 587: 'Почта (SMTP)', 993: 'Почта (IMAP)',
-	143: 'Почта (IMAP)', 110: 'Почта (POP3)', 995: 'Почта (POP3)', 8080: 'HTTP (альт.)', 8443: 'HTTPS (альт.)', 1935: 'Стриминг (RTMP)', 554: 'Видео (RTSP)',
-	5353: 'mDNS', 1900: 'UPnP', 6881: 'Торренты', 3389: 'RDP', 445: 'SMB', 21: 'FTP', 5222: 'XMPP', 8000: 'HTTP (альт.)', 8883: 'MQTT', 1883: 'MQTT' };
+const PORTS = { 443: 'HTTPS', 80: 'HTTP', 53: 'DNS', 853: 'DNS-over-TLS', 22: 'SSH', 123: 'Time (NTP)', 5228: 'Google Play / push', 5223: 'Apple push',
+	3478: 'Calls (STUN)', 3479: 'Calls (STUN)', 1194: 'OpenVPN', 51820: 'WireGuard', 25: 'Mail (SMTP)', 465: 'Mail (SMTP)', 587: 'Mail (SMTP)', 993: 'Mail (IMAP)',
+	143: 'Mail (IMAP)', 110: 'Mail (POP3)', 995: 'Mail (POP3)', 8080: 'HTTP (alt.)', 8443: 'HTTPS (alt.)', 1935: 'Streaming (RTMP)', 554: 'Video (RTSP)',
+	5353: 'mDNS', 1900: 'UPnP', 6881: 'Torrents', 3389: 'RDP', 445: 'SMB', 21: 'FTP', 5222: 'XMPP', 8000: 'HTTP (alt.)', 8883: 'MQTT', 1883: 'MQTT' };
 function portLabel(proto, port) {
 	if (port === '-' || port === '') return proto.toUpperCase();
 	if (proto === 'udp' && port === '443') return 'QUIC / HTTP3 · UDP 443';
 	return (PORTS[port] ? PORTS[port] + ' · ' : '') + proto.toUpperCase() + ' ' + port;
 }
-const SVC_INFO = { dnsmasq: 'DNS и DHCP', dropbear: 'SSH-доступ', uhttpd: 'Веб-сервер LuCI', rpcd: 'API панели', firewall: 'Файрвол', network: 'Сетевые интерфейсы',
-	odhcpd: 'DHCPv6 и RA', sysntpd: 'Синхронизация времени', ttyd: 'Веб-терминал', 'https-dns-proxy': 'DNS поверх HTTPS', 'nightfall-collector': 'Сборщик истории монитора',
-	log: 'Системный журнал', cron: 'Планировщик задач', ubus: 'Шина ubus', irqbalance: 'Распределение прерываний', wpad: 'Wi-Fi (hostapd/wpa_supplicant)', hostapd: 'Wi-Fi точка доступа' };
+const SVC_INFO = { dnsmasq: 'DNS and DHCP', dropbear: 'SSH access', uhttpd: 'LuCI web server', rpcd: 'Panel API', firewall: 'Firewall', network: 'Network interfaces',
+	odhcpd: 'DHCPv6 and RA', sysntpd: 'Time sync', ttyd: 'Web terminal', 'https-dns-proxy': 'DNS over HTTPS', 'nightfall-collector': 'Monitor history collector',
+	log: 'System log', cron: 'Task scheduler', ubus: 'ubus bus', irqbalance: 'Interrupt balancing', wpad: 'Wi-Fi (hostapd/wpa_supplicant)', hostapd: 'Wi-Fi access point' };
 const SVC_PROTECTED = [ 'network', 'uhttpd', 'rpcd', 'dropbear', 'firewall', 'dnsmasq', 'odhcpd', 'log', 'ubus', 'boot', 'system', 'done', 'sysfixtime', 'wpad' ];
 
 const GROUPS = [
 	[ /^dnsmasq$/, 'DNS (dnsmasq)', 'g1' ],
-	[ /^(uhttpd|rpcd|ucode|luci|nightfall)/, 'Панель и LuCI', 'g2' ],
+	[ /^(uhttpd|rpcd|ucode|luci|nightfall)/, 'Panel and LuCI', 'g2' ],
 	[ /^(hostapd|wpa_|wpad|iw|mt76|ath)/, 'Wi-Fi', 'g3' ],
-	[ /^(ttyd|dropbear|sshd|login|getty)/, 'Терминал', 'g4' ],
-	[ /^(sing-box|xray|v2ray|clash|mihomo|openvpn|wg|tailscale|zerotier|nikki|podkop)/, 'VPN и прокси', 'g5' ],
-	[ /^(nginx|lighttpd|adguard|AdGuard|unbound|stubby|https-dns|smartdns|mosdns)/, 'Сетевые службы', 'g6' ],
+	[ /^(ttyd|dropbear|sshd|login|getty)/, 'Terminal', 'g4' ],
+	[ /^(sing-box|xray|v2ray|clash|mihomo|openvpn|wg|tailscale|zerotier|nikki|podkop)/, 'VPN and proxy', 'g5' ],
+	[ /^(nginx|lighttpd|adguard|AdGuard|unbound|stubby|https-dns|smartdns|mosdns)/, 'Network services', 'g6' ],
 	[ /^(procd|ubusd|netifd|logd|odhcp|crond|ntpd|busybox|sh$|ash$|init|syslog|dnsmasq-|fw4|nft|rngd|urngd|ubox|swconfig|hotplug|sleep|awk|cat)/, 'OpenWrt', 'g7' ]
 ];
 
@@ -91,14 +91,14 @@ function fmtMB(kb) {
 	kb = Number(kb);
 	if (!Number.isFinite(kb) || kb < 0) return '—';
 	const mb = kb / 1024;
-	if (mb >= 1024) return nf2.format(mb / 1024) + ' ГБ';
-	return (mb >= 100 ? nf0 : nf1).format(mb) + ' МБ';
+	if (mb >= 1024) return nf2.format(mb / 1024) + ' GB';
+	return (mb >= 100 ? nf0 : nf1).format(mb) + ' MB';
 }
 
 function fmtBytes(b) {
 	b = Number(b);
 	if (!Number.isFinite(b) || b < 0) return '—';
-	const u = [ 'Б', 'КБ', 'МБ', 'ГБ', 'ТБ' ];
+	const u = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
 	let i = 0;
 	while (b >= 1024 && i < u.length - 1) { b /= 1024; i++; }
 	return (i < 2 ? nf0 : nf2).format(b) + ' ' + u[i];
@@ -108,10 +108,10 @@ function fmtRate(bps) {
 	bps = Number(bps);
 	if (!Number.isFinite(bps) || bps < 0) return [ '—', '' ];
 	const bits = bps * 8;
-	if (bits >= 1e9) return [ nf2.format(bits / 1e9), 'Гбит/с' ];
-	if (bits >= 1e6) return [ (bits >= 1e8 ? nf0 : nf1).format(bits / 1e6), 'Мбит/с' ];
-	if (bits >= 1e3) return [ nf0.format(bits / 1e3), 'Кбит/с' ];
-	return [ nf0.format(bits), 'бит/с' ];
+	if (bits >= 1e9) return [ nf2.format(bits / 1e9), 'Gbit/s' ];
+	if (bits >= 1e6) return [ (bits >= 1e8 ? nf0 : nf1).format(bits / 1e6), 'Mbit/s' ];
+	if (bits >= 1e3) return [ nf0.format(bits / 1e3), 'Kbit/s' ];
+	return [ nf0.format(bits), 'bit/s' ];
 }
 
 function rateText(bps) {
@@ -123,7 +123,7 @@ function fmtUptime(s) {
 	s = Number(s);
 	if (!Number.isFinite(s) || s < 0) return '—';
 	const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60);
-	return (d ? d + ' д ' : '') + h + ' ч ' + m + ' мин';
+	return (d ? d + ' d ' : '') + h + ' h ' + m + ' min';
 }
 
 function fmtTemp(v) {
@@ -265,65 +265,73 @@ function groupOf(name) {
 }
 
 
-// Категории трафика: только классификация уже распознанных имён, без догадок по IP.
+// Traffic categories: only classify names that are already recognized, no guessing by IP.
 const APP_TRAFFIC_CATEGORIES = {
-	'YouTube': 'Видео и развлечения', 'Netflix': 'Видео и развлечения', 'Twitch': 'Видео и развлечения',
-	'Spotify': 'Видео и развлечения', 'RuTube': 'Видео и развлечения', 'VK Видео': 'Видео и развлечения',
-	'Zoom': 'Мессенджеры и звонки', 'Telegram': 'Мессенджеры и звонки', 'WhatsApp': 'Мессенджеры и звонки',
-	'Discord': 'Мессенджеры и звонки', 'MAX': 'Мессенджеры и звонки', 'Skype': 'Мессенджеры и звонки',
-	'ВКонтакте': 'Социальные сети', 'Одноклассники': 'Социальные сети', 'Дзен': 'Социальные сети',
-	'Instagram': 'Социальные сети', 'Facebook': 'Социальные сети', 'TikTok': 'Социальные сети', 'X (Twitter)': 'Социальные сети',
-	'Wildberries': 'Магазины и маркетплейсы', 'Wibes': 'Магазины и маркетплейсы', 'Ozon': 'Магазины и маркетплейсы', 'RuStore': 'Магазины приложений',
-	'Avito': 'Магазины и маркетплейсы', 'AliExpress': 'Магазины и маркетплейсы',
-	'Т-Банк': 'Банки и платежи', 'Сбербанк': 'Банки и платежи', 'Госуслуги': 'Государственные сервисы',
-	'Steam': 'Игры', 'Xbox': 'Игры', 'PlayStation': 'Игры', 'Riot Games': 'Игры', 'EA': 'Игры',
-	'Roblox': 'Игры', 'Battle.net': 'Игры', 'Lesta': 'Игры', 'Playrix': 'Игры',
-	'OneDrive': 'Облака и хранилища', 'Google Drive': 'Облака и хранилища', 'Google Photos': 'Облака и хранилища',
-	'Dropbox': 'Облака и хранилища', 'Apple iCloud': 'Облака и хранилища',
-	'Google Meet': 'Мессенджеры и звонки', 'Mail.ru': 'Почта и коммуникации',
-	'Яндекс': 'Поиск и сервисы', 'Google': 'Поиск и сервисы', 'Microsoft': 'Системные службы',
-	'Apple': 'Системные службы', 'Amazon': 'Облака и хранилища', 'GitHub': 'Разработка',
-	'Kaspersky': 'Безопасность', 'Cloudflare': 'Сеть и инфраструктура'
+	'YouTube': 'Video & entertainment', 'Netflix': 'Video & entertainment', 'Twitch': 'Video & entertainment',
+	'Spotify': 'Video & entertainment', 'RuTube': 'Video & entertainment', 'VK Video': 'Video & entertainment',
+	'Zoom': 'Messengers & calls', 'Telegram': 'Messengers & calls', 'WhatsApp': 'Messengers & calls',
+	'Discord': 'Messengers & calls', 'MAX': 'Messengers & calls', 'Skype': 'Messengers & calls',
+	'VK': 'Social networks', 'VKontakte': 'Social networks', 'Odnoklassniki': 'Social networks', 'OK': 'Social networks', 'Dzen': 'Social networks',
+	'Instagram': 'Social networks', 'Facebook': 'Social networks', 'TikTok': 'Social networks', 'X (Twitter)': 'Social networks',
+	'Wildberries': 'Shops & marketplaces', 'Wibes': 'Shops & marketplaces', 'Ozon': 'Shops & marketplaces', 'RuStore': 'App stores',
+	'Avito': 'Shops & marketplaces', 'AliExpress': 'Shops & marketplaces',
+	'T-Bank': 'Banks & payments', 'Sberbank': 'Banks & payments', 'Gosuslugi': 'Government services',
+	'Steam': 'Games', 'Xbox': 'Games', 'PlayStation': 'Games', 'Riot Games': 'Games', 'EA': 'Games',
+	'Roblox': 'Games', 'Battle.net': 'Games', 'Lesta': 'Games', 'Playrix': 'Games',
+	'OneDrive': 'Cloud & storage', 'Google Drive': 'Cloud & storage', 'Google Photos': 'Cloud & storage',
+	'Dropbox': 'Cloud & storage', 'Apple iCloud': 'Cloud & storage',
+	'Google Meet': 'Messengers & calls', 'Mail.ru': 'Mail & communication',
+	'Yandex': 'Search & services', 'Google': 'Search & services', 'Microsoft': 'System services',
+	'Apple': 'System services', 'Amazon': 'Cloud & storage', 'GitHub': 'Development',
+	'Kaspersky': 'Security', 'Cloudflare': 'Network & infrastructure'
 };
 const APP_TRAFFIC_INFRA = /^(?:okcdn\.ru|cdn77\.org|akamai\.net|akamaiedge\.net|edgesuite\.net|akadns\.net|fastly\.net|fastly-edge\.com|gcdn\.co|b-cdn\.net|ecdnx\.com|cdn-vk\.ru)$/i;
 const APP_TRAFFIC_ADS = /(?:doubleclick\.net|googlesyndication\.com|googletagservices\.com|2mdn\.net|app-measurement\.com|crashlytics\.com|app-analytics-services\.com|mediation\.goog|vk-analytics\.ru|uxfeedback\.ru)/i;
 const APP_TRAFFIC_DNS = /^(?:dns\.google|resolver\.arpa|quad9\.net)$/i;
 const APP_TRAFFIC_CERT = /^(?:lencr\.org|pki\.goog|digicert\.com)$/i;
 
+/* Traffic history recorded by versions before the English translation stores Russian app names; map them to the current ones. */
+const LEGACY_APP_NAMES = { 'Прочее': 'Other', 'Нет DNS-имени': 'No DNS name', 'Общий IP (CDN)': 'Shared IP (CDN)', 'Несколько доменов': 'Multiple domains',
+	'ВКонтакте': 'VK', 'Одноклассники': 'Odnoklassniki', 'Яндекс': 'Yandex', 'Дзен': 'Dzen', 'Госуслуги': 'Gosuslugi', 'Т-Банк': 'T-Bank', 'VK Видео': 'VK Video' };
+function legacyAppName(name) {
+	if (typeof name !== 'string' || !/[\u0400-\u04ff]/.test(name)) return name;
+	return name.split(' · ').map(p => LEGACY_APP_NAMES[p] || p).join(' · ');
+}
+
 function appTrafficCategory(name) {
-	const m = /^Прочее(?: · (.+))?$/.exec(name || '');
+	const m = /^Other(?: · (.+))?$/.exec(name || '');
 	if (m) {
 		const domain = m[1] || '';
-		if (!domain || domain === 'Нет DNS-имени' || domain === 'Общий IP (CDN)' || domain === 'Несколько доменов') return 'Не определено';
-		if (APP_TRAFFIC_ADS.test(domain)) return 'Реклама и аналитика';
-		if (APP_TRAFFIC_DNS.test(domain)) return 'DNS и инфраструктура';
-		if (APP_TRAFFIC_CERT.test(domain)) return 'Безопасность и сертификаты';
-		if (/^(?:steamcommunity\.com|steamserver\.net|steamconnecttest\.com|gamepass\.com|xboxservices\.com|nvidiagrid\.net|giants-software\.com|farming-simulator\.com|geforce\.com)$/i.test(domain)) return 'Игры';
-		if (/^(?:hicloud\.com|dbankcloud\.(?:ru|cn)|dbankcdn\.ru|icloud-content\.com)$/i.test(domain)) return 'Облака и хранилища';
-		if (/^(?:windows\.com|windows\.net|live\.net|msn\.com|android\.com|miui\.com|xiaomi\.(?:com|net)|transsion-os\.com|transsion-message\.com|mediatek\.com|blackberry\.com)$/i.test(domain)) return 'Системные службы';
-		if (/^(?:palmplaystore\.com|palm\.tech)$/i.test(domain)) return 'Магазины приложений';
-		if (/^(?:sberbank\.ru|t-bank-app\.ru|tbank-app\.ru)$/i.test(domain)) return 'Банки и платежи';
-		if (/^gosuslugi\.ru$/i.test(domain)) return 'Государственные сервисы';
-		if (/^(?:magnit\.ru|5ka\.ru|x5\.ru|x5media\.ru)$/i.test(domain)) return 'Продукты и магазины';
-		if (/^(?:snapchat\.com|sc-cdn\.net)$/i.test(domain)) return 'Социальные сети';
-		if (/^tamtam\.chat$/i.test(domain)) return 'Мессенджеры и звонки';
-		if (/^findmykids\.org$/i.test(domain)) return 'Семья и геолокация';
-		if (/^revenuecat\.com$/i.test(domain)) return 'Платежи в приложениях';
-		if (/^(?:apptracer\.ru|trace-flow\.ru|uxfeedback\.ru)$/i.test(domain)) return 'Реклама и аналитика';
-		if (/^rtcdn\.ru$/i.test(domain)) return 'Видео и развлечения';
-		if (APP_TRAFFIC_INFRA.test(domain)) return 'CDN и инфраструктура';
-		if (domain === 'aaplimg.com' || /(?:^|\.)apple\.com$/i.test(domain)) return 'Системные службы';
-		if (/^(?:windows\.com|windows\.net|live\.net|msn\.com)$/i.test(domain)) return 'Системные службы';
-		return 'Не определено';
+		if (!domain || domain === 'No DNS name' || domain === 'Shared IP (CDN)' || domain === 'Multiple domains') return 'Unclassified';
+		if (APP_TRAFFIC_ADS.test(domain)) return 'Ads & analytics';
+		if (APP_TRAFFIC_DNS.test(domain)) return 'DNS & infrastructure';
+		if (APP_TRAFFIC_CERT.test(domain)) return 'Security & certificates';
+		if (/^(?:steamcommunity\.com|steamserver\.net|steamconnecttest\.com|gamepass\.com|xboxservices\.com|nvidiagrid\.net|giants-software\.com|farming-simulator\.com|geforce\.com)$/i.test(domain)) return 'Games';
+		if (/^(?:hicloud\.com|dbankcloud\.(?:ru|cn)|dbankcdn\.ru|icloud-content\.com)$/i.test(domain)) return 'Cloud & storage';
+		if (/^(?:windows\.com|windows\.net|live\.net|msn\.com|android\.com|miui\.com|xiaomi\.(?:com|net)|transsion-os\.com|transsion-message\.com|mediatek\.com|blackberry\.com)$/i.test(domain)) return 'System services';
+		if (/^(?:palmplaystore\.com|palm\.tech)$/i.test(domain)) return 'App stores';
+		if (/^(?:sberbank\.ru|t-bank-app\.ru|tbank-app\.ru)$/i.test(domain)) return 'Banks & payments';
+		if (/^gosuslugi\.ru$/i.test(domain)) return 'Government services';
+		if (/^(?:magnit\.ru|5ka\.ru|x5\.ru|x5media\.ru)$/i.test(domain)) return 'Groceries & retail';
+		if (/^(?:snapchat\.com|sc-cdn\.net)$/i.test(domain)) return 'Social networks';
+		if (/^tamtam\.chat$/i.test(domain)) return 'Messengers & calls';
+		if (/^findmykids\.org$/i.test(domain)) return 'Family & location';
+		if (/^revenuecat\.com$/i.test(domain)) return 'In-app payments';
+		if (/^(?:apptracer\.ru|trace-flow\.ru|uxfeedback\.ru)$/i.test(domain)) return 'Ads & analytics';
+		if (/^rtcdn\.ru$/i.test(domain)) return 'Video & entertainment';
+		if (APP_TRAFFIC_INFRA.test(domain)) return 'CDN & infrastructure';
+		if (domain === 'aaplimg.com' || /(?:^|\.)apple\.com$/i.test(domain)) return 'System services';
+		if (/^(?:windows\.com|windows\.net|live\.net|msn\.com)$/i.test(domain)) return 'System services';
+		return 'Unclassified';
 	}
-	return APP_TRAFFIC_CATEGORIES[name] || 'Другие приложения';
+	return APP_TRAFFIC_CATEGORIES[name] || 'Other apps';
 }
 
 function appTrafficDisplayName(name) {
-	const m = /^Прочее(?: · (.+))?$/.exec(name || '');
-	if (!m) return name || 'Неизвестное приложение';
+	const m = /^Other(?: · (.+))?$/.exec(name || '');
+	if (!m) return name || 'Unknown app';
 	const domain = m[1] || '';
-	return ({ 'Нет DNS-имени': 'IP без DNS-имени', 'Общий IP (CDN)': 'Общий IP / CDN', 'Несколько доменов': 'Несколько доменов' })[domain] || domain || 'IP без DNS-имени';
+	return ({ 'No DNS name': 'IP without a DNS name', 'Shared IP (CDN)': 'Shared IP / CDN', 'Multiple domains': 'Multiple domains' })[domain] || domain || 'IP without a DNS name';
 }
 
 function sumMonitorAppTraffic(data, days, ip) {
@@ -336,6 +344,7 @@ function sumMonitorAppTraffic(data, days, ip) {
 		return Number.isFinite(n) && n > 0 ? n : 0;
 	};
 	const add = (addr, name, route, down, up) => {
+		name = legacyAppName(name);
 		route = [ 'VPN', 'Direct', 'Unknown' ].includes(route) ? route : 'Unknown';
 		const d = bytes(down), u = bytes(up), total = d + u;
 		if (selectedIps.size && !selectedIps.has(normalizeMonitorIp(addr))) return;
@@ -494,7 +503,7 @@ function monitorBuildWifiDisplayRows(wifi, hints, neighbours, leases) {
 	const inferred = [];
 	for (const upstream of Object.keys(byUpstream)) {
 		for (const row of Object.values(byUpstream[upstream])) inferred.push({
-			mac: row.mac, ip: row.ip, ssid: 'За ретранслятором', band: 'proxy', proxy: true,
+			mac: row.mac, ip: row.ip, ssid: 'Behind a repeater', band: 'proxy', proxy: true,
 			upstream: row.upstream, proxyState: row.state, signal: null, rx: null, tx: null,
 			connected_time: null
 		});
@@ -538,7 +547,7 @@ function sumMonitorDeviceDailyTraffic(rows, hints, neighbours, wifi, routerIps, 
 function monitorDeviceOwnsHistoricalRow(deviceMac, deviceIps, rowIp, rowMac) {
 	const mac = String(deviceMac || '').toUpperCase();
 	const historicalMac = String(rowMac || '').toUpperCase();
-	/* Наличие MAC в архиве запрещает fallback по IP: адрес мог перейти другому клиенту. */
+	/* A MAC in the archive forbids the IP fallback: the address may have moved to another client. */
 	if (historicalMac && historicalMac !== '-') return !!mac && historicalMac === mac;
 	return !!rowIp && !!deviceIps && deviceIps.has(normalizeMonitorIp(rowIp));
 }
@@ -546,17 +555,17 @@ function monitorDeviceOwnsHistoricalRow(deviceMac, deviceIps, rowIp, rowMac) {
 /* ---------- widgets ---------- */
 
 const CARD_ICONS = [
-	[ /^Wi.Fi:|сигнал Wi.Fi/i, 'wifi' ], [ /журнал/i, 'events' ], [ /хранен|износ/i, 'disk' ], [ /канал/i, 'net' ], [ /служб/i, 'quick' ],
-	[ /сводка/i, 'events' ], [ /процессор|программ|ядр/i, 'system' ], [ /памят/i, 'mem' ], [ /температур/i, 'temp' ], [ /хранилищ|флеш|flash/i, 'disk' ],
-	[ /wi-?fi/i, 'wifi' ], [ /устройств|клиент|кто держит/i, 'top' ], [ /интерфейс|скорост|трафик|интернет|сеть|связ/i, 'net' ],
-	[ /событ|предупрежд|истори/i, 'events' ], [ /настройк/i, 'quick' ]
+	[ /^Wi.Fi:|Wi.Fi signal/i, 'wifi' ], [ /\blog\b/i, 'events' ], [ /history storage|wear/i, 'disk' ], [ /using the link/i, 'net' ], [ /servic/i, 'quick' ],
+	[ /summary/i, 'events' ], [ /cpu|program|core/i, 'system' ], [ /memory/i, 'mem' ], [ /temperature/i, 'temp' ], [ /flash/i, 'disk' ],
+	[ /wi-?fi/i, 'wifi' ], [ /device|client|who holds/i, 'top' ], [ /interface|speed|traffic|internet|network now|connection quality/i, 'net' ],
+	[ /event|alert|warning|history/i, 'events' ], [ /^settings$/i, 'quick' ]
 ];
 
 const HEAT = {
-	cpu: [ 'Процессор', r => r[1], v => Math.round(v) + '%' ],
-	mem: [ 'Память', r => r[2], v => Math.round(v) + '%' ],
-	ping: [ 'Пинг', r => r[7], v => Math.round(v) + ' мс' ],
-	net: [ 'Трафик', r => (r[4] >= 0 && r[5] >= 0) ? r[4] + r[5] : null, v => (v * 8 / 1e6).toFixed(1) + ' Мбит/с' ]
+	cpu: [ 'CPU', r => r[1], v => Math.round(v) + '%' ],
+	mem: [ 'Memory', r => r[2], v => Math.round(v) + '%' ],
+	ping: [ 'Ping', r => r[7], v => Math.round(v) + ' ms' ],
+	net: [ 'Traffic', r => (r[4] >= 0 && r[5] >= 0) ? r[4] + r[5] : null, v => (v * 8 / 1e6).toFixed(1) + ' Mbit/s' ]
 };
 
 function card(title, body, extra) {
@@ -566,9 +575,9 @@ function card(title, body, extra) {
 		title ? E('h3', { class: 'nfm-card-title' }, ic ? [ E('i', { class: 'nf-ci', 'data-i': ic }) ].concat(title) : title) : null, body ]);
 }
 
-/* «как обычно в это время»: среднее значение колонки по 15-минутным отрезкам суток за все дни, что есть в сводке (до 7 дней) */
+/* "usual for this time": column average per 15-minute slot of the day across all days in the summary (up to 7 days) */
 function usualCurve(rows, times, i) {
-	if (!rows || rows.length < 288) return times.map(() => null);   /* меньше суток данных — сравнивать не с чем */
+	if (!rows || rows.length < 288) return times.map(() => null);   /* less than a day of data: nothing to compare with */
 	const sum = new Array(96).fill(0), cnt = new Array(96).fill(0), bin = t => { const d = new Date(t * 1000); return d.getHours() * 4 + Math.floor(d.getMinutes() / 15); };
 	for (const r of rows) { const v = r[i]; if (v == null || v < 0) continue; const b = bin(r[0]); sum[b] += v; cnt[b]++; }
 	return times.map(t => { const b = bin(t); return cnt[b] ? sum[b] / cnt[b] : null; });
@@ -967,9 +976,9 @@ return view.extend({
 
 		/* Names are filled only after the DHCP-backed identity resolver is available. */
 		const names = {}, routerNameIps = new Set();
-		/* собственные адреса роутера (LAN и WAN) подписываем «Роутер» */
-		/* адреса самого роутера: текущие, прежние внешние (провайдер их меняет) и вся внешняя подсеть. Их трафик повторяет трафик устройств (VPN, прокси)
-		   или служебный, поэтому в «устройства» не входит */
+		/* the router's own addresses (LAN and WAN) are labeled "Router" */
+		/* addresses of the router itself: current ones, previous external ones (the ISP changes them) and the whole external subnet. Their traffic repeats device traffic (VPN, proxy)
+		   or is service traffic, so it is not counted under "devices" */
 		const routerIps = (() => {
 			const ips = new Set(), nets = [];
 			const n = ip => { const a = String(ip).split('.'); return a.length === 4 && a.every(x => /^\d+$/.test(x)) ? ((+a[0] * 256 + +a[1]) * 256 + +a[2]) * 256 + +a[3] : -1; };
@@ -983,7 +992,7 @@ return view.extend({
 				}
 			};
 		})();
-		for (const i of ifdump) for (const a of (i['ipv4-address'] || [])) if (a.address) { routerIps.add(a.address); routerNameIps.add(a.address); names[a.address] = 'Роутер'; }
+		for (const i of ifdump) for (const a of (i['ipv4-address'] || [])) if (a.address) { routerIps.add(a.address); routerNameIps.add(a.address); names[a.address] = 'Router'; }
 
 		/* device -> logical interface, default-route device */
 		const devRole = {};
@@ -1049,7 +1058,7 @@ return view.extend({
 		const metric = (r, k, ...lines) => E('section', { class: 'nfm-card nfm-metric' }, [
 			r.el, E('div', { class: 'nfm-metric-info' }, [ E('div', { class: 'nfm-k' }, k) ].concat(lines)) ]);
 
-		const hotBox = E('div', { class: 'alert-message warning', hidden: '', style: 'margin-bottom:12px' }, [ E('h4', {}, 'Процессор перегрет'), E('p') ]);
+		const hotBox = E('div', { class: 'alert-message warning', hidden: '', style: 'margin-bottom:12px' }, [ E('h4', {}, 'CPU is overheating'), E('p') ]);
 		const alertsBox = E('div', { class: 'nfm-alerts', hidden: '' });
 
 		const act = (cls, path, label, fn) => {
@@ -1059,43 +1068,43 @@ return view.extend({
 		};
 
 		const actBtns = [
-			act('', '<path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0"/><circle cx="12" cy="20" r=".8"/>', 'Перезапустить Wi-Fi', () => confirmRun(
-				'Перезапустить Wi-Fi?', 'Беспроводные клиенты ненадолго отключатся.', () => fs.exec('/sbin/wifi', [ 'reload' ]), 'Wi-Fi перезапускается…')),
-			act('', '<path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/>', 'Перезапустить сеть', () => confirmRun(
-				'Перезапустить сеть?', 'Все соединения, включая эту страницу, на время прервутся.', () => fs.exec('/etc/init.d/network', [ 'restart' ]), 'Сеть перезапускается…')),
-			act('', '<path d="M12 3v8"/><path d="M6.5 6.5a8 8 0 1 0 11 0"/>', 'Разбудить устройство', () => wakeDialog()),
-			act('', '<path d="M9 4h6v3H9z"/><path d="M7 5.5H5.5v14h13v-14H17"/><path d="M9 12h6M9 15.5h4"/>', 'Скопировать диагностику', () => copyDiag()),
-			act('danger', '<path d="M12 3v9"/><path d="M7 7a7.5 7.5 0 1 0 10 0"/>', 'Перезагрузить роутер', () => confirmRun(
-				'Перезагрузить роутер?', 'Роутер будет недоступен около минуты.', () => callReboot(), 'Роутер перезагружается… страница обновится сама.', true))
+			act('', '<path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0"/><circle cx="12" cy="20" r=".8"/>', 'Restart Wi-Fi', () => confirmRun(
+				'Restart Wi-Fi?', 'Wireless clients will disconnect briefly.', () => fs.exec('/sbin/wifi', [ 'reload' ]), 'Wi-Fi is restarting…')),
+			act('', '<path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/>', 'Restart network', () => confirmRun(
+				'Restart network?', 'All connections, including this page, will be interrupted for a while.', () => fs.exec('/etc/init.d/network', [ 'restart' ]), 'Network is restarting…')),
+			act('', '<path d="M12 3v8"/><path d="M6.5 6.5a8 8 0 1 0 11 0"/>', 'Wake a device', () => wakeDialog()),
+			act('', '<path d="M9 4h6v3H9z"/><path d="M7 5.5H5.5v14h13v-14H17"/><path d="M9 12h6M9 15.5h4"/>', 'Copy diagnostics', () => copyDiag()),
+			act('danger', '<path d="M12 3v9"/><path d="M7 7a7.5 7.5 0 1 0 10 0"/>', 'Reboot router', () => confirmRun(
+				'Reboot router?', 'The router will be unavailable for about a minute.', () => callReboot(), 'Router is rebooting… the page will refresh by itself.', true))
 		];
 		const actions = E('div', { class: 'nfm-actions', style: 'margin-top:12px' }, [ actBtns[0], actBtns[1],
-			E('details', { class: 'nfm-more' }, [ E('summary', { class: 'nfm-act', title: 'Ещё: разбудить устройство, скопировать диагностику, перезагрузить роутер' }, '⋯'),
+			E('details', { class: 'nfm-more' }, [ E('summary', { class: 'nfm-act', title: 'More: wake a device, copy diagnostics, reboot router' }, '⋯'),
 				E('div', { class: 'nfm-more-list' }, actBtns.slice(2)) ]) ]);
 		document.addEventListener('click', ev => { const d = actions.querySelector('details'); if (d && d.open && !d.contains(ev.target)) d.open = false; });
 
-		/* ---- строка-вывод «Обзора»: одно слово вместо россыпи предупреждений ---- */
-		const vdTitle = E('b', {}, 'Загружаю…'), vdSub = E('small', {}), vdMore = E('button', { type: 'button', class: 'nfm-linkish', hidden: '' }, 'Подробности ▾');
+		/* ---- Overview verdict line: one word instead of a scatter of warnings ---- */
+		const vdTitle = E('b', {}, 'Loading…'), vdSub = E('small', {}), vdMore = E('button', { type: 'button', class: 'nfm-linkish', hidden: '' }, 'Details ▾');
 		const verdictBox = E('div', { class: 'nfm-verdict' }, [ E('i', { class: 'nfm-vd' }), E('div', { class: 'nfm-vd-t' }, [ vdTitle, vdSub ]), vdMore ]);
 		const detailsWrap = E('div', { hidden: '' }, [ alertsBox, hotBox ]);
-		vdMore.addEventListener('click', () => { const on = detailsWrap.hasAttribute('hidden'); detailsWrap.toggleAttribute('hidden', !on); vdMore.textContent = on ? 'Скрыть ▴' : 'Подробности ▾'; });
+		vdMore.addEventListener('click', () => { const on = detailsWrap.hasAttribute('hidden'); detailsWrap.toggleAttribute('hidden', !on); vdMore.textContent = on ? 'Hide ▴' : 'Details ▾'; });
 		function updVerdict() {
 			const hot = !hotBox.hasAttribute('hidden'), al = alertsBox.hasAttribute('hidden') ? [] : Array.from(alertsBox.children);
 			const crit = hot || al.some(x => x.classList.contains('crit'));
 			const n = al.length + (hot ? 1 : 0);
 			verdictBox.className = 'nfm-verdict ' + (crit ? 'bad' : n ? 'warn' : 'ok');
-			vdTitle.textContent = crit ? 'Требует внимания' : n ? 'Есть замечания' : 'Всё в порядке';
-			const tm = S.temps && S.temps.main != null ? 'температура ' + nf0.format(S.temps.main) + ' °C' : '', net = (T.wanMini && T.wanMini.textContent) || '';
-			vdSub.textContent = n ? (hot ? 'Процессор перегрет' : (al[0].querySelector('b') || {}).textContent || '') + (n > 1 ? ' · и ещё ' + (n - 1) : '') : [ tm, net && net !== '–' ? 'интернет: ' + net : '' ].filter(Boolean).join(' · ');
+			vdTitle.textContent = crit ? 'Needs attention' : n ? 'Some issues' : 'All good';
+			const tm = S.temps && S.temps.main != null ? 'temperature ' + nf0.format(S.temps.main) + ' °C' : '', net = (T.wanMini && T.wanMini.textContent) || '';
+			vdSub.textContent = n ? (hot ? 'CPU is overheating' : (al[0].querySelector('b') || {}).textContent || '') + (n > 1 ? ' · and ' + (n - 1) + ' more' : '') : [ tm, net && net !== '–' ? 'internet: ' + net : '' ].filter(Boolean).join(' · ');
 			vdMore.toggleAttribute('hidden', !n);
-			if (!n) { detailsWrap.setAttribute('hidden', ''); vdMore.textContent = 'Подробности ▾'; }
+			if (!n) { detailsWrap.setAttribute('hidden', ''); vdMore.textContent = 'Details ▾'; }
 		}
 
 
 		const cardsRow = E('div', { class: 'nfm-grid nfm-g4' }, [
-			metric(rCpu, 'Процессор', E('div', { class: 'nfm-v' }, [ t('cpuCores') ]), E('div', { class: 'nfm-s' }, [ t('cpuLoad') ])),
-			metric(rTemp, 'Температура', E('div', { class: 'nfm-v' }, [ t('tempMain') ]), E('div', { class: 'nfm-s' }, [ t('tempSub') ])),
-			metric(rMem, 'Память', E('div', { class: 'nfm-v' }, [ t('memMain') ]), E('div', { class: 'nfm-s' }, [ t('memSub') ])),
-			metric(rNet, 'Интернет', E('div', { class: 'nfm-v' }, [ t('netMain') ]), E('div', { class: 'nfm-s' }, [ t('netSub') ]))
+			metric(rCpu, 'CPU', E('div', { class: 'nfm-v' }, [ t('cpuCores') ]), E('div', { class: 'nfm-s' }, [ t('cpuLoad') ])),
+			metric(rTemp, 'Temperature', E('div', { class: 'nfm-v' }, [ t('tempMain') ]), E('div', { class: 'nfm-s' }, [ t('tempSub') ])),
+			metric(rMem, 'Memory', E('div', { class: 'nfm-v' }, [ t('memMain') ]), E('div', { class: 'nfm-s' }, [ t('memSub') ])),
+			metric(rNet, 'Internet', E('div', { class: 'nfm-v' }, [ t('netMain') ]), E('div', { class: 'nfm-s' }, [ t('netSub') ]))
 		]);
 		const flashCard = E('section', { class: 'nfm-card nfm-flash-card' }, [
 			E('div', { class: 'nfm-flash-head' }, [
@@ -1105,8 +1114,8 @@ return view.extend({
 						SVG('path', { d: 'M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3', fill: 'none', stroke: 'currentColor', 'stroke-width': 1.8 })
 					])),
 					E('div', {}, [
-						E('div', { class: 'nfm-flash-title' }, 'Флеш-память'),
-						E('span', { class: 'nfm-flash-caption' }, 'Накопитель роутера')
+						E('div', { class: 'nfm-flash-title' }, 'Flash memory'),
+						E('span', { class: 'nfm-flash-caption' }, 'Router storage')
 					])
 				]),
 				E('span', { class: 'nfm-flash-percent' }, flashPct)
@@ -1118,11 +1127,11 @@ return view.extend({
 			rFlash.el,
 			E('div', { class: 'nfm-flash-stats' }, [
 				E('div', { class: 'nfm-flash-stat' }, [
-					E('span', {}, 'Всего'),
+					E('span', {}, 'Total'),
 					E('b', {}, [ t('flashTotal') ])
 				]),
 				E('div', { class: 'nfm-flash-stat' }, [
-					E('span', {}, 'Свободно'),
+					E('span', {}, 'Free'),
 					E('b', {}, [ t('flashFree') ])
 				])
 			])
@@ -1130,21 +1139,21 @@ return view.extend({
 
 		const mainChart = chart({
 			right: true,
-			series: [ { key: 'cpu', cls: 'c-cpu', label: 'Процессор', fmt: v => nf0.format(v) + '%' }, { key: 'mem', cls: 'c-mem', label: 'Память', fmt: v => nf0.format(v) + '%' },
-				{ key: 'temp', cls: 'c-temp', axis: 'right', fill: .12, label: 'Температура', fmt: v => nf1.format(v) + ' °C' } ],
+			series: [ { key: 'cpu', cls: 'c-cpu', label: 'CPU', fmt: v => nf0.format(v) + '%' }, { key: 'mem', cls: 'c-mem', label: 'Memory', fmt: v => nf0.format(v) + '%' },
+				{ key: 'temp', cls: 'c-temp', axis: 'right', fill: .12, label: 'Temperature', fmt: v => nf1.format(v) + ' °C' } ],
 			fmtLeft: v => nf0.format(v) + '%', fmtRight: v => nf0.format(v) + '°'
 		});
 
 		const coresBox = E('div');
 		const coreRefs = [];
 		const tileRefs = {};
-		const tiles = E('div', { class: 'nfm-tiles' }, [ [ 'apps', 'программы' ], [ 'sys', 'система' ], [ 'irq', 'прерывания' ], [ 'io', 'ожидание диска' ] ]
+		const tiles = E('div', { class: 'nfm-tiles' }, [ [ 'apps', 'programs' ], [ 'sys', 'system' ], [ 'irq', 'interrupts' ], [ 'io', 'disk wait' ] ]
 			.map(([ k, l ]) => E('div', { class: 'nfm-tile' }, [ l, tileRefs[k] = E('b', {}, '–') ])));
 
 		const sparkDown = sparkline('c-down'), sparkUp = sparkline('c-up');
 		const netMini = chart({
 			height: 196,
-			series: [ { key: 'rx', cls: 'c-down', label: 'Загрузка', fmt: rateText }, { key: 'tx', cls: 'c-up', fill: .18, label: 'Отдача', fmt: rateText } ],
+			series: [ { key: 'rx', cls: 'c-down', label: 'Download', fmt: rateText }, { key: 'tx', cls: 'c-up', fill: .18, label: 'Upload', fmt: rateText } ],
 			fmtLeft: v => rateText(v), fmtRight: () => ''
 		});
 
@@ -1153,28 +1162,28 @@ return view.extend({
 
 		const top3Box = E('div');
 		const netLine = E('div', { class: 'nfm-netline' }, [
-			E('div', {}, [ E('small', {}, 'Загрузка'), E('b', {}, [ T.dlN = E('span', {}, '–'), ' ', T.dlU = E('span', { class: 'nfm-u' }, '') ]) ]),
-			E('div', {}, [ E('small', {}, 'Отдача'), E('b', {}, [ T.ulN = E('span', {}, '–'), ' ', T.ulU = E('span', { class: 'nfm-u' }, '') ]) ]),
-			E('div', {}, [ E('small', {}, 'Соединений'), E('b', {}, [ t('ctMini') ]) ]),
-			E('div', {}, [ E('small', {}, 'Wi-Fi клиентов'), E('b', {}, [ t('wifiMini') ]) ]),
-			E('div', {}, [ E('small', {}, 'Интернет'), E('b', {}, [ t('wanMini') ]) ]),
-			E('button', { type: 'button', class: 'nfm-btn nfm-netgo', click: () => { S.tab = 'net'; refresh(); } }, 'Подробнее во вкладке «Сеть» →') ]);
+			E('div', {}, [ E('small', {}, 'Download'), E('b', {}, [ T.dlN = E('span', {}, '–'), ' ', T.dlU = E('span', { class: 'nfm-u' }, '') ]) ]),
+			E('div', {}, [ E('small', {}, 'Upload'), E('b', {}, [ T.ulN = E('span', {}, '–'), ' ', T.ulU = E('span', { class: 'nfm-u' }, '') ]) ]),
+			E('div', {}, [ E('small', {}, 'Connections'), E('b', {}, [ t('ctMini') ]) ]),
+			E('div', {}, [ E('small', {}, 'Wi-Fi clients'), E('b', {}, [ t('wifiMini') ]) ]),
+			E('div', {}, [ E('small', {}, 'Internet'), E('b', {}, [ t('wanMini') ]) ]),
+			E('button', { type: 'button', class: 'nfm-btn nfm-netgo', click: () => { S.tab = 'net'; refresh(); } }, 'More on the "Network" tab →') ]);
 		T.netIface = E('span');
 
 		const overview = E('div', {}, [
 			verdictBox, detailsWrap, cardsRow,
 			E('div', { class: 'nfm-grid nfm-g21' }, [
-				card([ 'Последние 5 минут', E('span', { class: 'nfm-spacer' }),
-					E('span', { class: 'nfm-legend' }, [ legendDot('c-cpu', 'Процессор'), legendDot('c-mem', 'Память'), legendDot('c-temp', 'Температура, °C') ]) ], mainChart.el),
-				card('Сейчас больше всех', top3Box)
+				card([ 'Last 5 minutes', E('span', { class: 'nfm-spacer' }),
+					E('span', { class: 'nfm-legend' }, [ legendDot('c-cpu', 'CPU'), legendDot('c-mem', 'Memory'), legendDot('c-temp', 'Temperature, °C') ]) ], mainChart.el),
+				card('Top consumers now', top3Box)
 			]),
-			card('Сеть сейчас', netLine),
+			card('Network now', netLine),
 			actions
 		]);
 
 		/* network tab */
 		const netSel = E('select', { class: 'nfm-sel', change: ev => { S.iface = ev.target.value; refresh(); } });
-		const netBig = chart({ height: 260, series: [ { key: 'rx', cls: 'c-down', label: 'Загрузка', fmt: rateText }, { key: 'tx', cls: 'c-up', fill: .18, label: 'Отдача', fmt: rateText } ],
+		const netBig = chart({ height: 260, series: [ { key: 'rx', cls: 'c-down', label: 'Download', fmt: rateText }, { key: 'tx', cls: 'c-up', fill: .18, label: 'Upload', fmt: rateText } ],
 			fmtLeft: v => rateText(v), fmtRight: () => '' });
 		const ifBody = E('tbody');
 		const wifiBody = E('tbody');
@@ -1182,57 +1191,57 @@ return view.extend({
 		const devBody = E('tbody');
 		const devNote = E('div', { class: 'nfm-hint', hidden: '' });
 		const devSel = E('select', { class: 'nfm-sel', change: ev => { S.devDay = ev.target.value; refresh(); } },
-			[ E('option', { value: 'day' }, 'Сегодня'), E('option', { value: 'yday' }, 'Вчера') ]);
+			[ E('option', { value: 'day' }, 'Today'), E('option', { value: 'yday' }, 'Yesterday') ]);
 		const dnsBox = E('div', { class: 'nfm-two' }), ipBox = E('div');
 		function renderExtIp() {
 			const R = S.extip;
-			if (!R || !R.rows) { ipBox.replaceChildren(E('div', { class: 'nfm-empty' }, R === null ? 'Нет данных: обновите тему на роутере.' : 'Загружаю…')); return; }
+			if (!R || !R.rows) { ipBox.replaceChildren(E('div', { class: 'nfm-empty' }, R === null ? 'No data: update the theme on the router.' : 'Loading…')); return; }
 			const rows = R.rows.slice().reverse();
-			if (!rows.length) { ipBox.replaceChildren(E('div', { class: 'nfm-empty' }, 'Адрес WAN появится после ближайшего шага сборщика (раз в 5 минут).')); return; }
+			if (!rows.length) { ipBox.replaceChildren(E('div', { class: 'nfm-empty' }, 'The WAN address will appear after the next collector step (every 5 minutes).')); return; }
 			const cur = rows[0], nat = !!cur[2];
 			ipBox.replaceChildren(
-				E('div', { class: 'nfm-hint sec-' + (nat ? 'warn' : 'ok') }, nat ? 'Адрес на WAN ' + cur[1] + ' из диапазона провайдерского NAT (CGNAT или двойной NAT): входящие соединения из интернета и проброс портов, скорее всего, не заработают. Выход: запросить у провайдера «белый» IP.' : 'Адрес на WAN ' + cur[1] + ' не похож на NAT провайдера: проброс портов и входящие соединения возможны.'),
-				E('div', { class: 'nfm-k', style: 'margin:10px 0 6px' }, 'Смены адреса (' + rows.length + ')'),
-				E('div', { class: 'nfm-evlist' }, rows.slice(0, 10).map(x => E('div', { class: 'nfm-ev-i' }, [ E('i'), E('time', {}, fmtTs(x[0])), E('span', {}, x[1] + (x[2] ? ' · за NAT' : '')) ]))));
+				E('div', { class: 'nfm-hint sec-' + (nat ? 'warn' : 'ok') }, nat ? 'The WAN address ' + cur[1] + ' is in the ISP NAT range (CGNAT or double NAT): incoming connections from the internet and port forwarding will most likely not work. Fix: ask your ISP for a public ("white") IP.' : 'The WAN address ' + cur[1] + ' does not look like ISP NAT: port forwarding and incoming connections are possible.'),
+				E('div', { class: 'nfm-k', style: 'margin:10px 0 6px' }, 'Address changes (' + rows.length + ')'),
+				E('div', { class: 'nfm-evlist' }, rows.slice(0, 10).map(x => E('div', { class: 'nfm-ev-i' }, [ E('i'), E('time', {}, fmtTs(x[0])), E('span', {}, x[1] + (x[2] ? ' · behind NAT' : '')) ]))));
 		}
 		const chanSel = E('select', { class: 'nfm-sel', change: ev => { S.chanDev = ev.target.value; renderChannel(); } });
 		const chanBox = E('div', { class: 'nfm-two' });
-		const chanNote = E('div', { class: 'nfm-note-s', style: 'margin:-4px 0 10px' }, 'Скорость за последние секунды по данным conntrack: по службам (портам) и по адресам в интернете.');
-		/* ---- диагностика: ping / маршрут / DNS прямо из браузера ---- */
+		const chanNote = E('div', { class: 'nfm-note-s', style: 'margin:-4px 0 10px' }, 'Speed over the last few seconds from conntrack data: by service (port) and by internet address.');
+		/* ---- diagnostics: ping / route / DNS straight from the browser ---- */
 		const DIAG = '/usr/libexec/nightfall-diag';
-		const diagOut = E('pre', { class: 'nfm-diag-out' }, 'Выберите узел и нажмите кнопку.');
-		const diagHost = E('input', { type: 'text', class: 'nfm-diag-in', value: '1.1.1.1', spellcheck: 'false', autocapitalize: 'off', autocomplete: 'off', 'aria-label': 'Адрес узла' });
+		const diagOut = E('pre', { class: 'nfm-diag-out' }, 'Choose a host and press a button.');
+		const diagHost = E('input', { type: 'text', class: 'nfm-diag-in', value: '1.1.1.1', spellcheck: 'false', autocapitalize: 'off', autocomplete: 'off', 'aria-label': 'Host address' });
 		let diagBusy = false;
-		const DNAME = { ping: 'Пинг', trace: 'Маршрут', route: 'Потери по маршруту', dns: 'DNS', check: 'Проверка всего', bloat: 'Задержка под нагрузкой' };
+		const DNAME = { ping: 'Ping', trace: 'Route', route: 'Route loss', dns: 'DNS', check: 'Full check', bloat: 'Latency under load' };
 		const diagHistBox = E('div', { class: 'nfm-evlist' });
 		const diagLoad = () => { try { return JSON.parse(window.localStorage.getItem('nfm_diag') || '[]'); } catch (e) { return []; } };
 		function diagSave(cmd, host, out) {
-			if (/Выйдите из LuCI|Некорректный/.test(out)) return;
-			try { const l = diagLoad(); l.unshift({ t: Math.floor(Date.now() / 1000), cmd, host, out: String(out).slice(0, 2000) }); window.localStorage.setItem('nfm_diag', JSON.stringify(l.slice(0, 15))); } catch (e) { /* без истории */ }
+			if (/out of LuCI|[Ii]nvalid|[Ii]ncorrect/.test(out)) return;
+			try { const l = diagLoad(); l.unshift({ t: Math.floor(Date.now() / 1000), cmd, host, out: String(out).slice(0, 2000) }); window.localStorage.setItem('nfm_diag', JSON.stringify(l.slice(0, 15))); } catch (e) { /* no history */ }
 			renderDiagHist();
 		}
 		function renderDiagHist() {
 			const l = diagLoad();
-			diagHistBox.replaceChildren(...(l.length ? l.map(x => E('div', { class: 'nfm-ev-i ' + (/❌|сильный/.test(x.out) ? 'crit' : /заметно/.test(x.out) ? 'warn' : 'info'), style: 'cursor:pointer', title: 'Показать результат', click: () => { diagOut.textContent = x.out; } }, [ E('i'), E('time', {}, fmtTs(x.t)), E('span', {}, DNAME[x.cmd] + (x.host ? ' · ' + x.host : '') + ' — ' + (x.out.split('\n').find(z => /[✅❌]|Вывод/.test(z)) || x.out.split('\n')[0]).slice(0, 90)) ])) : [ E('div', { class: 'nfm-empty' }, 'Здесь появятся результаты ваших проверок (хранятся в этом браузере).') ]));
+			diagHistBox.replaceChildren(...(l.length ? l.map(x => E('div', { class: 'nfm-ev-i ' + (/❌|severe|heavy/i.test(x.out) ? 'crit' : /noticeable/i.test(x.out) ? 'warn' : 'info'), style: 'cursor:pointer', title: 'Show result', click: () => { diagOut.textContent = x.out; } }, [ E('i'), E('time', {}, fmtTs(x.t)), E('span', {}, DNAME[x.cmd] + (x.host ? ' · ' + x.host : '') + ' — ' + (x.out.split('\n').find(z => /[✅❌]|Verdict|Conclusion|Result/.test(z)) || x.out.split('\n')[0]).slice(0, 90)) ])) : [ E('div', { class: 'nfm-empty' }, 'Results of your checks will appear here (stored in this browser).') ]));
 		}
 		function runDiag(cmd) {
 			const h = (cmd === 'check' || cmd === 'bloat') ? cmd : diagHost.value.trim();
-			if (!/^[A-Za-z0-9._:-]{1,253}$/.test(h) || h[0] === '-') { diagOut.textContent = 'Введите адрес или имя узла: буквы, цифры, точка, дефис.'; return; }
+			if (!/^[A-Za-z0-9._:-]{1,253}$/.test(h) || h[0] === '-') { diagOut.textContent = 'Enter a host address or name: letters, digits, dot, hyphen.'; return; }
 			if (diagBusy) return;
 			diagBusy = true; diagBox.classList.add('busy');
-			diagOut.textContent = ({ ping: 'Пинг ' + h + '…', trace: 'Маршрут до ' + h + ' (до 30 секунд)…', route: 'Измеряю потери по маршруту до ' + h + ' (до 25 секунд)…', bloat: 'Измеряю задержку без нагрузки и под нагрузкой (около 20 секунд)…', dns: 'Запрос DNS ' + h + '…', check: 'Проверяю шлюз, интернет и DNS (до 20 секунд)…' })[cmd];
-			fs.exec(DIAG, (cmd === 'check' || cmd === 'bloat') ? [ cmd ] : [ cmd, h ]).then(r => { diagOut.textContent = ((r.stdout || '') + (r.stderr || '')).trim() || 'Нет ответа.'; diagSave(cmd, (cmd === 'check' || cmd === 'bloat') ? '' : h, diagOut.textContent); })
-				.catch(e => { const m = String((e && e.message) || e || ''); diagOut.textContent = 'Не удалось выполнить' + (m ? ' (' + m.slice(0, 120) + ')' : '') + '. ' + (/denied|permission|access/i.test(m) ? 'Выйдите из LuCI и войдите снова (нужны новые права).' : 'Скорее всего, команда не уложилась в лимит времени ответа роутера; попробуйте узел поближе.'); })
+			diagOut.textContent = ({ ping: 'Ping ' + h + '…', trace: 'Route to ' + h + ' (up to 30 seconds)…', route: 'Measuring loss along the route to ' + h + ' (up to 25 seconds)…', bloat: 'Measuring latency without and under load (about 20 seconds)…', dns: 'DNS query ' + h + '…', check: 'Checking gateway, internet and DNS (up to 20 seconds)…' })[cmd];
+			fs.exec(DIAG, (cmd === 'check' || cmd === 'bloat') ? [ cmd ] : [ cmd, h ]).then(r => { diagOut.textContent = ((r.stdout || '') + (r.stderr || '')).trim() || 'No response.'; diagSave(cmd, (cmd === 'check' || cmd === 'bloat') ? '' : h, diagOut.textContent); })
+				.catch(e => { const m = String((e && e.message) || e || ''); diagOut.textContent = 'Could not run' + (m ? ' (' + m.slice(0, 120) + ')' : '') + '. ' + (/denied|permission|access/i.test(m) ? 'Log out of LuCI and sign in again (new permissions are needed).' : 'Most likely the command did not finish within the router response time limit; try a closer host.'); })
 				.then(() => { diagBusy = false; diagBox.classList.remove('busy'); });
 		}
 		const diagBox = E('div', { class: 'nfm-diag' }, [
 			E('div', { class: 'nfm-diag-row' }, [ diagHost,
-				E('button', { type: 'button', class: 'nfm-tab on', click: () => runDiag('ping') }, 'Пинг'),
-				E('button', { type: 'button', class: 'nfm-tab', click: () => runDiag('trace') }, 'Маршрут'),
-				E('button', { type: 'button', class: 'nfm-tab', title: 'Потери и задержка на каждом узле маршрута', click: () => runDiag('route') }, 'Потери по маршруту'),
+				E('button', { type: 'button', class: 'nfm-tab on', click: () => runDiag('ping') }, 'Ping'),
+				E('button', { type: 'button', class: 'nfm-tab', click: () => runDiag('trace') }, 'Route'),
+				E('button', { type: 'button', class: 'nfm-tab', title: 'Loss and latency at each hop of the route', click: () => runDiag('route') }, 'Route loss'),
 				E('button', { type: 'button', class: 'nfm-tab', click: () => runDiag('dns') }, 'DNS') ]),
-			E('div', { class: 'nfm-diag-row' }, [ E('button', { type: 'button', class: 'nfm-btn', click: () => runDiag('check') }, 'Проверить всё: шлюз, интернет, DNS'), E('span', { class: 'nfm-note-s' }, 'пинг до шлюза и 1.1.1.1, разрешение имён через DNS роутера') ]),
-			E('div', { class: 'nfm-diag-row' }, [ E('button', { type: 'button', class: 'nfm-btn', click: () => runDiag('bloat') }, 'Тест задержки под нагрузкой'), E('span', { class: 'nfm-note-s' }, 'bufferbloat: на время теста канал загружается скачиванием (нужен curl)') ]),
+			E('div', { class: 'nfm-diag-row' }, [ E('button', { type: 'button', class: 'nfm-btn', click: () => runDiag('check') }, 'Check everything: gateway, internet, DNS'), E('span', { class: 'nfm-note-s' }, 'ping to the gateway and 1.1.1.1, name resolution via the router DNS') ]),
+			E('div', { class: 'nfm-diag-row' }, [ E('button', { type: 'button', class: 'nfm-btn', click: () => runDiag('bloat') }, 'Latency under load test'), E('span', { class: 'nfm-note-s' }, 'bufferbloat: the link is saturated by a download during the test (curl required)') ]),
 			E('div', { class: 'nfm-diag-chips' }, [ '1.1.1.1', '8.8.8.8', '77.88.8.8', 'ya.ru', 'google.com' ].map(h =>
 				E('button', { type: 'button', class: 'nfm-tab', click: () => { diagHost.value = h; } }, h))),
 			diagOut ]);
@@ -1242,40 +1251,40 @@ return view.extend({
 
 		const net = E('div', { hidden: true }, [
 			E('div', { class: 'nfm-grid nfm-g3' }, [
-				card('Загрузка', E('div', {}, [ E('div', { class: 'nfm-rate' }, [ T.nDlN = E('b', {}, '–'), T.nDlU = E('span') ]),
-					E('div', { class: 'nfm-s' }, [ 'всего принято ', t('nDlTot') ]) ])),
-				card('Отдача', E('div', {}, [ E('div', { class: 'nfm-rate' }, [ T.nUlN = E('b', {}, '–'), T.nUlU = E('span') ]),
-					E('div', { class: 'nfm-s' }, [ 'всего отправлено ', t('nUlTot') ]) ])),
-				card('Соединения', E('div', {}, [ E('div', { class: 'nfm-rate' }, [ T.ctN = E('b', {}, '–'), T.ctMax = E('span') ]),
+				card('Download', E('div', {}, [ E('div', { class: 'nfm-rate' }, [ T.nDlN = E('b', {}, '–'), T.nDlU = E('span') ]),
+					E('div', { class: 'nfm-s' }, [ 'total received ', t('nDlTot') ]) ])),
+				card('Upload', E('div', {}, [ E('div', { class: 'nfm-rate' }, [ T.nUlN = E('b', {}, '–'), T.nUlU = E('span') ]),
+					E('div', { class: 'nfm-s' }, [ 'total sent ', t('nUlTot') ]) ])),
+				card('Connections', E('div', {}, [ E('div', { class: 'nfm-rate' }, [ T.ctN = E('b', {}, '–'), T.ctMax = E('span') ]),
 					E('div', { class: 'nfm-bar', style: 'margin:8px 0 6px' }, [ T.ctBar = E('div', { class: 'nfm-bar-fill c-cpu' }) ]),
 					E('div', { class: 'nfm-s' }, [ t('ctProto') ]) ]))
 			]),
 			E('div', { class: 'nfm-grid' }, [
-				card([ 'Что грузит канал сейчас', E('span', { class: 'nfm-spacer' }), chanSel ], E('div', {}, [ chanNote, chanBox ]))
+				card([ 'What is using the link now', E('span', { class: 'nfm-spacer' }), chanSel ], E('div', {}, [ chanNote, chanBox ]))
 			]),
-			E('div', { class: 'nfm-grid' }, [ card('DNS-запросы', dnsBox) ]),
-			E('div', { class: 'nfm-grid' }, [ card('Адрес WAN и CGNAT', ipBox) ]),
+			E('div', { class: 'nfm-grid' }, [ card('DNS queries', dnsBox) ]),
+			E('div', { class: 'nfm-grid' }, [ card('WAN address and CGNAT', ipBox) ]),
 			E('div', { class: 'nfm-grid' }, [
-				card([ 'Скорость по интерфейсу', E('span', { class: 'nfm-spacer' }), netSel,
-					E('span', { class: 'nfm-legend' }, [ legendDot('c-down', 'Загрузка'), legendDot('c-up', 'Отдача') ]) ], netBig.el)
+				card([ 'Speed by interface', E('span', { class: 'nfm-spacer' }), netSel,
+					E('span', { class: 'nfm-legend' }, [ legendDot('c-down', 'Download'), legendDot('c-up', 'Upload') ]) ], netBig.el)
 			]),
 			E('div', { class: 'nfm-grid nfm-g21' }, [
-				card('Интерфейсы', E('table', { class: 'nfm-table' }, [
-					E('thead', {}, E('tr', {}, [ E('th', {}, 'Интерфейс'), E('th', { class: 'r' }, '↓ сейчас'), E('th', { class: 'r' }, '↑ сейчас'),
-						E('th', { class: 'r' }, '↓ всего'), E('th', { class: 'r' }, '↑ всего'), E('th', { class: 'r' }, 'Ошибки') ])), ifBody ])),
-				card('Кто держит соединения', hostsBox)
+				card('Interfaces', E('table', { class: 'nfm-table' }, [
+					E('thead', {}, E('tr', {}, [ E('th', {}, 'Interface'), E('th', { class: 'r' }, '↓ now'), E('th', { class: 'r' }, '↑ now'),
+						E('th', { class: 'r' }, '↓ total'), E('th', { class: 'r' }, '↑ total'), E('th', { class: 'r' }, 'Errors') ])), ifBody ])),
+				card('Who holds connections', hostsBox)
 			]),
 		]);
 
 		/* processes tab */
 		const procBody = E('tbody');
 		const sortTh = (key, label, cls) => E('th', { class: 'sort ' + (cls || ''), click: () => { S.sort = key; refresh(); } }, label);
-		const pmBox = E('div'), pmPer = E('select', { class: 'nfm-sel', 'aria-label': 'Период памяти', change: ev => { S.pmH = +ev.target.value; S.at.pm = 0; tick(); } },
-			[ [ 6, 'За 6 часов' ], [ 24, 'За 24 часа' ], [ 168, 'За 7 дней' ] ].map(([ v, l ]) => E('option', { value: String(v), selected: v === 24 }, l)));
+		const pmBox = E('div'), pmPer = E('select', { class: 'nfm-sel', 'aria-label': 'Memory period', change: ev => { S.pmH = +ev.target.value; S.at.pm = 0; tick(); } },
+			[ [ 6, 'Last 6 hours' ], [ 24, 'Last 24 hours' ], [ 168, 'Last 7 days' ] ].map(([ v, l ]) => E('option', { value: String(v), selected: v === 24 }, l)));
 		function renderProcMem() {
 			const R = S.pm;
-			if (!R || !R.rows) { pmBox.replaceChildren(E('div', { class: 'nfm-empty' }, R === null ? 'Нет данных: обновите тему на роутере.' : 'Загружаю…')); return; }
-			if (R.rows.length < 3) { pmBox.replaceChildren(E('div', { class: 'nfm-empty' }, 'Данных пока мало: память по программам записывается раз в 15 минут (в режиме Lite не ведётся).')); return; }
+			if (!R || !R.rows) { pmBox.replaceChildren(E('div', { class: 'nfm-empty' }, R === null ? 'No data: update the theme on the router.' : 'Loading…')); return; }
+			if (R.rows.length < 3) { pmBox.replaceChildren(E('div', { class: 'nfm-empty' }, 'Not enough data yet: per-program memory is recorded every 15 minutes (not kept in Lite mode).')); return; }
 			const ser = {};
 			R.rows.forEach((row, i) => { for (const [ n, kb ] of row[1]) (ser[n] = ser[n] || new Array(R.rows.length).fill(null))[i] = kb; });
 			const list = Object.keys(ser).map(n => {
@@ -1287,20 +1296,20 @@ return view.extend({
 			const spark = v => { const pts = v.map((x, i) => x == null ? null : [ i, x ]).filter(Boolean); const mx = Math.max(...pts.map(q => q[1])), mn = Math.min(...pts.map(q => q[1])), w = 90, h = 22, N = Math.max(1, v.length - 1);
 				return SVG('svg', { width: w, height: h, viewBox: '0 0 ' + w + ' ' + h }, [ SVG('polyline', { fill: 'none', stroke: 'currentColor', 'stroke-width': 1.5, points: pts.map(q => (q[0] / N * w).toFixed(1) + ',' + (h - 2 - (mx === mn ? 0.5 : (q[1] - mn) / (mx - mn)) * (h - 4)).toFixed(1)).join(' ') }) ]); };
 			pmBox.replaceChildren(
-				E('table', { class: 'nfm-table' }, [ E('thead', {}, E('tr', {}, [ E('th', {}, 'Программа'), E('th', {}, 'Динамика'), E('th', { class: 'r' }, 'В начале'), E('th', { class: 'r' }, 'Сейчас'), E('th', { class: 'r' }, 'Пик') ])),
-					E('tbody', {}, list.map(x => E('tr', {}, [ E('td', {}, [ x.n, x.grow ? E('span', { class: 'nfm-chip priv', title: 'Память растёт почти непрерывно: возможна утечка. Перезапустите службу и понаблюдайте.' }, 'растёт · возможна утечка') : '' ]),
+				E('table', { class: 'nfm-table' }, [ E('thead', {}, E('tr', {}, [ E('th', {}, 'Program'), E('th', {}, 'Trend'), E('th', { class: 'r' }, 'At start'), E('th', { class: 'r' }, 'Now'), E('th', { class: 'r' }, 'Peak') ])),
+					E('tbody', {}, list.map(x => E('tr', {}, [ E('td', {}, [ x.n, x.grow ? E('span', { class: 'nfm-chip priv', title: 'Memory grows almost continuously: a leak is possible. Restart the service and keep an eye on it.' }, 'growing · possible leak') : '' ]),
 						E('td', {}, spark(x.v)), E('td', { class: 'r' }, fmtMB(x.first)), E('td', { class: 'r' }, fmtMB(x.last)), E('td', { class: 'r' }, fmtMB(x.max)) ]))) ]),
-				E('div', { class: 'nfm-note-s', style: 'margin-top:8px' }, 'Показаны десять самых «толстых» программ. «Возможна утечка» ставится, если память почти все замеры только росла и выросла больше чем на 30% и 5 МБ.'));
+				E('div', { class: 'nfm-note-s', style: 'margin-top:8px' }, 'The ten "heaviest" programs are shown. "Possible leak" is flagged when memory only grew in almost all samples and increased by more than 30% and 5 MB.'));
 		}
 		const procs = E('div', { hidden: true }, [
-			E('div', { class: 'nfm-grid nfm-g21 nfm-proc-overview' }, [ card('Ядра процессора', E('div', {}, [ coresBox, tiles ])), flashCard ]),
-			card([ 'Кто сколько занимает', E('span', { class: 'nfm-note' }, 'память программ — примерно: общие библиотеки входят в каждую') ], E('div', {}, [ memStack, memLegend ])),
-			card([ 'Память по программам за период', E('span', { class: 'nfm-spacer' }), pmPer ], pmBox),
-			card([ 'Программы', E('span', { class: 'nfm-spacer' }),
-				E('input', { class: 'nfm-search', type: 'search', placeholder: 'Поиск…', input: ev => { S.filter = ev.target.value.toLowerCase(); refresh(); } }) ],
+			E('div', { class: 'nfm-grid nfm-g21 nfm-proc-overview' }, [ card('CPU cores', E('div', {}, [ coresBox, tiles ])), flashCard ]),
+			card([ 'Who uses how much', E('span', { class: 'nfm-note' }, 'program memory is approximate: shared libraries are counted in each one') ], E('div', {}, [ memStack, memLegend ])),
+			card([ 'Program memory over the period', E('span', { class: 'nfm-spacer' }), pmPer ], pmBox),
+			card([ 'Programs', E('span', { class: 'nfm-spacer' }),
+				E('input', { class: 'nfm-search', type: 'search', placeholder: 'Search…', input: ev => { S.filter = ev.target.value.toLowerCase(); refresh(); } }) ],
 				E('table', { class: 'nfm-table' }, [
-					E('thead', {}, E('tr', {}, [ E('th', {}, 'Имя'), E('th', { class: 'r' }, 'Процессов'),
-						sortTh('cpu', 'Процессор ↓', 'r'), sortTh('mem', 'Память ↓', 'r') ])), procBody ]))
+					E('thead', {}, E('tr', {}, [ E('th', {}, 'Name'), E('th', { class: 'r' }, 'Processes'),
+						sortTh('cpu', 'CPU ↓', 'r'), sortTh('mem', 'Memory ↓', 'r') ])), procBody ]))
 		]);
 
 		/* history tab */
@@ -1309,64 +1318,64 @@ return view.extend({
 			rangeBtns[k] = E('button', { class: 'nfm-tab', click: () => { S.range = k; S.hist = undefined; S.at.hist = 0; refresh(); tick(); } }, RANGES[k][2])));
 		const histNote = E('div', { class: 'nfm-hint', hidden: '' });
 		const histMain = chart({ right: true, height: 240,
-			series: [ { key: 'cpuB', cls: 'c-base', fill: 0, label: 'Процессор обычно', fmt: v => nf0.format(v) + '%' }, { key: 'cpu', cls: 'c-cpu', label: 'Процессор', fmt: v => nf0.format(v) + '%' }, { key: 'mem', cls: 'c-mem', label: 'Память', fmt: v => nf0.format(v) + '%' },
-				{ key: 'temp', cls: 'c-temp', axis: 'right', fill: .12, label: 'Температура', fmt: v => nf1.format(v) + ' °C' } ],
+			series: [ { key: 'cpuB', cls: 'c-base', fill: 0, label: 'CPU usual', fmt: v => nf0.format(v) + '%' }, { key: 'cpu', cls: 'c-cpu', label: 'CPU', fmt: v => nf0.format(v) + '%' }, { key: 'mem', cls: 'c-mem', label: 'Memory', fmt: v => nf0.format(v) + '%' },
+				{ key: 'temp', cls: 'c-temp', axis: 'right', fill: .12, label: 'Temperature', fmt: v => nf1.format(v) + ' °C' } ],
 			fmtLeft: v => nf0.format(v) + '%', fmtRight: v => nf0.format(v) + '°' });
 		const histPing = chart({ height: 200,
-			series: [ { key: 'netB', cls: 'c-base', fill: 0, label: 'Интернет обычно', fmt: v => nf1.format(v) + ' мс' }, { key: 'gw', cls: 'c-up', fill: 0, gaps: true, label: 'Шлюз', fmt: v => nf1.format(v) + ' мс' }, { key: 'net', cls: 'c-down', fill: 0, gaps: true, label: 'Интернет', fmt: v => nf1.format(v) + ' мс' } ],
-			fmtLeft: v => nf0.format(v) + ' мс', fmtRight: () => '' });
-		const histNet = chart({ height: 200, series: [ { key: 'rxB', cls: 'c-base', fill: 0, label: 'Загрузка обычно', fmt: rateText }, { key: 'rx', cls: 'c-down', label: 'Загрузка', fmt: rateText }, { key: 'tx', cls: 'c-up', fill: .18, label: 'Отдача', fmt: rateText } ],
+			series: [ { key: 'netB', cls: 'c-base', fill: 0, label: 'Internet usual', fmt: v => nf1.format(v) + ' ms' }, { key: 'gw', cls: 'c-up', fill: 0, gaps: true, label: 'Gateway', fmt: v => nf1.format(v) + ' ms' }, { key: 'net', cls: 'c-down', fill: 0, gaps: true, label: 'Internet', fmt: v => nf1.format(v) + ' ms' } ],
+			fmtLeft: v => nf0.format(v) + ' ms', fmtRight: () => '' });
+		const histNet = chart({ height: 200, series: [ { key: 'rxB', cls: 'c-base', fill: 0, label: 'Download usual', fmt: rateText }, { key: 'rx', cls: 'c-down', label: 'Download', fmt: rateText }, { key: 'tx', cls: 'c-up', fill: .18, label: 'Upload', fmt: rateText } ],
 			fmtLeft: v => rateText(v), fmtRight: () => '' });
 		const evBox = E('div', { class: 'nfm-evlist' });
 		const histInfo = E('div', { class: 'nfm-s', style: 'margin-top:10px' });
-		const pingTiles = E('div', { class: 'nfm-tiles t4' }, [ [ 'pAvg', 'средняя задержка' ], [ 'pMax', 'максимум' ], [ 'pLoss', 'потери ответов' ], [ 'pCut', 'обрывов связи' ] ]
+		const pingTiles = E('div', { class: 'nfm-tiles t4' }, [ [ 'pAvg', 'average latency' ], [ 'pMax', 'maximum' ], [ 'pLoss', 'lost replies' ], [ 'pCut', 'outages' ] ]
 			.map(([ k, l ]) => E('div', { class: 'nfm-tile' }, [ l, T[k] = E('b', {}, '–') ])));
 		const CFG_FIELDS = [
-			[ 'TEMP_WARN', 'Предупреждение о перегреве', '°C' ], [ 'TEMP_CRIT', 'Критический перегрев', '°C' ],
-			[ 'MEM_MIN_PCT', 'Свободной памяти меньше', '%' ], [ 'FLASH_MAX_PCT', 'Флеш занят больше', '%' ],
-			[ 'CT_MAX_PCT', 'Таблица соединений заполнена', '%' ], [ 'CPU_MAX_PCT', 'Загрузка процессора', '%' ],
-			[ 'CPU_MINUTES', '…и держится дольше', 'мин' ],
-			[ 'PING_TARGET', 'Проверка интернета: адрес 1', '', 'text' ], [ 'PING_TARGET2', 'Проверка интернета: адрес 2', '', 'text' ],
-			[ 'PERSIST_DIR', 'Папка для сохранения истории', '', 'text', 'например /mnt/sda1/nightfall; /overlay — только с разрешением' ],
-			[ 'PERSIST_HOURS', 'Сохранять историю на накопитель', 'ч' ], [ 'HIST_DAYS', 'Длинная история (шаг 30 мин), суток 7–90', 'сут' ], [ 'BACKUP_KEEP', 'Хранить резервных копий на USB/SD (1–20)', 'шт' ], [ 'PERSIST_ANY', 'Разрешить запись во внутреннюю флеш-память (износ и свободное место)', '' ], [ 'JOURNAL', 'Журнал обрывов и перезагрузок (0/1)', '' ], [ 'WIFI_HIST', 'История сигнала Wi-Fi (0/1)', '' ],
-			[ 'SPEED_URL', 'Файл для замера скорости', '', 'text' ], [ 'SPEED_STREAMS', 'Потоков при замере скорости (1–8)', '' ],
-			[ 'NEWDEV', 'Сообщать о новых устройствах (0/1)', '' ],
-			[ 'LITE', 'Режим Lite для слабого роутера: опрос раз в 60 с, без учёта по приложениям и истории Wi‑Fi (0/1)', '' ],
-			[ 'APPS', 'Учёт трафика по приложениям (0/1)', '' ],
-			[ 'TG', 'Отправлять уведомления в Telegram (0/1)', '' ], [ 'TG_ALERTS', 'Слать предупреждения и перезагрузки (0/1)', '' ], [ 'TG_BOT', 'Бот с кнопками: меню, блокировка, перезагрузка (0/1)', '' ], [ 'TG_CLEAN', 'Бот убирает за собой: ответ всегда внизу, команды удаляются (0/1)', '' ], [ 'TG_UPDATES', 'Сообщать в Telegram о новых версиях темы (0/1)', '' ], [ 'TG_SEC', 'Сообщать в Telegram о всплеске неудачных входов (0/1)', '' ], [ 'TG_WIDGETS', 'Живые виджеты в боте: «Статус» с кольцами, только личный чат (0/1)', '' ], [ 'TG_REPORT', 'Ежедневный отчёт в Telegram, время', '', 'text', 'например 21:00, пусто = выкл' ],
-			[ 'TG_TOKEN', 'Токен бота (от @BotFather)', '', 'password', 'не задан' ], [ 'TG_CHAT', 'Chat id', '', 'text', 'число, определяется кнопкой' ],
-			[ 'TG_USERS', 'Кому управлять ботом в группе (id через запятую)', '', 'text', 'нужно, только если chat id группы' ],
-			[ 'TG_PROXY', 'Прокси для Telegram (если он закрыт)', '', 'text', 'например socks5h://127.0.0.1:1080' ],
-			[ 'TG_IFACE', 'Или интерфейс VPN для Telegram', '', 'text', 'например wg0' ]
+			[ 'TEMP_WARN', 'Overheating warning', '°C' ], [ 'TEMP_CRIT', 'Critical overheating', '°C' ],
+			[ 'MEM_MIN_PCT', 'Free memory below', '%' ], [ 'FLASH_MAX_PCT', 'Flash used above', '%' ],
+			[ 'CT_MAX_PCT', 'Connection table filled', '%' ], [ 'CPU_MAX_PCT', 'CPU load', '%' ],
+			[ 'CPU_MINUTES', '…and lasts longer than', 'min' ],
+			[ 'PING_TARGET', 'Internet check: address 1', '', 'text' ], [ 'PING_TARGET2', 'Internet check: address 2', '', 'text' ],
+			[ 'PERSIST_DIR', 'Folder for saving history', '', 'text', 'e.g. /mnt/sda1/nightfall; /overlay only with permission' ],
+			[ 'PERSIST_HOURS', 'Save history to storage every', 'h' ], [ 'HIST_DAYS', 'Long history (30 min step), days 7–90', 'days' ], [ 'BACKUP_KEEP', 'Backups to keep on USB/SD (1–20)', 'pcs' ], [ 'PERSIST_ANY', 'Allow writing to internal flash memory (wear and free space)', '' ], [ 'JOURNAL', 'Outage and reboot log (0/1)', '' ], [ 'WIFI_HIST', 'Wi-Fi signal history (0/1)', '' ],
+			[ 'SPEED_URL', 'Speed test file', '', 'text' ], [ 'SPEED_STREAMS', 'Speed test streams (1–8)', '' ],
+			[ 'NEWDEV', 'Report new devices (0/1)', '' ],
+			[ 'LITE', 'Lite mode for a weak router: polling every 60 s, no per-app accounting and no Wi‑Fi history (0/1)', '' ],
+			[ 'APPS', 'Per-app traffic accounting (0/1)', '' ],
+			[ 'TG', 'Send notifications to Telegram (0/1)', '' ], [ 'TG_ALERTS', 'Send warnings and reboots (0/1)', '' ], [ 'TG_BOT', 'Bot with buttons: menu, blocking, reboot (0/1)', '' ], [ 'TG_CLEAN', 'Bot cleans up after itself: reply always at the bottom, commands are deleted (0/1)', '' ], [ 'TG_UPDATES', 'Notify in Telegram about new theme versions (0/1)', '' ], [ 'TG_SEC', 'Notify in Telegram about a burst of failed sign-ins (0/1)', '' ], [ 'TG_WIDGETS', 'Live widgets in the bot: "Status" with rings, private chat only (0/1)', '' ], [ 'TG_REPORT', 'Daily report in Telegram, time', '', 'text', 'e.g. 21:00, empty = off' ],
+			[ 'TG_TOKEN', 'Bot token (from @BotFather)', '', 'password', 'not set' ], [ 'TG_CHAT', 'Chat id', '', 'text', 'a number, detected by the button' ],
+			[ 'TG_USERS', 'Who can control the bot in a group (ids, comma-separated)', '', 'text', 'needed only if the chat id is a group' ],
+			[ 'TG_PROXY', 'Proxy for Telegram (if it is blocked)', '', 'text', 'e.g. socks5h://127.0.0.1:1080' ],
+			[ 'TG_IFACE', 'Or a VPN interface for Telegram', '', 'text', 'e.g. wg0' ]
 		];
 		const cfgInputs = {};
 		const cfgMsg = E('span', { class: 'nfm-note-s' });
 		const backupMsg = E('span', { class: 'nfm-note-s' });
-		/* Telegram: сначала сохраняем введённое, потом просим роутер определить chat id или отправить проверочное сообщение */
+		/* Telegram: first save what was entered, then ask the router to detect the chat id or send a test message */
 		const tgMsg = E('div', { class: 'nfm-note-s', style: 'margin-top:6px' });
 		const tgRun = cmd => {
-			tgMsg.textContent = 'Выполняю…';
+			tgMsg.textContent = 'Working…';
 			const save = [ 'set' ].concat([ 'TG_TOKEN', 'TG_CHAT', 'TG_PROXY', 'TG_IFACE' ].map(k => k + '=' + cfgInputs[k].value.trim()));
 			return callCfg(save).then(r => {
-				if (!(r && r.ok)) { tgMsg.textContent = 'Не сохранено: ' + ((r && r.error) || 'нет ответа'); return null; }
-				return fs.exec(NOTIFYBIN, [ cmd ]).then(res => { try { return JSON.parse(res.stdout); } catch (e) { return { ok: false, error: 'нет ответа от роутера' }; } }).catch(() => ({ ok: false, error: 'нет прав на запуск (выйдите из LuCI и войдите снова; права обновляются при входе) или не найден /usr/libexec/nightfall-notify' }));
+				if (!(r && r.ok)) { tgMsg.textContent = 'Not saved: ' + ((r && r.error) || 'no response'); return null; }
+				return fs.exec(NOTIFYBIN, [ cmd ]).then(res => { try { return JSON.parse(res.stdout); } catch (e) { return { ok: false, error: 'no response from the router' }; } }).catch(() => ({ ok: false, error: 'no permission to run (log out of LuCI and sign in again; permissions are refreshed at sign-in) or /usr/libexec/nightfall-notify not found' }));
 			});
 		};
 		const tgTools = E('div', { style: 'margin-top:10px' }, [
-			E('div', { class: 'nfm-note-s' }, 'Как настроить: 1) в Telegram найдите @BotFather, создайте бота командой /newbot и вставьте токен выше; 2) откройте своего бота и нажмите Start; 3) нажмите «Определить chat id», затем «Отправить проверку»; 4) включите переключатель «Отправлять уведомления» и сохраните. После этого боту можно писать команды: /status, /clients, /traffic, /apps, /speed, /help (отвечает только вам).'),
+			E('div', { class: 'nfm-note-s' }, 'How to set up: 1) in Telegram find @BotFather, create a bot with the /newbot command and paste the token above; 2) open your bot and press Start; 3) press "Detect chat id", then "Send test"; 4) turn on the "Send notifications" switch and save. After that you can send commands to the bot: /status, /clients, /traffic, /apps, /speed, /help (it replies only to you).'),
 			E('div', { class: 'nfm-actions', style: 'margin:8px 0 0' }, [
-				E('button', { class: 'nfm-act', click: () => tgRun('chatid').then(r => { if (!r) return; if (r.ok) { cfgInputs.TG_CHAT.value = r.chat; callCfg([ 'set', 'TG_CHAT=' + r.chat ]); tgMsg.textContent = 'Chat id найден: ' + r.chat; } else tgMsg.textContent = r.error; }) }, 'Определить chat id'),
-				E('button', { class: 'nfm-act', click: () => tgRun('test').then(r => { if (r) tgMsg.textContent = r.ok ? 'Сообщение отправлено, проверьте Telegram.' : 'Не отправлено: ' + r.error; }) }, 'Отправить проверку'),
-				E('button', { class: 'nfm-act', click: () => tgRun('backup').then(r => { if (r) tgMsg.textContent = r.ok ? 'Резервная копия отправлена в Telegram файлом (без токена бота).' : 'Не отправлено: ' + r.error; }) }, 'Резервная копия в Telegram') ]),
+				E('button', { class: 'nfm-act', click: () => tgRun('chatid').then(r => { if (!r) return; if (r.ok) { cfgInputs.TG_CHAT.value = r.chat; callCfg([ 'set', 'TG_CHAT=' + r.chat ]); tgMsg.textContent = 'Chat id found: ' + r.chat; } else tgMsg.textContent = r.error; }) }, 'Detect chat id'),
+				E('button', { class: 'nfm-act', click: () => tgRun('test').then(r => { if (r) tgMsg.textContent = r.ok ? 'Message sent, check Telegram.' : 'Not sent: ' + r.error; }) }, 'Send test'),
+				E('button', { class: 'nfm-act', click: () => tgRun('backup').then(r => { if (r) tgMsg.textContent = r.ok ? 'Backup sent to Telegram as a file (without the bot token).' : 'Not sent: ' + r.error; }) }, 'Backup to Telegram') ]),
 			tgMsg ]);
-		/* ---- Накопители: найти флешку / SD-карту и одним нажатием хранить на ней историю ---- */
-		const dskBody = E('div', {}, E('div', { class: 'nfm-empty' }, 'Ищу накопители…'));
+		/* ---- Storage: find a USB stick / SD card and keep history on it with one click ---- */
+		const dskBody = E('div', {}, E('div', { class: 'nfm-empty' }, 'Looking for storage…'));
 		const dskMsg = E('div', { class: 'nfm-note-s', style: 'margin-top:8px' });
 		function loadDisks() { return callCfg([ 'disks' ]).then(r => { S.dsk = r || null; renderDisks(); }).catch(() => { S.dsk = null; renderDisks(); }); }
 		function setPersist(dir, hours, msg) {
-			dskMsg.textContent = 'Применяю…';
+			dskMsg.textContent = 'Applying…';
 			callCfg(dir ? [ 'set', 'PERSIST_DIR=' + dir, 'PERSIST_HOURS=' + hours ] : [ 'set', 'PERSIST_DIR=' ]).then(r => {
-				if (!(r && r.ok)) { dskMsg.textContent = 'Не сохранено: ' + ((r && r.error) || 'нет ответа'); return; }
+				if (!(r && r.ok)) { dskMsg.textContent = 'Not saved: ' + ((r && r.error) || 'no response'); return; }
 				dskMsg.textContent = msg; S.at.alerts = 0; S.at.hist = 0;
 				callCfg([ 'get' ]).then(c => { S.cfg = c; if (c) fillCfg(c.values); renderDisks(); });
 			});
@@ -1374,30 +1383,30 @@ return view.extend({
 		function renderDisks() {
 			const d = S.dsk, cur = ((S.cfg && S.cfg.values) || {}).PERSIST_DIR || '';
 			if (d === undefined) return;
-			if (!d || !Array.isArray(d.disks)) { dskBody.replaceChildren(E('div', { class: 'nfm-hint' }, 'Не удалось получить список накопителей: обновите тему на роутере до последней версии.')); return; }
+			if (!d || !Array.isArray(d.disks)) { dskBody.replaceChildren(E('div', { class: 'nfm-hint' }, 'Could not get the list of storage devices: update the theme on the router to the latest version.')); return; }
 			if (!d.disks.length) {
 				const parts = (d.parts || []).filter(x => /^\/dev\/(sd|nvme|vd|mmcblk)/.test(x.dev)), fsl = d.fs || [], msg = [];
 				const need = { vfat: 'kmod-fs-vfat', exfat: 'kmod-fs-exfat', ntfs: 'kmod-fs-ntfs3', ext4: 'kmod-fs-ext4', f2fs: 'kmod-fs-f2fs', btrfs: 'kmod-fs-btrfs' };
 				if (parts.length) {
-					msg.push('Роутер видит раздел: ' + parts.map(x => x.dev + ' (' + fmtBytes(x.size_kb * 1024) + (x.type ? ', ' + x.type : '') + ')').join(', ') + ', но он не смонтирован.');
+					msg.push('The router sees a partition: ' + parts.map(x => x.dev + ' (' + fmtBytes(x.size_kb * 1024) + (x.type ? ', ' + x.type : '') + ')').join(', ') + ', but it is not mounted.');
 					const bad = parts.filter(x => x.type && need[x.type] && !fsl.includes(x.type) && !(x.type === 'ntfs' && fsl.includes('ntfs3')));
-					if (bad.length) msg.push('Не хватает драйвера файловой системы: установите ' + [ ...new Set(bad.map(x => need[x.type])) ].join(', ') + ' и перезагрузите роутер.');
-					msg.push('Затем откройте «Система → Точки монтирования», нажмите «Добавить», выберите этот раздел, точка монтирования /mnt/sda1, включите и нажмите «Сохранить и применить». Если там уже есть запись с пометкой «не существует», удалите её и добавьте заново.');
+					if (bad.length) msg.push('A file system driver is missing: install ' + [ ...new Set(bad.map(x => need[x.type])) ].join(', ') + ' and reboot the router.');
+					msg.push('Then open "System → Mount Points", press "Add", select this partition, mount point /mnt/sda1, enable it and press "Save & Apply". If there is already an entry marked "does not exist", delete it and add it again.');
 				} else if (d.usb_storage === 0) {
-					msg.push('Драйвер USB-накопителей не загружен. Установите kmod-usb-storage (для USB 3.0 ещё kmod-usb-storage-uas) и перезагрузите роутер.');
+					msg.push('The USB storage driver is not loaded. Install kmod-usb-storage (for USB 3.0 also kmod-usb-storage-uas) and reboot the router.');
 				} else {
-					msg.push('Роутер не видит флешку как диск. Проверьте, что она вставлена до конца, попробуйте другой порт или другую флешку (некоторым не хватает питания). Запись в «Точках монтирования» с пометкой «не существует» значит то же самое: раздел с таким UUID сейчас не найден. Подробности на роутере: dmesg | grep -i usb.');
+					msg.push('The router does not see the USB stick as a disk. Make sure it is fully inserted, try another port or another stick (some do not get enough power). An entry in "Mount Points" marked "does not exist" means the same thing: a partition with that UUID is not found right now. Details on the router: dmesg | grep -i usb.');
 				}
-				msg.push('Когда накопитель смонтируется, нажмите «Обновить»: он появится здесь.');
+				msg.push('When the storage is mounted, press "Refresh": it will appear here.');
 				dskBody.replaceChildren(...msg.map(t => E('div', { class: 'nfm-hint', style: 'margin-bottom:6px' }, t)));
 				return;
 			}
 			dskBody.replaceChildren(...d.disks.map(k => {
 				const dir = k.mount.replace(/\/$/, '') + '/nightfall', used = cur === dir || cur.indexOf(k.mount.replace(/\/$/, '') + '/') === 0;
 				return E('div', { class: 'nfm-dsk' }, [
-					E('div', { class: 'nfm-dsk-i' }, [ E('b', {}, k.mount), E('span', { class: 'nfm-note-s' }, k.dev + ' · ' + k.fs + ' · ' + fmtBytes(k.size_kb * 1024) + ', свободно ' + fmtBytes(k.free_kb * 1024)) ]),
-					used ? E('button', { type: 'button', class: 'nfm-btn', click: () => setPersist('', 0, 'Сохранение истории на накопитель выключено, история снова только в памяти.') }, '✓ История здесь · отключить')
-						: E('button', { type: 'button', class: 'nfm-btn', click: () => setPersist(dir, 1, 'Готово: история сохраняется в ' + dir + ' раз в час и переживёт перезагрузку роутера.') }, 'Хранить историю здесь') ]);
+					E('div', { class: 'nfm-dsk-i' }, [ E('b', {}, k.mount), E('span', { class: 'nfm-note-s' }, k.dev + ' · ' + k.fs + ' · ' + fmtBytes(k.size_kb * 1024) + ', free ' + fmtBytes(k.free_kb * 1024)) ]),
+					used ? E('button', { type: 'button', class: 'nfm-btn', click: () => setPersist('', 0, 'Saving history to storage is off; history is kept in memory only again.') }, '✓ History here · turn off')
+						: E('button', { type: 'button', class: 'nfm-btn', click: () => setPersist(dir, 1, 'Done: history is saved to ' + dir + ' every hour and will survive a router reboot.') }, 'Keep history here') ]);
 			}));
 		}
 
@@ -1416,36 +1425,36 @@ return view.extend({
 		}
 		function cfgGroup(title, keys, extra, cls) {
 			const icons = {
-				'Температура и память': [ 'path', { d: 'M9 18h6M10 22h4M8 14a6 6 0 1 1 8 0c-.8.7-1 1.3-1 2H9c0-.7-.2-1.3-1-2Z' } ],
-				'Процессор и соединения': [ 'fragment', [
+				'Temperature and memory': [ 'path', { d: 'M9 18h6M10 22h4M8 14a6 6 0 1 1 8 0c-.8.7-1 1.3-1 2H9c0-.7-.2-1.3-1-2Z' } ],
+				'CPU and connections': [ 'fragment', [
 					[ 'rect', { x: 6, y: 6, width: 12, height: 12, rx: 2 } ],
 					[ 'path', { d: 'M9 2v4m6-4v4M9 18v4m6-4v4M2 9h4m-4 6h4m12-6h4m-4 6h4' } ]
 				] ],
-				'Проверка интернета': [ 'fragment', [
+				'Internet check': [ 'fragment', [
 					[ 'circle', { cx: 12, cy: 12, r: 9 } ],
 					[ 'path', { d: 'M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18' } ]
 				] ],
-				'Замер скорости': [ 'fragment', [
+				'Speed test': [ 'fragment', [
 					[ 'path', { d: 'M4 19a9 9 0 1 1 16 0' } ],
 					[ 'path', { d: 'm12 13 4-5M7 19h10' } ],
 					[ 'circle', { cx: 12, cy: 13, r: 1 } ]
 				] ],
-				'Хранение истории и резервные копии': [ 'fragment', [
+				'History storage and backups': [ 'fragment', [
 					[ 'ellipse', { cx: 12, cy: 5, rx: 8, ry: 3 } ],
 					[ 'path', { d: 'M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3' } ]
 				] ],
-				'Режим и функции мониторинга': [ 'fragment', [
+				'Monitoring mode and features': [ 'fragment', [
 					[ 'path', { d: 'M12 2v3m0 14v3M4.9 4.9 7 7m10 10 2.1 2.1M2 12h3m14 0h3M4.9 19.1 7 17m10-10 2.1-2.1' } ],
 					[ 'circle', { cx: 12, cy: 12, r: 5 } ]
 				] ],
-				'Уведомления': [ 'fragment', [
+				'Notifications': [ 'fragment', [
 					[ 'path', { d: 'M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4' } ]
 				] ],
-				'Управление ботом': [ 'fragment', [
+				'Bot control': [ 'fragment', [
 					[ 'rect', { x: 3, y: 7, width: 18, height: 13, rx: 3 } ],
 					[ 'path', { d: 'M12 3v4M8 13h.01M16 13h.01M9 17h6' } ]
 				] ],
-				'Подключение и инструменты': [ 'fragment', [
+				'Connection and tools': [ 'fragment', [
 					[ 'path', { d: 'M8 3v5m8-5v5M6 8h12v3a6 6 0 0 1-12 0V8ZM12 17v4' } ]
 				] ]
 			};
@@ -1470,72 +1479,72 @@ return view.extend({
 				])
 			]);
 		}
-		const cfgCard = card('Настройки предупреждений', E('div', {}, [
+		const cfgCard = card('Alert settings', E('div', {}, [
 			E('div', { class: 'nfm-cfg-layout' }, [
-				cfgGroup('Температура и память', [ 'TEMP_WARN', 'TEMP_CRIT', 'MEM_MIN_PCT', 'FLASH_MAX_PCT' ]),
-				cfgGroup('Процессор и соединения', [ 'CPU_MAX_PCT', 'CPU_MINUTES', 'CT_MAX_PCT' ]),
-				cfgGroup('Проверка интернета', [ 'PING_TARGET', 'PING_TARGET2' ]),
-				cfgGroup('Замер скорости', [ 'SPEED_URL', 'SPEED_STREAMS' ]),
-				cfgGroup('Хранение истории и резервные копии', [ 'PERSIST_DIR', 'PERSIST_HOURS', 'HIST_DAYS', 'BACKUP_KEEP', 'PERSIST_ANY', 'JOURNAL', 'WIFI_HIST' ]),
-				cfgGroup('Режим и функции мониторинга', [ 'LITE', 'APPS', 'NEWDEV' ])
+				cfgGroup('Temperature and memory', [ 'TEMP_WARN', 'TEMP_CRIT', 'MEM_MIN_PCT', 'FLASH_MAX_PCT' ]),
+				cfgGroup('CPU and connections', [ 'CPU_MAX_PCT', 'CPU_MINUTES', 'CT_MAX_PCT' ]),
+				cfgGroup('Internet check', [ 'PING_TARGET', 'PING_TARGET2' ]),
+				cfgGroup('Speed test', [ 'SPEED_URL', 'SPEED_STREAMS' ]),
+				cfgGroup('History storage and backups', [ 'PERSIST_DIR', 'PERSIST_HOURS', 'HIST_DAYS', 'BACKUP_KEEP', 'PERSIST_ANY', 'JOURNAL', 'WIFI_HIST' ]),
+				cfgGroup('Monitoring mode and features', [ 'LITE', 'APPS', 'NEWDEV' ])
 			]),
 			E('section', { class: 'nfm-cfg-g nfm-cfg-telegram' }, [
-				E('h4', {}, 'Telegram — уведомления и управление'),
+				E('h4', {}, 'Telegram: notifications and control'),
 				E('div', { class: 'nfm-tg-grid' }, [
-					cfgGroup('Уведомления', [ 'TG', 'TG_ALERTS', 'TG_UPDATES', 'TG_SEC', 'TG_REPORT' ]),
-					cfgGroup('Управление ботом', [ 'TG_BOT', 'TG_CLEAN', 'TG_WIDGETS', 'TG_USERS' ]),
-					cfgGroup('Подключение и инструменты', [ 'TG_TOKEN', 'TG_CHAT', 'TG_PROXY', 'TG_IFACE' ], tgTools)
+					cfgGroup('Notifications', [ 'TG', 'TG_ALERTS', 'TG_UPDATES', 'TG_SEC', 'TG_REPORT' ]),
+					cfgGroup('Bot control', [ 'TG_BOT', 'TG_CLEAN', 'TG_WIDGETS', 'TG_USERS' ]),
+					cfgGroup('Connection and tools', [ 'TG_TOKEN', 'TG_CHAT', 'TG_PROXY', 'TG_IFACE' ], tgTools)
 				])
 			]),
 			E('div', { class: 'nfm-cfg-actions' }, [
-				E('button', { class: 'nfm-act', click: () => saveCfg() }, '✓ Сохранить и применить'),
-				E('button', { class: 'nfm-act', click: () => (S.cfg ? Promise.resolve(S.cfg) : callCfg([ 'get' ]).then(c => (S.cfg = c))).then(c => fillCfg(c && c.defaults)) }, 'Значения по умолчанию'),
-				E('button', { class: 'nfm-act', click: () => copyDiag() }, 'Скопировать диагностику'),
+				E('button', { class: 'nfm-act', click: () => saveCfg() }, '✓ Save & apply'),
+				E('button', { class: 'nfm-act', click: () => (S.cfg ? Promise.resolve(S.cfg) : callCfg([ 'get' ]).then(c => (S.cfg = c))).then(c => fillCfg(c && c.defaults)) }, 'Defaults'),
+				E('button', { class: 'nfm-act', click: () => copyDiag() }, 'Copy diagnostics'),
 				E('button', { class: 'nfm-act', click: () => {
-					backupMsg.textContent = 'Создаю и проверяю резервную копию…';
+					backupMsg.textContent = 'Creating and verifying a backup…';
 					fs.exec('/usr/libexec/nightfall-backup', [ 'create' ]).then(r => {
-						backupMsg.textContent = ((r.stdout || '') + (r.stderr || '')).trim() || 'Нет ответа от архиватора.';
-					}).catch(e => { backupMsg.textContent = 'Не удалось создать копию: ' + String((e && e.message) || e); });
-				} }, 'Создать резервную копию сейчас')
+						backupMsg.textContent = ((r.stdout || '') + (r.stderr || '')).trim() || 'No response from the archiver.';
+					}).catch(e => { backupMsg.textContent = 'Could not create a backup: ' + String((e && e.message) || e); });
+				} }, 'Create backup now')
 			]),
 			cfgMsg,
 			backupMsg,
 			E('details', { class: 'nfm-cfg-help' }, [
-				E('summary', {}, 'Справка по настройкам'),
-				E('div', {}, 'Для честного разделения трафика укажите известные VPN-серверы в формате IP:порт (через запятую): их внешний трафик будет показан как «VPN». Содержимое внутри зашифрованного туннеля определить нельзя. Пустой адрес 1 отключает проверку интернета. Историю безопаснее хранить на USB/SD. Путь внутри /overlay разрешается только при включённом переключателе внутренней флеш-памяти: это ускоряет износ и может заполнить системный раздел, поэтому оставляйте запас свободного места. Корневой / и /rom всегда запрещены. Резервные копии лежат отдельно в nightfall-backups; если USB отключён, копия временно создаётся в /tmp. После сохранения сборщик перезапускается, накопленная история не теряется.')
+				E('summary', {}, 'Settings help'),
+				E('div', {}, 'For an honest traffic split, list known VPN servers as IP:port (comma-separated): their external traffic will be shown as "VPN". What is inside an encrypted tunnel cannot be determined. An empty address 1 disables the internet check. History is safer on USB/SD. A path inside /overlay is allowed only when the internal flash memory switch is on: this speeds up wear and can fill the system partition, so leave some free space. Root / and /rom are always forbidden. Backups are kept separately in nightfall-backups; if USB is disconnected, the backup is temporarily created in /tmp. After saving, the collector restarts; accumulated history is not lost.')
 			])
 		]), 'nfm-cfg-settings-card');
-		const jrnTiles = E('div', { class: 'nfm-tiles t4', style: 'margin-bottom:10px' }, [ [ 'jCnt', 'обрывов за 7 дней' ], [ 'jSum', 'без связи суммарно' ], [ 'jAv', 'доступность' ], [ 'jBoot', 'последняя загрузка' ] ]
+		const jrnTiles = E('div', { class: 'nfm-tiles t4', style: 'margin-bottom:10px' }, [ [ 'jCnt', 'outages in 7 days' ], [ 'jSum', 'total time offline' ], [ 'jAv', 'availability' ], [ 'jBoot', 'last boot' ] ]
 			.map(([ k, l ]) => E('div', { class: 'nfm-tile' }, [ l, T[k] = E('b', {}, '–') ])));
 		const jrnBox = E('div');
-		const spdTiles = E('div', { class: 'nfm-tiles t4', style: 'margin-bottom:10px' }, [ [ 'sLast', 'последний замер' ], [ 'sAvg', 'среднее за 7 дней' ], [ 'sMax', 'максимум' ], [ 'sMin', 'минимум' ] ]
+		const spdTiles = E('div', { class: 'nfm-tiles t4', style: 'margin-bottom:10px' }, [ [ 'sLast', 'last test' ], [ 'sAvg', '7-day average' ], [ 'sMax', 'maximum' ], [ 'sMin', 'minimum' ] ]
 			.map(([ k, l ]) => E('div', { class: 'nfm-tile' }, [ l, T[k] = E('b', {}, '–') ])));
-		const spdChart = chart({ height: 180, series: [ { key: 'mbps', cls: 'c-down', fill: .16, label: 'Скорость', fmt: v => nf1.format(v) + ' Мбит/с' } ],
-			fmtLeft: v => nf0.format(v) + ' Мбит/с', fmtRight: () => '' });
+		const spdChart = chart({ height: 180, series: [ { key: 'mbps', cls: 'c-down', fill: .16, label: 'Speed', fmt: v => nf1.format(v) + ' Mbit/s' } ],
+			fmtLeft: v => nf0.format(v) + ' Mbit/s', fmtRight: () => '' });
 		const spdList = E('div', { class: 'nfm-lst', style: 'margin-top:12px' });
 		const spdNote = E('div', { class: 'nfm-note-s', style: 'margin-top:8px' });
-		const spdSel = E('select', { class: 'nfm-sel', title: 'Автоматический замер', change: ev => {
-			callCfg([ 'set', 'SPEED_HOURS=' + ev.target.value ]).then(r => { if (!(r && r.ok)) ui.addNotification(null, E('p', {}, 'Не сохранено: ' + ((r && r.error) || 'нет ответа')), 'danger'); S.at.spd = 0; }); } },
-			[ [ '0', 'Автозамер выключен' ], [ '1', 'Каждый час' ], [ '3', 'Каждые 3 часа' ], [ '6', 'Каждые 6 часов' ], [ '12', 'Каждые 12 часов' ], [ '24', 'Раз в сутки' ] ].map(([ v, l ]) => E('option', { value: v }, l)));
+		const spdSel = E('select', { class: 'nfm-sel', title: 'Automatic speed test', change: ev => {
+			callCfg([ 'set', 'SPEED_HOURS=' + ev.target.value ]).then(r => { if (!(r && r.ok)) ui.addNotification(null, E('p', {}, 'Not saved: ' + ((r && r.error) || 'no response')), 'danger'); S.at.spd = 0; }); } },
+			[ [ '0', 'Auto test off' ], [ '1', 'Every hour' ], [ '3', 'Every 3 hours' ], [ '6', 'Every 6 hours' ], [ '12', 'Every 12 hours' ], [ '24', 'Once a day' ] ].map(([ v, l ]) => E('option', { value: v }, l)));
 		const SPEED_PRESETS = [
-			[ 'https://speed.cloudflare.com/__down?bytes=25000000', 'Cloudflare (25 МБ на поток)' ],
-			[ 'https://mirror.yandex.ru/ubuntu/ls-lR.gz', 'Яндекс.Зеркало (Россия)' ],
-			[ 'https://speed.hetzner.de/100MB.bin', 'Hetzner (Германия, 100 МБ на поток)' ],
-			[ 'https://proof.ovh.net/files/100Mb.dat', 'OVH (Франция, 100 МБ на поток)' ] ];
-		const spdSrc = E('select', { class: 'nfm-sel', title: 'Откуда качать тестовый файл', change: ev => {
-			if (!ev.target.value) { ui.addNotification(null, E('p', {}, 'Свой адрес впишите в поле «Файл для замера скорости» в настройках ниже.'), 'info'); return; }
+			[ 'https://speed.cloudflare.com/__down?bytes=25000000', 'Cloudflare (25 MB per stream)' ],
+			[ 'https://mirror.yandex.ru/ubuntu/ls-lR.gz', 'Yandex Mirror (Russia)' ],
+			[ 'https://speed.hetzner.de/100MB.bin', 'Hetzner (Germany, 100 MB per stream)' ],
+			[ 'https://proof.ovh.net/files/100Mb.dat', 'OVH (France, 100 MB per stream)' ] ];
+		const spdSrc = E('select', { class: 'nfm-sel', title: 'Where to download the test file from', change: ev => {
+			if (!ev.target.value) { ui.addNotification(null, E('p', {}, 'Enter your own address in the "Speed test file" field in the settings below.'), 'info'); return; }
 			callCfg([ 'set', 'SPEED_URL=' + ev.target.value ]).then(r => {
 				if (r && r.ok) { if (S.cfg && S.cfg.values) S.cfg.values.SPEED_URL = ev.target.value; if (cfgInputs.SPEED_URL) cfgInputs.SPEED_URL.value = ev.target.value; }
-				else ui.addNotification(null, E('p', {}, 'Не сохранено: ' + ((r && r.error) || 'нет ответа')), 'danger'); }); } },
-			SPEED_PRESETS.map(([ v, l ]) => E('option', { value: v }, l)).concat([ E('option', { value: '' }, 'Свой адрес (в настройках)') ]));
-		const spdBtn = E('button', { class: 'nfm-btn', click: () => startSpeed() }, 'Измерить сейчас');
+				else ui.addNotification(null, E('p', {}, 'Not saved: ' + ((r && r.error) || 'no response')), 'danger'); }); } },
+			SPEED_PRESETS.map(([ v, l ]) => E('option', { value: v }, l)).concat([ E('option', { value: '' }, 'Custom address (in settings)') ]));
+		const spdBtn = E('button', { class: 'nfm-btn', click: () => startSpeed() }, 'Test now');
 		const flashBox = E('div');
-		const dayBody = E('div', { class: 'nfm-day' }, E('div', { class: 'nfm-empty' }, 'Загружаю…'));
+		const dayBody = E('div', { class: 'nfm-day' }, E('div', { class: 'nfm-empty' }, 'Loading…'));
 		const wqBody = E('div', { class: 'nfm-wq' });
 		const homeBox = E('div', { class: 'nfm-evlist' }), susBox = E('div', { class: 'nfm-evlist' });
 		const wbBox = E('div'), wrBox = E('div'), wjBox = E('div', { class: 'nfm-evlist' });
-		/* ---- v1.23.0: диапазоны, рекомендации и журнал подключений Wi‑Fi ---- */
-		/* ---- «Кто дома» (по Wi‑Fi) и необычная активность (по трафику за дни) ---- */
+		/* ---- v1.23.0: bands, recommendations and Wi‑Fi connection log ---- */
+		/* ---- "Who is home" (via Wi‑Fi) and unusual activity (by traffic over days) ---- */
 		function renderDevExtra() {
 			const R = S.wq, cl = wifiDisplayRows(), up = m => String(m).toUpperCase();
 			const here = {}, via = {};
@@ -1547,9 +1556,9 @@ return view.extend({
 			for (const e of (R && R.events) || []) { const m = up(e[1]), o = st[m] = st[m] || { join: 0, leave: 0 }; if (e[2] === 'join') o.join = Math.max(o.join, e[0]); else o.leave = Math.max(o.leave, e[0]); }
 			for (const m in here) st[m] = st[m] || { join: 0, leave: 0 };
 			const rows = Object.keys(st).map(m => ({ m, home: !!here[m], t: here[m] ? st[m].join : st[m].leave })).sort((a, b) => (b.home - a.home) || (b.t - a.t));
-			homeBox.replaceChildren(...(rows.length ? rows.map(x => E('div', { class: 'nfm-ev-i ' + (x.home ? 'ok' : 'info') }, [ E('i'), E('time', {}, x.home ? 'дома' : 'не в сети'),
-				E('span', {}, devName(x.m) + (via[x.m] ? ' · через ретранслятор' : '') + (x.t ? (x.home ? ' · подключился ' : ' · ушёл ') + fmtTs(x.t) : '')) ])) : [ E('div', { class: 'nfm-empty' }, R || S.wifi ? 'Пока нет данных о подключениях по Wi‑Fi.' : 'Загружаю…') ]));
-			/* необычная активность: сегодня заметно больше обычного или устройство отдаёт много больше, чем получает */
+			homeBox.replaceChildren(...(rows.length ? rows.map(x => E('div', { class: 'nfm-ev-i ' + (x.home ? 'ok' : 'info') }, [ E('i'), E('time', {}, x.home ? 'home' : 'offline'),
+				E('span', {}, devName(x.m) + (via[x.m] ? ' · via repeater' : '') + (x.t ? (x.home ? ' · connected ' : ' · left ') + fmtTs(x.t) : '')) ])) : [ E('div', { class: 'nfm-empty' }, R || S.wifi ? 'No Wi‑Fi connection data yet.' : 'Loading…') ]));
+			/* unusual activity: noticeably more than usual today, or the device sends much more than it receives */
 			const base = {};
 			for (const x of (S.dd && S.dd.rows) || []) { const k = x[4] && x[4] !== '-' ? up(x[4]) : x[1]; const b = base[k] = base[k] || {}; b[x[0]] = (b[x[0]] || 0) + (+x[2]) + (+x[3]); }
 			const out = [];
@@ -1558,15 +1567,15 @@ return view.extend({
 				const today = r.dd + r.du, nm = (r.mac && devName(r.mac)) || names[r.ip] || r.ip;
 				const b = base[r.mac] || base[r.ip], days = b ? Object.values(b) : [];
 				const avg = days.length >= 3 ? days.reduce((a, c) => a + c, 0) / days.length : 0;
-				if (avg > 0 && today > 3 * avg && today > 300e6) out.push([ 'warn', nm + ': сегодня ' + fmtBytes(today) + ', обычно около ' + fmtBytes(avg) + ' в день.' ]);
-				else if (r.du > 5 * r.dd && r.du > 200e6) out.push([ 'warn', nm + ': отдано ' + fmtBytes(r.du) + ', получено только ' + fmtBytes(r.dd) + '. Это может быть облачная копия камеры или телефона, но стоит убедиться.' ]);
+				if (avg > 0 && today > 3 * avg && today > 300e6) out.push([ 'warn', nm + ': today ' + fmtBytes(today) + ', usually about ' + fmtBytes(avg) + ' per day.' ]);
+				else if (r.du > 5 * r.dd && r.du > 200e6) out.push([ 'warn', nm + ': sent ' + fmtBytes(r.du) + ', received only ' + fmtBytes(r.dd) + '. This may be a cloud backup from a camera or phone, but it is worth checking.' ]);
 			}
-			susBox.replaceChildren(...(out.length ? out.map(o => E('div', { class: 'nfm-ev-i nt warn' }, [ E('i'), E('span', {}, o[1]) ])) : [ E('div', { class: 'nfm-empty' }, S.devRows ? 'Ничего необычного: трафик устройств в пределах их обычного.' : 'Загружаю…') ]));
+			susBox.replaceChildren(...(out.length ? out.map(o => E('div', { class: 'nfm-ev-i nt warn' }, [ E('i'), E('span', {}, o[1]) ])) : [ E('div', { class: 'nfm-empty' }, S.devRows ? 'Nothing unusual: device traffic is within its normal range.' : 'Loading…') ]));
 		}
-		/* Клиенты за ретранслятором: DHCP хранит их собственные MAC,
-		 * а ip neigh может показывать MAC промежуточной Wi-Fi-станции.
-		 * Не склеиваем такие устройства по proxy MAC — только добавляем отдельные строки,
-		 * когда несколько DHCP-клиентов сходятся на одну реально ассоциированную станцию.
+		/* Clients behind a repeater: DHCP keeps their own MACs,
+		 * while ip neigh may show the MAC of the intermediate Wi-Fi station.
+		 * We do not merge such devices by proxy MAC; we only add separate rows
+		 * when several DHCP clients converge on one actually associated station.
 		 */
 		function wifiDisplayRows() {
 			const dv = S.devs || {};
@@ -1577,50 +1586,50 @@ return view.extend({
 			const bands = {};
 			for (const c of cl) { if (c.proxy) continue; const b = c.band || '?'; const e = bands[b] = bands[b] || { n: 0, sum: 0, rate: 0, rn: 0 }; e.n++; if (c.signal) e.sum += c.signal; if (c.rx && c.rx.rate) { e.rate += c.rx.rate; e.rn++; } }
 			const bk = Object.keys(bands).sort();
-			wbBox.replaceChildren(...(bk.length ? [ E('div', { class: 'nfm-two' }, bk.map(b => { const e = bands[b]; return E('div', { class: 'nfm-tile' }, [ E('div', { class: 'nfm-k' }, BANDS[b] || 'Диапазон не определён'), E('div', { class: 'nfm-v' }, e.n + ' ' + (e.n === 1 ? 'устройство' : 'устройств')),
-				E('div', { class: 'nfm-s' }, 'средний сигнал ' + (e.n ? Math.round(e.sum / e.n) : '–') + ' дБм' + (e.rn ? ' · линк ' + nf0.format(e.rate / e.rn / 1000) + ' Мбит/с' : '')) ]); })) ] : [ E('div', { class: 'nfm-empty' }, S.wifi ? 'Подключённых Wi-Fi клиентов нет' : 'Данные о Wi-Fi недоступны') ]));
-			/* рекомендации */
+			wbBox.replaceChildren(...(bk.length ? [ E('div', { class: 'nfm-two' }, bk.map(b => { const e = bands[b]; return E('div', { class: 'nfm-tile' }, [ E('div', { class: 'nfm-k' }, BANDS[b] || 'Band unknown'), E('div', { class: 'nfm-v' }, e.n + ' ' + (e.n === 1 ? 'device' : 'devices')),
+				E('div', { class: 'nfm-s' }, 'average signal ' + (e.n ? Math.round(e.sum / e.n) : '–') + ' dBm' + (e.rn ? ' · link ' + nf0.format(e.rate / e.rn / 1000) + ' Mbit/s' : '')) ]); })) ] : [ E('div', { class: 'nfm-empty' }, S.wifi ? 'No Wi-Fi clients connected' : 'Wi-Fi data unavailable') ]));
+			/* recommendations */
 			const tips = [];
 			const by = {};
 			const bridgeMacs = new Set(cl.filter(c => c.proxyStation).map(c => String(c.mac).toUpperCase()));
 			for (const x of (R && R.rows) || []) { const m = String(x[1]).toLowerCase(), v = +x[2]; if (bridgeMacs.has(m.toUpperCase()) || !isFinite(v)) continue; (by[m] = by[m] || []).push(v); }
 			const leaves = {};
 			for (const e of (R && R.events) || []) if (e[2] === 'leave' && !bridgeMacs.has(String(e[1]).toUpperCase())) { const k = String(e[1]).toLowerCase(); leaves[k] = (leaves[k] || 0) + 1; }
-			for (const m of Object.keys(by)) { const v = by[m], avg = v.reduce((a, b) => a + b, 0) / v.length; if (v.length >= 5 && avg <= -75) tips.push([ 'warn', devName(m) + ': средний сигнал ' + Math.round(avg) + ' дБм. Поднесите ближе к роутеру или добавьте точку доступа; если устройство на 2,4 ГГц, проверьте, нет ли помех на канале (карточка ниже).' ]); }
-			for (const m of Object.keys(leaves)) if (leaves[m] >= 6) tips.push([ 'warn', devName(m) + ': ' + leaves[m] + ' отключений за период. Часто виновато энергосбережение Wi‑Fi на устройстве; попробуйте отключить его или включить «Фиксированный MAC» вместо частного.' ]);
+			for (const m of Object.keys(by)) { const v = by[m], avg = v.reduce((a, b) => a + b, 0) / v.length; if (v.length >= 5 && avg <= -75) tips.push([ 'warn', devName(m) + ': average signal ' + Math.round(avg) + ' dBm. Move it closer to the router or add an access point; if the device is on 2.4 GHz, check the channel for interference (card below).' ]); }
+			for (const m of Object.keys(leaves)) if (leaves[m] >= 6) tips.push([ 'warn', devName(m) + ': ' + leaves[m] + ' disconnects in the period. Wi‑Fi power saving on the device is often to blame; try turning it off or enable "Fixed MAC" instead of a private one.' ]);
 			const n24 = (bands['2g'] || {}).n || 0, n5 = (bands['5g'] || {}).n || 0;
-			if (n5 && n24 > 2 * n5 + 1) tips.push([ 'info', 'На 2,4 ГГц ' + n24 + ' устройств, на 5 ГГц ' + n5 + '. Если часть устройств умеет 5 ГГц, переведите их туда: быстрее и меньше помех.' ]);
-			if (!tips.length) tips.push([ 'info', R && (R.rows || []).length ? 'Жалоб нет: сигнал и стабильность у всех клиентов в норме.' : 'Данных пока мало: история сигнала копится с запуска сборщика (в режиме Lite не ведётся).' ]);
+			if (n5 && n24 > 2 * n5 + 1) tips.push([ 'info', '2.4 GHz has ' + n24 + ' devices, 5 GHz has ' + n5 + '. If some devices support 5 GHz, move them there: faster and less interference.' ]);
+			if (!tips.length) tips.push([ 'info', R && (R.rows || []).length ? 'No complaints: signal and stability are fine for all clients.' : 'Not enough data yet: signal history accumulates from collector start (not kept in Lite mode).' ]);
 			wrBox.replaceChildren(...tips.map(t => E('div', { class: 'nfm-ev-i nt ' + (t[0] === 'warn' ? 'warn' : 'info') }, [ E('i'), E('span', {}, t[1]) ])));
-			/* журнал подключений */
+			/* connection log */
 			const ev = ((R && R.events) || []).slice(-40).reverse();
-			wjBox.replaceChildren(...(ev.length ? ev.map(e => E('div', { class: 'nfm-ev-i ' + (e[2] === 'join' ? 'info' : 'warn') }, [ E('i'), E('time', {}, fmtTs(e[0])), E('span', {}, devName(String(e[1]).toUpperCase()) + (e[2] === 'join' ? ' подключился' : ' отключился')) ])) : [ E('div', { class: 'nfm-empty' }, R ? 'Подключений и отключений пока не было.' : 'Загружаю…') ]));
+			wjBox.replaceChildren(...(ev.length ? ev.map(e => E('div', { class: 'nfm-ev-i ' + (e[2] === 'join' ? 'info' : 'warn') }, [ E('i'), E('time', {}, fmtTs(e[0])), E('span', {}, devName(String(e[1]).toUpperCase()) + (e[2] === 'join' ? ' connected' : ' disconnected')) ])) : [ E('div', { class: 'nfm-empty' }, R ? 'No connects or disconnects yet.' : 'Loading…') ]));
 		}
 		function wqVerdict(c) {
-			if (!c || typeof c !== 'object') return 'Нет ответа от роутера. Обновите тему на роутере до последней версии.';
+			if (!c || typeof c !== 'object') return 'No response from the router. Update the theme on the router to the latest version.';
 			const devs = c.devs || [], n = devs.reduce((a, d) => a + (+d[1] || 0), 0), ok = devs.reduce((a, d) => a + (+d[2] || 0), 0);
-			if (c.hist === '0') return 'Запись истории Wi-Fi выключена: поставьте WIFI_HIST=1 в настройках сборщика (вкладка «История», внизу) и сохраните.';
-			if (!c.iwinfo) return 'Роутер не отдаёт данные радиомодулей (нет ubus iwinfo). Проверьте, что Wi-Fi включён, и установите пакет rpcd-mod-iwinfo.';
-			if (!devs.length) return 'Радиомодули не найдены: ни один Wi-Fi интерфейс сейчас не включён. Включите Wi-Fi в «Сеть → Беспроводная сеть».';
-			if (!n) return 'Wi-Fi работает (' + devs.map(d => d[0]).join(', ') + '), но сейчас к нему никто не подключён. Подключите телефон, первые точки появятся примерно через минуту. Проводные устройства здесь не учитываются.';
-			if (!ok) return 'Клиентов Wi-Fi: ' + n + ', но уровень сигнала разобрать не удалось. Пришлите это сообщение разработчику: ' + (c.sample || 'пример недоступен');
-			if (c.collector === 0 && (c.age < 0 || c.age > 180)) return 'Клиенты Wi-Fi есть (' + n + '), но сборщик не работает. Перезапустите его: /etc/init.d/nightfall-collector restart, либо перезагрузите роутер.';
-			if (!c.lines) return 'Клиенты Wi-Fi есть (' + n + '), сигнал читается (' + ok + '), сборщик работает' + (c.collector ? '' : ' (данные свежие)') + ', но записей в истории нет. Подождите 1–2 минуты и обновите страницу. Если не помогло: /etc/init.d/nightfall-collector restart.';
-			return 'Записей в истории: ' + c.lines + '. Обновите страницу.';
+			if (c.hist === '0') return 'Wi-Fi history recording is off: set WIFI_HIST=1 in the collector settings ("History" tab, at the bottom) and save.';
+			if (!c.iwinfo) return 'The router does not report radio data (no ubus iwinfo). Make sure Wi-Fi is on and install the rpcd-mod-iwinfo package.';
+			if (!devs.length) return 'No radios found: no Wi-Fi interface is enabled right now. Enable Wi-Fi in "Network → Wireless".';
+			if (!n) return 'Wi-Fi is working (' + devs.map(d => d[0]).join(', ') + '), but nobody is connected right now. Connect a phone; the first points will appear in about a minute. Wired devices are not counted here.';
+			if (!ok) return 'Wi-Fi clients: ' + n + ', but the signal level could not be parsed. Send this message to the developer: ' + (c.sample || 'sample unavailable');
+			if (c.collector === 0 && (c.age < 0 || c.age > 180)) return 'There are Wi-Fi clients (' + n + '), but the collector is not running. Restart it: /etc/init.d/nightfall-collector restart, or reboot the router.';
+			if (!c.lines) return 'There are Wi-Fi clients (' + n + '), the signal is readable (' + ok + '), the collector is running' + (c.collector ? '' : ' (data is fresh)') + ', but there are no history records. Wait 1–2 minutes and refresh the page. If that does not help: /etc/init.d/nightfall-collector restart.';
+			return 'History records: ' + c.lines + '. Refresh the page.';
 		}
 
 		function renderWq() {
 			const R = S.wq;
-			if (R === undefined) { wqBody.replaceChildren(E('div', { class: 'nfm-empty' }, 'Загружаю…')); return; }
+			if (R === undefined) { wqBody.replaceChildren(E('div', { class: 'nfm-empty' }, 'Loading…')); return; }
 			const bridgeMacs = new Set(wifiDisplayRows().filter(c => c.proxyStation).map(c => String(c.mac).toLowerCase()));
 			const rows = (R && R.rows || []).filter(x => !bridgeMacs.has(String(x[1]).toLowerCase()));
 			if (!rows.length) {
 				const verdict = E('div', { class: 'nfm-note-s' });
 				const btn = E('button', { type: 'button', class: 'nfm-btn', click: () => {
-					btn.disabled = true; verdict.textContent = 'Проверяю…';
-					callHistory([ 'wifi-check' ]).then(c => { btn.disabled = false; verdict.textContent = wqVerdict(c); }).catch(() => { btn.disabled = false; verdict.textContent = 'Не удалось выполнить проверку: обновите тему на роутере до последней версии.'; });
-				} }, 'Почему пусто? Проверить');
-				wqBody.replaceChildren(E('div', { class: 'nfm-hint' }, 'Данных пока нет: история сигнала копится раз в минуту с запуска сборщика, только для клиентов Wi-Fi.' + ((R && R.info && R.info.wifi_hist === '0') ? ' Запись истории Wi-Fi выключена в настройках (WIFI_HIST=0).' : '')),
+					btn.disabled = true; verdict.textContent = 'Checking…';
+					callHistory([ 'wifi-check' ]).then(c => { btn.disabled = false; verdict.textContent = wqVerdict(c); }).catch(() => { btn.disabled = false; verdict.textContent = 'Could not run the check: update the theme on the router to the latest version.'; });
+				} }, 'Why is it empty? Check');
+				wqBody.replaceChildren(E('div', { class: 'nfm-hint' }, 'No data yet: signal history accumulates once a minute from collector start, for Wi-Fi clients only.' + ((R && R.info && R.info.wifi_hist === '0') ? ' Wi-Fi history recording is off in the settings (WIFI_HIST=0).' : '')),
 					E('div', { class: 'nfm-row', style: 'display:flex;margin-top:8px;gap:10px;align-items:center;flex-wrap:wrap' }, [ btn, verdict ]));
 				return;
 			}
@@ -1631,42 +1640,42 @@ return view.extend({
 			const ORD = { bad: 0, mid: 1, ok: 2 };
 			const list = Object.keys(by).map(m => {
 				const v = by[m].v, avg = v.reduce((a, b) => a + b, 0) / v.length, weak = 100 * v.filter(x => x <= -75).length / v.length, lv = leaves[m] || 0;
-				/* оценка: сильный сигнал и без обрывов — хорошо; слабый сигнал или частые отключения — плохо */
+				/* rating: strong signal and no drops = good; weak signal or frequent disconnects = bad */
 				const q = (avg <= -75 || weak >= 40 || lv >= 6) ? 'bad' : (avg <= -65 || weak >= 15 || lv >= 3) ? 'mid' : 'ok';
 				return { m, avg, weak, lv, last: by[m].last, q, live: R.now - by[m].lastT < 180 };
 			}).sort((a, b) => ORD[a.q] - ORD[b.q] || a.avg - b.avg);
-			const QL = { ok: 'хорошо', mid: 'терпимо', bad: 'плохо' };
+			const QL = { ok: 'good', mid: 'fair', bad: 'poor' };
 			const nm = m => devName(m);
 			wqBody.replaceChildren(
 				E('table', { class: 'nfm-table' }, [
-					E('thead', {}, E('tr', {}, [ E('th', {}, 'Устройство'), E('th', { class: 'r' }, 'Сейчас'), E('th', { class: 'r' }, 'В среднем'), E('th', { class: 'r' }, 'Слабый'), E('th', { class: 'r' }, 'Отключений'), E('th', {}, 'Оценка') ])),
-					E('tbody', {}, list.map(c => E('tr', { class: 'nfm-click', title: 'Показать сигнал в динамике', click: () => wifiDialog(c.m, nm(c.m), {}) }, [
-						E('td', {}, [ nm(c.m), c.live ? '' : E('span', { class: 'nfm-chip' }, 'не в сети') ]),
-						E('td', { class: 'r' }, c.live ? c.last + ' дБм' : '–'), E('td', { class: 'r' }, nf0.format(c.avg) + ' дБм'),
+					E('thead', {}, E('tr', {}, [ E('th', {}, 'Device'), E('th', { class: 'r' }, 'Now'), E('th', { class: 'r' }, 'Average'), E('th', { class: 'r' }, 'Weak'), E('th', { class: 'r' }, 'Disconnects'), E('th', {}, 'Rating') ])),
+					E('tbody', {}, list.map(c => E('tr', { class: 'nfm-click', title: 'Show signal over time', click: () => wifiDialog(c.m, nm(c.m), {}) }, [
+						E('td', {}, [ nm(c.m), c.live ? '' : E('span', { class: 'nfm-chip' }, 'offline') ]),
+						E('td', { class: 'r' }, c.live ? c.last + ' dBm' : '–'), E('td', { class: 'r' }, nf0.format(c.avg) + ' dBm'),
 						E('td', { class: 'r' }, nf0.format(c.weak) + '%'), E('td', { class: 'r' }, String(c.lv)),
 						E('td', {}, E('span', { class: 'nfm-wq-b ' + c.q }, QL[c.q])) ]))) ]),
-				E('div', { class: 'nfm-note-s', style: 'margin-top:8px' }, 'Слабый — доля времени с сигналом −75 дБм и ниже. «Плохо»: средний сигнал слабый или частые отключения; обычно помогает поднести устройство ближе или сменить канал. Нажмите строку, чтобы увидеть график.'));
+				E('div', { class: 'nfm-note-s', style: 'margin-top:8px' }, 'Weak: share of time with signal at −75 dBm or lower. "Poor": weak average signal or frequent disconnects; moving the device closer or changing the channel usually helps. Click a row to see the chart.'));
 		}
-		/* ---- устройство по MAC: имя из DHCP, иначе вид и производитель по MAC ---- */
+		/* ---- device by MAC: name from DHCP, otherwise type and vendor by MAC ---- */
 		const devId = (mac, host) => { try { return mac ? DevId.identify(mac, host || '') : null; } catch (e) { return null; } };
 		const devIcon = id => { const i = E('i', { class: 'nfm-dv-i' + (id && id.priv ? ' priv' : '') }); i.innerHTML = DevId.icon(id.kind); return i; };
 		const devName = mac => {
 			const m = String(mac).toUpperCase(), h = hints[m] || hints[String(mac).toLowerCase()] || {}, id = devId(m, h.name);
-			return h.name || (id && id.known ? [ id.label || 'Устройство', id.vendor && id.vendor !== id.label ? id.vendor : '' ].filter(Boolean).join(' ') : '') || (h.ipaddrs || [])[0] || m;
+			return h.name || (id && id.known ? [ id.label || 'Device', id.vendor && id.vendor !== id.label ? id.vendor : '' ].filter(Boolean).join(' ') : '') || (h.ipaddrs || [])[0] || m;
 		};
 
-		/* ---- Сигнал Wi‑Fi по часам: тепловая карта по клиентам ---- */
+		/* ---- Wi‑Fi signal by hour: heat map per client ---- */
 		const whBody = E('div', { class: 'nfm-wh' });
-		const whTabs = E('div', { class: 'nfm-tabs' }, [ [ 'd', '24 часа' ], [ 'w', '7 дней' ] ].map(([ k, t ]) =>
+		const whTabs = E('div', { class: 'nfm-tabs' }, [ [ 'd', '24 hours' ], [ 'w', '7 days' ] ].map(([ k, t ]) =>
 			E('button', { class: 'nfm-tab' + (k === 'd' ? ' on' : ''), type: 'button', click: ev => { S.whR = k; for (const b of whTabs.children) b.classList.toggle('on', b === ev.currentTarget); renderWHeat(); } }, t)));
-		const WHQ = [ [ -60, 'q0', 'отличный (−60 и выше)' ], [ -67, 'q1', 'хороший (−60…−67)' ], [ -75, 'q2', 'слабоват (−67…−75)' ], [ -200, 'q3', 'плохой (ниже −75)' ] ];
+		const WHQ = [ [ -60, 'q0', 'excellent (−60 and above)' ], [ -67, 'q1', 'good (−60…−67)' ], [ -75, 'q2', 'weakish (−67…−75)' ], [ -200, 'q3', 'poor (below −75)' ] ];
 		const whQ = v => WHQ.find(q => v >= q[0]) || WHQ[3];
 		function renderWHeat() {
 			const R = S.whr;
-			if (R === undefined) { whBody.replaceChildren(E('div', { class: 'nfm-empty' }, 'Загружаю…')); return; }
+			if (R === undefined) { whBody.replaceChildren(E('div', { class: 'nfm-empty' }, 'Loading…')); return; }
 			const bridgeMacs = new Set(wifiDisplayRows().filter(c => c.proxyStation).map(c => String(c.mac).toLowerCase()));
 			const rows = (R && R.rows || []).filter(x => !bridgeMacs.has(String(x[1]).toLowerCase()));
-			if (!rows.length) { whBody.replaceChildren(E('div', { class: 'nfm-hint' }, 'Данных пока нет: сборщик записывает средний сигнал каждого клиента раз в час (первые точки появятся через час после запуска) и хранит их на накопителе, если он подключён.' + (R === null ? ' Обновите тему на роутере до последней версии.' : ''))); return; }
+			if (!rows.length) { whBody.replaceChildren(E('div', { class: 'nfm-hint' }, 'No data yet: the collector records the average signal of each client once an hour (the first points appear an hour after start) and keeps them on storage if it is connected.' + (R === null ? ' Update the theme on the router to the latest version.' : ''))); return; }
 			const week = S.whR === 'w', step = week ? 21600 : 3600, n = week ? 28 : 24, end = R.now;
 			const by = {};
 			for (const [ ts, mac, v, c ] of rows) {
@@ -1677,31 +1686,31 @@ return view.extend({
 				e.s[n - 1 - i] += v * w; e.c[n - 1 - i] += w; e.all += v * w; e.k += w;
 			}
 			const list = Object.values(by).map(e => (e.avg = e.all / e.k, e)).sort((a, b) => a.avg - b.avg).slice(0, 14);
-			if (!list.length) { whBody.replaceChildren(E('div', { class: 'nfm-hint' }, 'За этот период записей нет.')); return; }
+			if (!list.length) { whBody.replaceChildren(E('div', { class: 'nfm-hint' }, 'No records for this period.')); return; }
 			const g = E('div', { class: 'nfm-wh-g', style: '--n:' + n });
 			g.appendChild(E('span'));
 			for (let c = 0; c < n; c++) {
 				const t0 = new Date((end - (n - c) * step) * 1000);
-				g.appendChild(E('span', { class: 'nfm-wh-h' }, week ? (t0.getHours() < 6 ? t0.toLocaleDateString('ru-RU', { weekday: 'short' }) : '') : (t0.getHours() % 3 === 0 ? String(t0.getHours()) : '')));
+				g.appendChild(E('span', { class: 'nfm-wh-h' }, week ? (t0.getHours() < 6 ? t0.toLocaleDateString('en-US', { weekday: 'short' }) : '') : (t0.getHours() % 3 === 0 ? String(t0.getHours()) : '')));
 			}
 			for (const e of list) {
 				const id = devId(e.m, (hints[e.m.toUpperCase()] || {}).name);
-				g.appendChild(E('span', { class: 'nfm-wh-n', title: 'Показать сигнал в динамике · ' + e.m.toUpperCase() + (id && id.hint ? '\n' + id.hint : ''), click: () => wifiDialog(e.m, devName(e.m), {}) }, [ id ? devIcon(id) : '', devName(e.m) ]));
+				g.appendChild(E('span', { class: 'nfm-wh-n', title: 'Show signal over time · ' + e.m.toUpperCase() + (id && id.hint ? '\n' + id.hint : ''), click: () => wifiDialog(e.m, devName(e.m), {}) }, [ id ? devIcon(id) : '', devName(e.m) ]));
 				for (let c = 0; c < n; c++) {
-					const t0 = new Date((end - (n - c) * step) * 1000), when = t0.toLocaleString('ru-RU', { weekday: 'short', hour: '2-digit', minute: '2-digit' }) + (week ? '–' + new Date((end - (n - c - 1) * step) * 1000).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : '');
-					if (!e.c[c]) { g.appendChild(E('span', { class: 'nfm-wh-c', title: when + ' — не было в сети' })); continue; }
+					const t0 = new Date((end - (n - c) * step) * 1000), when = t0.toLocaleString('en-US', { weekday: 'short', hour: '2-digit', minute: '2-digit' }) + (week ? '–' + new Date((end - (n - c - 1) * step) * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '');
+					if (!e.c[c]) { g.appendChild(E('span', { class: 'nfm-wh-c', title: when + ' — was offline' })); continue; }
 					const v = e.s[c] / e.c[c], q = whQ(v);
-					g.appendChild(E('span', { class: 'nfm-wh-c ' + q[1], title: devName(e.m) + ', ' + when + ' — ' + nf0.format(v) + ' дБм' }));
+					g.appendChild(E('span', { class: 'nfm-wh-c ' + q[1], title: devName(e.m) + ', ' + when + ' — ' + nf0.format(v) + ' dBm' }));
 				}
 			}
 			whBody.replaceChildren(g,
-				E('div', { class: 'nfm-wh-leg' }, WHQ.map(q => E('span', {}, [ E('i', { class: 'nfm-wh-c ' + q[1] }), q[2] ])).concat([ E('span', {}, [ E('i', { class: 'nfm-wh-c' }), 'нет в сети' ]) ])),
-				E('div', { class: 'nfm-note-s', style: 'margin-top:8px' }, 'Строки — клиенты Wi‑Fi, сверху самые слабые. Столбец — ' + (week ? 'шесть часов' : 'час') + ', цвет — средний сигнал. Если устройство стабильно красное, поднесите его ближе или добавьте повторитель; красное только в определённые часы — помеха от соседей или бытовой техники. Нажмите имя, чтобы увидеть минутный график.'));
+				E('div', { class: 'nfm-wh-leg' }, WHQ.map(q => E('span', {}, [ E('i', { class: 'nfm-wh-c ' + q[1] }), q[2] ])).concat([ E('span', {}, [ E('i', { class: 'nfm-wh-c' }), 'offline' ]) ])),
+				E('div', { class: 'nfm-note-s', style: 'margin-top:8px' }, 'Rows are Wi‑Fi clients, weakest at the top. A column is ' + (week ? 'six hours' : 'an hour') + ', the color is the average signal. If a device is consistently red, move it closer or add a repeater; red only at certain hours means interference from neighbors or household appliances. Click a name to see the per-minute chart.'));
 		}
 
-		/* ---- Wi‑Fi: загруженность каналов ---- */
+		/* ---- Wi‑Fi: channel congestion ---- */
 		const airBody = E('div', { class: 'nfm-air' });
-		const airBtn = E('button', { type: 'button', class: 'nfm-btn', click: () => scanAir() }, 'Сканировать эфир');
+		const airBtn = E('button', { type: 'button', class: 'nfm-btn', click: () => scanAir() }, 'Scan the air');
 		function scanAir() {
 			if (S.airBusy) return;
 			S.airBusy = true; renderAir();
@@ -1728,40 +1737,40 @@ return view.extend({
 		const airLv = l => l < 0.5 ? 0 : l < 1.5 ? 1 : l < 3 ? 2 : 3;
 		function renderAir() {
 			airBtn.disabled = !!S.airBusy;
-			airBtn.textContent = S.airBusy ? 'Сканирую…' : S.air ? 'Сканировать заново' : 'Сканировать эфир';
-			if (S.airBusy) { airBody.replaceChildren(E('div', { class: 'nfm-empty' }, 'Сканирую эфир… это занимает 5–15 секунд.')); return; }
-			if (S.air === undefined) { airBody.replaceChildren(E('div', { class: 'nfm-hint' }, 'Покажет, какие соседние сети мешают вашему Wi‑Fi и какой канал свободнее. Сканирование на несколько секунд отвлекает радиомодуль, поэтому запускается только по кнопке: лучше не во время видеозвонка.'), E('div', { style: 'margin-top:8px' }, airBtn)); return; }
+			airBtn.textContent = S.airBusy ? 'Scanning…' : S.air ? 'Scan again' : 'Scan the air';
+			if (S.airBusy) { airBody.replaceChildren(E('div', { class: 'nfm-empty' }, 'Scanning the air… this takes 5–15 seconds.')); return; }
+			if (S.air === undefined) { airBody.replaceChildren(E('div', { class: 'nfm-hint' }, 'Shows which neighboring networks interfere with your Wi‑Fi and which channel is freer. Scanning distracts the radio for a few seconds, so it runs only on a button press: better not during a video call.'), E('div', { style: 'margin-top:8px' }, airBtn)); return; }
 			const R = S.air;
-			if (!R || !(R.radios || []).length) { airBody.replaceChildren(E('div', { class: 'nfm-hint' }, R === false ? 'Не удалось выполнить сканирование: обновите тему на роутере до последней версии.' : 'Радиомодули не найдены: включите Wi‑Fi в «Сеть → Беспроводная сеть».'), E('div', { style: 'margin-top:8px' }, airBtn)); return; }
+			if (!R || !(R.radios || []).length) { airBody.replaceChildren(E('div', { class: 'nfm-hint' }, R === false ? 'Could not run the scan: update the theme on the router to the latest version.' : 'No radios found: enable Wi‑Fi in "Network → Wireless".'), E('div', { style: 'margin-top:8px' }, airBtn)); return; }
 			const secs = R.radios.map(rd => {
 				const m = airModel(rd, R.aps || []);
 				const mx = Math.max(3, ...m.col.map(x => x.load));
-				const bars = E('div', { class: 'nfm-air-bars' }, m.col.map(x => E('div', { class: 'nfm-air-b l' + airLv(x.load) + (x.ch === m.own ? ' own' : ''), title: 'Канал ' + x.ch + ': сетей на нём ' + x.k + ', нагрузка ' + nf1.format(x.load) + (x.ch === m.own ? ' (ваш)' : '') }, E('i', { style: '--h:' + Math.max(3, Math.round(100 * Math.min(x.load, mx) / mx)) + '%' }))));
+				const bars = E('div', { class: 'nfm-air-bars' }, m.col.map(x => E('div', { class: 'nfm-air-b l' + airLv(x.load) + (x.ch === m.own ? ' own' : ''), title: 'Channel ' + x.ch + ': networks on it ' + x.k + ', load ' + nf1.format(x.load) + (x.ch === m.own ? ' (yours)' : '') }, E('i', { style: '--h:' + Math.max(3, Math.round(100 * Math.min(x.load, mx) / mx)) + '%' }))));
 				const xs = E('div', { class: 'nfm-air-x' }, m.col.map(x => E('span', { class: (x.ch === m.own ? 'own' : '') + (m.best && x.ch === m.best.ch && x.ch !== m.own ? ' best' : '') }, String(x.ch))));
 				let verdict;
-				if (!m.own) verdict = 'Канал роутера определить не удалось.';
-				else if (!m.best) verdict = 'Не хватило данных для рекомендации.';
-				else if (m.best.ch === m.own || !m.cur || m.cur.load - m.best.load < 0.4) verdict = [ 'Ваш канал ', E('b', {}, String(m.own)), m.cur && m.cur.load < 0.5 ? ' свободен: менять ничего не нужно.' : ' занят не сильнее других: менять канал нет смысла.' ];
-				else verdict = [ 'Канал ', E('b', {}, String(m.own)), ' загружен (сетей на нём: ' + m.cur.k + ', нагрузка ' + nf1.format(m.cur.load) + '). Свободнее канал ', E('b', {}, String(m.best.ch)), ' (нагрузка ' + nf1.format(m.best.load) + '). Сменить: «Сеть → Беспроводная сеть → Изменить → Канал».' + (m.auto ? ' Сейчас стоит «auto»: роутер выбирает сам, но не всегда удачно.' : '') ];
+				if (!m.own) verdict = 'Could not determine the router channel.';
+				else if (!m.best) verdict = 'Not enough data for a recommendation.';
+				else if (m.best.ch === m.own || !m.cur || m.cur.load - m.best.load < 0.4) verdict = [ 'Your channel ', E('b', {}, String(m.own)), m.cur && m.cur.load < 0.5 ? ' is free: nothing needs to change.' : ' is no busier than the others: no point in changing the channel.' ];
+				else verdict = [ 'Channel ', E('b', {}, String(m.own)), ' is congested (networks on it: ' + m.cur.k + ', load ' + nf1.format(m.cur.load) + '). Channel ', E('b', {}, String(m.best.ch)), ' is freer (load ' + nf1.format(m.best.load) + '). To change: "Network → Wireless → Edit → Channel".' + (m.auto ? ' It is currently set to "auto": the router picks on its own, but not always well.' : '') ];
 				const top = m.nets.slice().sort((a, b) => b.sig - a.sig).slice(0, 8);
 				return E('div', { class: 'nfm-air-r' }, [
-					E('h4', {}, [ BANDS[m.band] || m.band, E('small', {}, rd.dev + (rd.ssid ? ' · ' + rd.ssid : '') + (m.own ? ' · канал ' + m.own : '') + (m.ht ? ' · ' + m.ht : '')) ]),
+					E('h4', {}, [ BANDS[m.band] || m.band, E('small', {}, rd.dev + (rd.ssid ? ' · ' + rd.ssid : '') + (m.own ? ' · channel ' + m.own : '') + (m.ht ? ' · ' + m.ht : '')) ]),
 					bars, xs, E('div', { class: 'nfm-air-v' }, verdict),
-					top.length ? E('table', { class: 'nfm-table' }, [ E('thead', {}, E('tr', {}, [ E('th', {}, 'Соседняя сеть'), E('th', { class: 'r' }, 'Канал'), E('th', { class: 'r' }, 'Сигнал') ])),
-						E('tbody', {}, top.map(x => E('tr', {}, [ E('td', {}, x.ssid || E('i', {}, 'скрытая сеть')), E('td', { class: 'r' }, String(x.ch)), E('td', { class: 'r' }, x.sig + ' дБм') ]))) ]) : E('div', { class: 'nfm-note-s' }, 'Соседних сетей не найдено.') ]);
+					top.length ? E('table', { class: 'nfm-table' }, [ E('thead', {}, E('tr', {}, [ E('th', {}, 'Neighboring network'), E('th', { class: 'r' }, 'Channel'), E('th', { class: 'r' }, 'Signal') ])),
+						E('tbody', {}, top.map(x => E('tr', {}, [ E('td', {}, x.ssid || E('i', {}, 'hidden network')), E('td', { class: 'r' }, String(x.ch)), E('td', { class: 'r' }, x.sig + ' dBm') ]))) ]) : E('div', { class: 'nfm-note-s' }, 'No neighboring networks found.') ]);
 			});
-			airBody.replaceChildren(...secs, E('div', { class: 'nfm-note-s' }, 'Нагрузка считается по числу соседних сетей и их силе; на 2,4 ГГц учитывается наложение соседних каналов, поэтому советуются только 1, 6 и 11. На 5 ГГц советуются каналы без радиолокационного режима (DFS). Измерено ' + new Date(S.airT).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) + '. ' + 'Каналы выше 6 ГГц и ширина канала 80/160 МГц в расчёте упрощены.'), E('div', { style: 'margin-top:8px' }, airBtn));
+			airBody.replaceChildren(...secs, E('div', { class: 'nfm-note-s' }, 'Load is estimated from the number of neighboring networks and their strength; on 2.4 GHz overlapping adjacent channels are taken into account, so only 1, 6 and 11 are recommended. On 5 GHz only channels without radar mode (DFS) are recommended. Measured at ' + new Date(S.airT).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) + '. ' + 'Channels above 6 GHz and 80/160 MHz channel widths are simplified in the calculation.'), E('div', { style: 'margin-top:8px' }, airBtn));
 		}
 		const heatBody = E('div', { class: 'nfm-heat' });
 		const heatTabs = E('div', { class: 'nfm-tabs' }, Object.keys(HEAT).map(k =>
 			E('button', { class: 'nfm-tab' + (k === 'cpu' ? ' on' : ''), type: 'button', 'data-k': k, click: ev => { S.heat = k; for (const b of heatTabs.children) b.classList.toggle('on', b === ev.currentTarget); renderHeat(); } }, HEAT[k][0])));
 		function renderHeat() {
 			const D = S.day, key = S.heat || 'cpu', H = HEAT[key];
-			if (!D || !D.h || !D.h.info || !D.h.info.started) { heatBody.replaceChildren(E('div', { class: 'nfm-empty' }, D ? 'Нет данных' : 'Загружаю…')); return; }
+			if (!D || !D.h || !D.h.info || !D.h.info.started) { heatBody.replaceChildren(E('div', { class: 'nfm-empty' }, D ? 'No data' : 'Loading…')); return; }
 			const sum = [], cnt = [];
 			for (let i = 0; i < 168; i++) { sum[i] = 0; cnt[i] = 0; }
 			const now = new Date();
-			/* подробные данные хранятся 7 суток; всё, что старше, берём из длинной истории (шаг 30 минут), если она уже накопилась */
+			/* detailed data is kept for 7 days; anything older comes from the long history (30-minute step) if it has accumulated */
 			const fine = D.h.rows || [], t0 = fine.length ? fine[0][0] : Infinity;
 			const old = ((S.lg && S.lg.rows) || []).filter(r => r[0] < t0);
 			const all = old.concat(fine), span = all.length ? Math.max(1, Math.round((D.h.now - all[0][0]) / 86400)) : 0;
@@ -1772,7 +1781,7 @@ return view.extend({
 			}
 			const avg = sum.map((x, i) => cnt[i] ? x / cnt[i] : null);
 			const mx = Math.max(0, ...avg.filter(v => v != null)) || 1;
-			const days = [ 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс' ];
+			const days = [ 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun' ];
 			const grid = E('div', { class: 'nfm-heat-grid' });
 			grid.appendChild(E('span'));
 			for (let h = 0; h < 24; h++) grid.appendChild(E('span', { class: 'nfm-heat-h' }, h % 3 === 0 ? String(h) : ''));
@@ -1780,16 +1789,16 @@ return view.extend({
 				grid.appendChild(E('span', { class: 'nfm-heat-d' + (d === (now.getDay() + 6) % 7 ? ' today' : '') }, days[d]));
 				for (let h = 0; h < 24; h++) {
 					const v = avg[d * 24 + h];
-					grid.appendChild(E('span', { class: 'nfm-heat-c', style: v == null ? '' : `--hv:${Math.round(100 * v / mx)}%`, title: days[d] + ', ' + h + ':00 — ' + (v == null ? 'нет данных' : H[2](v)) }));
+					grid.appendChild(E('span', { class: 'nfm-heat-c', style: v == null ? '' : `--hv:${Math.round(100 * v / mx)}%`, title: days[d] + ', ' + h + ':00 — ' + (v == null ? 'no data' : H[2](v)) }));
 				}
 			}
-			heatBody.replaceChildren(grid, E('div', { class: 'nfm-note-s', style: 'margin-top:8px' }, 'Среднее по часам за ' + (span > 7 ? 'последние ' + span + ' дн.' : 'последние 7 дней') + '. Тёмнее — меньше, ярче — больше (максимум ' + H[2](mx) + ').' + (avg.some(v => v == null) ? ' Пустые клетки — время, за которое истории ещё нет: подробные данные хранятся 7 суток, а длинная история (до ' + ((D.h.info && D.h.info.hist_days) || 30) + ' суток) копится с момента обновления до v1.14.0 и со временем заполнит карту.' : '')));
+			heatBody.replaceChildren(grid, E('div', { class: 'nfm-note-s', style: 'margin-top:8px' }, 'Hourly average over ' + (span > 7 ? 'the last ' + span + ' days' : 'the last 7 days') + '. Darker means less, brighter means more (maximum ' + H[2](mx) + ').' + (avg.some(v => v == null) ? ' Empty cells are times with no history yet: detailed data is kept for 7 days, and the long history (up to ' + ((D.h.info && D.h.info.hist_days) || 30) + ' days) accumulates since the update to v1.14.0 and will fill the map over time.' : '')));
 		}
-		/* ---- Сводка недели: пиковые часы, самое «тяжёлое» устройство, средний пинг ---- */
+		/* ---- Weekly summary: peak hours, the "heaviest" device, average ping ---- */
 		const wkBody = E('div', { class: 'nfm-wk' });
 		function renderWeek() {
 			const D = S.day;
-			if (!D || !D.h || !D.h.info || !D.h.info.started) { wkBody.replaceChildren(E('div', { class: 'nfm-empty' }, D ? 'Нет данных' : 'Загружаю…')); return; }
+			if (!D || !D.h || !D.h.info || !D.h.info.started) { wkBody.replaceChildren(E('div', { class: 'nfm-empty' }, D ? 'No data' : 'Loading…')); return; }
 			const hs = new Array(24).fill(0), hc = new Array(24).fill(0), byDay = {};
 			let ps = 0, pc = 0;
 			for (const r of D.h.rows || []) {
@@ -1801,9 +1810,9 @@ return view.extend({
 			let bi = -1, bv = 0;
 			for (let i = 0; i < 24; i++) { const v = av[i] + av[(i + 1) % 24] + av[(i + 2) % 24]; if (v > bv) { bv = v; bi = i; } }
 			const hh = h => String(h % 24).padStart(2, '0') + ':00';
-			const peak = bi < 0 ? [ '—', 'нет данных о трафике' ] : [ hh(bi) + '–' + hh(bi + 3), 'в среднем ' + (bv / 3 * 8 / 1e6).toFixed(1) + ' Мбит/с' ];
-			/* тяжёлое устройство */
-			let heavy = [ '—', 'учёт по приложениям не включён или данных ещё нет' ];
+			const peak = bi < 0 ? [ '—', 'no traffic data' ] : [ hh(bi) + '–' + hh(bi + 3), 'average ' + (bv / 3 * 8 / 1e6).toFixed(1) + ' Mbit/s' ];
+			/* heaviest device */
+			let heavy = [ '—', 'per-app accounting is off or there is no data yet' ];
 			const A = S.wkA;
 			if (A && ((A.hist || []).length || (A.day || []).length)) {
 				const t = String(A.today || ''), base = /^\d{8}$/.test(t) ? new Date(+t.slice(0, 4), +t.slice(4, 6) - 1, +t.slice(6, 8)) : new Date();
@@ -1812,23 +1821,23 @@ return view.extend({
 				const top = sumMonitorAppDeviceTraffic(A, from, hints, S.devs && S.devs.neigh, S.wifi, routerIps, S.devs && S.devs.leases).filter(row => row.key !== 'router');
 				if (top.length) {
 					const name = row => row.mac ? ((hints[row.mac] || hints[row.mac.toLowerCase()] || {}).name || row.ip) : names[row.ip] || row.ip;
-					heavy = [ name(top[0]), fmtBytes(top[0].total) + ' за неделю' + (top[1] ? ' · дальше ' + fmtBytes(top[1].total) : '') ];
+					heavy = [ name(top[0]), fmtBytes(top[0].total) + ' this week' + (top[1] ? ' · next ' + fmtBytes(top[1].total) : '') ];
 				}
 			}
-			/* пинг */
-			let ping = [ '—', 'нет данных о задержке' ];
+			/* ping */
+			let ping = [ '—', 'no latency data' ];
 			if (pc) {
 				const dk = Object.keys(byDay).sort(), worst = dk.reduce((w, k) => (!w || byDay[k][0] / byDay[k][1] > byDay[w][0] / byDay[w][1]) ? k : w, null);
-				ping = [ Math.round(ps / pc) + ' мс', worst && dk.length > 1 ? 'хуже всего ' + worst.slice(6, 8) + '.' + worst.slice(4, 6) + ' · ' + Math.round(byDay[worst][0] / byDay[worst][1]) + ' мс' : 'до интернета' ];
+				ping = [ Math.round(ps / pc) + ' ms', worst && dk.length > 1 ? 'worst on ' + worst.slice(4, 6) + '/' + worst.slice(6, 8) + ' · ' + Math.round(byDay[worst][0] / byDay[worst][1]) + ' ms' : 'to the internet' ];
 			}
 			const tile = (ic, t, v, sub) => E('div', { class: 'nfm-wk-t' }, [ E('span', { class: 'nfm-wk-l' }, t), E('b', {}, v), E('span', { class: 'nfm-note-s' }, sub) ]);
-			wkBody.replaceChildren(tile('', 'Пик трафика', peak[0], peak[1]), tile('', 'Самое «тяжёлое» устройство', heavy[0], heavy[1]), tile('', 'Средний пинг', ping[0], ping[1]));
+			wkBody.replaceChildren(tile('', 'Traffic peak', peak[0], peak[1]), tile('', 'The "heaviest" device', heavy[0], heavy[1]), tile('', 'Average ping', ping[0], ping[1]));
 		}
-		/* ---- Трафик по месяцам: календарь суточных итогов (счётчики WAN, а если они занижены, то сумма по устройствам) ---- */
+		/* ---- Traffic by month: calendar of daily totals (WAN counters, or the sum over devices if they are understated) ---- */
 		const monBody = E('div', { class: 'nfm-mon' });
 		const lim = () => { try { return Math.max(0, parseFloat(localStorage.getItem('nfm-limit-gb')) || 0); } catch (e) { return 0; } };
 		function renderMon() {
-			const T = S.tr; if (!T) { monBody.replaceChildren(E('div', { class: 'nfm-empty' }, 'Загружаю…')); return; }
+			const T = S.tr; if (!T) { monBody.replaceChildren(E('div', { class: 'nfm-empty' }, 'Loading…')); return; }
 			const now = new Date(); if (!S.mon) S.mon = { y: now.getFullYear(), m: now.getMonth() };
 			const { y, m } = S.mon, dim = new Date(y, m + 1, 0).getDate(), first = (new Date(y, m, 1).getDay() + 6) % 7;
 			const pre = String(y) + String(m + 1).padStart(2, '0'), by = {};
@@ -1837,47 +1846,47 @@ return view.extend({
 			const cur = y === now.getFullYear() && m === now.getMonth(), elapsed = cur ? now.getDate() : dim, total = rx + tx;
 			const avg = days ? total / Math.max(1, Math.min(days, elapsed)) : 0, fc = cur ? total + avg * (dim - elapsed) : total;
 			const step = k => { const d = new Date(y, m + k, 1); S.mon = { y: d.getFullYear(), m: d.getMonth() }; renderMon(); };
-			const title = new Date(y, m, 1).toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' }).replace(/\s*г\.?$/, '');
+			const title = new Date(y, m, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 			const L = lim() * 1073741824;
-			const limIn = E('input', { type: 'number', min: '0', step: '10', value: lim() || '', placeholder: 'ГБ', class: 'nfm-mon-lim', 'aria-label': 'Лимит в месяц, ГБ',
+			const limIn = E('input', { type: 'number', min: '0', step: '10', value: lim() || '', placeholder: 'GB', class: 'nfm-mon-lim', 'aria-label': 'Monthly limit, GB',
 				change: ev => { try { localStorage.setItem('nfm-limit-gb', String(Math.max(0, +ev.target.value || 0))); } catch (e) {} renderMon(); } });
 			const grid = E('div', { class: 'nfm-mon-grid' });
-			[ 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс' ].forEach(d => grid.appendChild(E('span', { class: 'nfm-mon-w' }, d)));
+			[ 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun' ].forEach(d => grid.appendChild(E('span', { class: 'nfm-mon-w' }, d)));
 			for (let i = 0; i < first; i++) grid.appendChild(E('span'));
 			for (let d = 1; d <= dim; d++) {
 				const r = by[d], v = r ? trafficBytes(r[1]) + trafficBytes(r[2]) : 0;
 				grid.appendChild(E('span', Object.assign({ class: 'nfm-mon-d' + (cur && d === now.getDate() ? ' today' : '') + (r ? ' has' : ''), style: r ? `--hv:${Math.max(8, Math.round(100 * v / mx))}%` : '',
-					title: r ? `${d}: ↓ ${fmtBytes(r[1])}, ↑ ${fmtBytes(r[2])}${r[3] === 1 ? ' (по данным устройств)' : ''}. Нажмите, чтобы увидеть, кто сколько скачал` : `${d}: нет данных` },
+					title: r ? `${d}: ↓ ${fmtBytes(r[1])}, ↑ ${fmtBytes(r[2])}${r[3] === 1 ? ' (from device data)' : ''}. Click to see who downloaded how much` : `${d}: no data` },
 					r ? { role: 'button', tabindex: '0', click: () => dayReport(r[0]), keydown: ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); dayReport(r[0]); } } } : {}), [ E('b', {}, String(d)), E('i', {}, r ? fmtBytes(v) : '') ]));
 			}
 			const kids = [
 				E('div', { class: 'nfm-mon-h' }, [
-					E('button', { type: 'button', class: 'nfm-tab', 'aria-label': 'Предыдущий месяц', click: () => step(-1) }, '‹'),
+					E('button', { type: 'button', class: 'nfm-tab', 'aria-label': 'Previous month', click: () => step(-1) }, '‹'),
 					E('b', { class: 'nfm-mon-t' }, title),
-					E('button', { type: 'button', class: 'nfm-tab', 'aria-label': 'Следующий месяц', click: () => step(1) }, '›'),
-					E('span', { class: 'nfm-spacer' }), E('label', { class: 'nfm-note-s' }, [ 'Лимит, ГБ ', limIn ]) ]),
+					E('button', { type: 'button', class: 'nfm-tab', 'aria-label': 'Next month', click: () => step(1) }, '›'),
+					E('span', { class: 'nfm-spacer' }), E('label', { class: 'nfm-note-s' }, [ 'Limit, GB ', limIn ]) ]),
 				E('div', { class: 'nfm-mon-sum' }, [
-					E('div', {}, [ E('span', {}, 'Всего'), E('b', {}, fmtBytes(total)) ]),
-					E('div', {}, [ E('span', {}, '↓ принято'), E('b', {}, fmtBytes(rx)) ]),
-					E('div', {}, [ E('span', {}, '↑ отправлено'), E('b', {}, fmtBytes(tx)) ]),
-					E('div', {}, [ E('span', {}, 'В день'), E('b', {}, days ? fmtBytes(avg) : '—') ]),
-					cur ? E('div', {}, [ E('span', {}, 'Прогноз на месяц'), E('b', {}, days ? '≈ ' + fmtBytes(fc) : '—') ]) : '' ]) ];
+					E('div', {}, [ E('span', {}, 'Total'), E('b', {}, fmtBytes(total)) ]),
+					E('div', {}, [ E('span', {}, '↓ received'), E('b', {}, fmtBytes(rx)) ]),
+					E('div', {}, [ E('span', {}, '↑ sent'), E('b', {}, fmtBytes(tx)) ]),
+					E('div', {}, [ E('span', {}, 'Per day'), E('b', {}, days ? fmtBytes(avg) : '—') ]),
+					cur ? E('div', {}, [ E('span', {}, 'Month forecast'), E('b', {}, days ? '≈ ' + fmtBytes(fc) : '—') ]) : '' ]) ];
 			if (L > 0) {
 				const pc = Math.min(100, 100 * total / L), pf = 100 * fc / L;
 				kids.push(E('div', { class: 'nfm-mon-bar', 'data-lvl': pc >= 100 ? 'bad' : pc >= 80 ? 'mid' : 'ok' }, [ E('i', { style: `width:${pc}%` }) ]),
-					E('div', { class: 'nfm-note-s' }, `Использовано ${Math.round(pc)}% лимита` + (cur && days ? `; по прогнозу к концу месяца ≈ ${Math.round(pf)}%` + (pf > 100 ? ' — лимит будет превышен' : '') : '')));
+					E('div', { class: 'nfm-note-s' }, `${Math.round(pc)}% of the limit used` + (cur && days ? `; forecast for the end of the month ≈ ${Math.round(pf)}%` + (pf > 100 ? ': the limit will be exceeded' : '') : '')));
 			}
 			kids.push(grid);
-			if (viaDev) kids.push(E('div', { class: 'nfm-note-s', style: 'margin-top:8px' }, 'За ' + viaDev + ' ' + (viaDev === 1 ? 'день' : viaDev < 5 ? 'дня' : 'дней') + ' счётчики порта WAN показывали заметно меньше, чем прошло через устройства (аппаратное ускорение пакетов скрывает трафик от порта), поэтому итог взят по данным устройств, без трафика самого роутера. Они совпадают с отчётом по дню (нажмите на день).'));
-			if (!T.persist) kids.push(E('div', { class: 'nfm-note-s', style: 'margin-top:8px' }, 'Итоги хранятся в памяти и обнулятся при перезагрузке роутера. Чтобы копить месяцы, укажите папку на флешке в настройках сборщика (PERSIST_DIR).'));
+			if (viaDev) kids.push(E('div', { class: 'nfm-note-s', style: 'margin-top:8px' }, 'On ' + viaDev + ' ' + (viaDev === 1 ? 'day' : 'days') + ' the WAN port counters showed noticeably less than passed through devices (hardware packet offloading hides traffic from the port), so the total is taken from device data, without the router\'s own traffic. It matches the daily report (click a day).'));
+			if (!T.persist) kids.push(E('div', { class: 'nfm-note-s', style: 'margin-top:8px' }, 'Totals are kept in memory and will be reset when the router reboots. To accumulate months, set a folder on a USB stick in the collector settings (PERSIST_DIR).'));
 			monBody.replaceChildren(...kids);
 		}
-		/* ---- отчёт за день: кто сколько скачал и отдал (по нажатию на день в календаре) ---- */
+		/* ---- daily report: who downloaded and uploaded how much (on clicking a day in the calendar) ---- */
 		function dayReport(ymd) {
 			const dt = new Date(+ymd.slice(0, 4), +ymd.slice(4, 6) - 1, +ymd.slice(6, 8));
-			const title = 'Трафик за ' + dt.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
-			const body = E('div', { class: 'nfm nfm-dr' }, E('div', { class: 'nfm-empty' }, 'Собираю отчёт…'));
-			ui.showModal(title, [ body, E('div', { class: 'button-row' }, [ E('button', { class: 'btn', click: ui.hideModal }, 'Закрыть') ]) ]);
+			const title = 'Traffic for ' + dt.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+			const body = E('div', { class: 'nfm nfm-dr' }, E('div', { class: 'nfm-empty' }, 'Building the report…'));
+			ui.showModal(title, [ body, E('div', { class: 'button-row' }, [ E('button', { class: 'btn', click: ui.hideModal }, 'Close') ]) ]);
 			const J = a => callHistory(a).catch(() => null);
 			Promise.all([ J([ 'devdaily' ]), J([ 'devices' ]), J([ 'devhr' ]) ]).then(([ dd, dv, hr ]) => {
 				const norm = normalizeMonitorIp, ipMac = monitorBuildIpMacMap(hints, dv && dv.neigh, S.wifi, dv && dv.leases);
@@ -1886,14 +1895,14 @@ return view.extend({
 				const nowD = new Date(), today = ymdOf(nowD), yest = ymdOf(new Date(nowD.getTime() - 86400000));
 				let src = [], how = '';
 				const arch = ((dd && dd.rows) || []).filter(r => r[0] === ymd);
-				if (arch.length) { src = arch.map(r => [ r[1], r[2], r[3], r[4] !== '-' ? r[4].toUpperCase() : '' ]); how = 'Итоги за сутки, сохранённые сборщиком.'; }
-				else if (ymd === today && dv && dv.day && dv.day.length) { src = dv.day.map(r => [ r[0], r[1], r[2], '' ]); how = 'Сегодняшний день ещё не закончен: цифры растут.'; }
-				else if (ymd === yest && dv && dv.yday && dv.yday.length) { src = dv.yday.map(r => [ r[0], r[1], r[2], '' ]); how = 'Итоги за сутки по данным сборщика.'; }
+				if (arch.length) { src = arch.map(r => [ r[1], r[2], r[3], r[4] !== '-' ? r[4].toUpperCase() : '' ]); how = 'Daily totals saved by the collector.'; }
+				else if (ymd === today && dv && dv.day && dv.day.length) { src = dv.day.map(r => [ r[0], r[1], r[2], '' ]); how = 'Today is not over yet: the numbers are still growing.'; }
+				else if (ymd === yest && dv && dv.yday && dv.yday.length) { src = dv.yday.map(r => [ r[0], r[1], r[2], '' ]); how = 'Daily totals from collector data.'; }
 				else {
 					const by = {};
 					for (const r of (hr && hr.rows) || []) if (ymdOf(new Date(r[0] * 1000)) === ymd) { const e = by[r[1]] || (by[r[1]] = [ r[1], 0, 0, '' ]); e[1] += trafficBytes(r[2]); e[2] += trafficBytes(r[3]); }
 					src = Object.values(by);
-					if (src.length) how = 'Собрано из почасовых итогов: точность до часа.';
+					if (src.length) how = 'Built from hourly totals: accurate to the hour.';
 				}
 				const acc = {};
 				for (const [ ip, rx, tx, mac0 ] of src) {
@@ -1906,36 +1915,36 @@ return view.extend({
 				const sumRx = list.reduce((a, e) => a + e.rx, 0), sumTx = list.reduce((a, e) => a + e.tx, 0), mx = Math.max(1, ...list.map(e => e.rx + e.tx));
 				const kids = [];
 				if (wan) kids.push(E('div', { class: 'nfm-mon-sum' }, [
-					E('div', {}, [ E('span', {}, wan[3] === 1 ? 'Всего (по устройствам)' : 'Всего через WAN'), E('b', {}, fmtBytes(trafficBytes(wan[1]) + trafficBytes(wan[2]))) ]),
-					E('div', {}, [ E('span', {}, '↓ принято'), E('b', {}, fmtBytes(trafficBytes(wan[1]))) ]),
-					E('div', {}, [ E('span', {}, '↑ отправлено'), E('b', {}, fmtBytes(trafficBytes(wan[2]))) ]) ]));
-				if (!list.length) kids.push(E('div', { class: 'nfm-hint' }, 'По устройствам за этот день данных нет. Подробные итоги по устройствам копятся с версии 1.15 (в архив уходят сутки, закончившиеся после обновления), а почасовых данных хватает примерно на две недели. Чтобы они переживали перезагрузку, подключите накопитель (История → «Накопители»).'));
+					E('div', {}, [ E('span', {}, wan[3] === 1 ? 'Total (by devices)' : 'Total via WAN'), E('b', {}, fmtBytes(trafficBytes(wan[1]) + trafficBytes(wan[2]))) ]),
+					E('div', {}, [ E('span', {}, '↓ received'), E('b', {}, fmtBytes(trafficBytes(wan[1]))) ]),
+					E('div', {}, [ E('span', {}, '↑ sent'), E('b', {}, fmtBytes(trafficBytes(wan[2]))) ]) ]));
+				if (!list.length) kids.push(E('div', { class: 'nfm-hint' }, 'No per-device data for this day. Detailed per-device totals are kept since version 1.15 (days that ended after the update go to the archive), and hourly data covers about two weeks. To keep them across reboots, connect storage (History → "Storage").'));
 				else {
 					kids.push(E('table', { class: 'nfm-table' }, [
-						E('thead', {}, E('tr', {}, [ E('th', {}, 'Устройство'), E('th', { class: 'r' }, '↓ скачано'), E('th', { class: 'r' }, '↑ отдано'), E('th', { class: 'r' }, 'Всего') ])),
+						E('thead', {}, E('tr', {}, [ E('th', {}, 'Device'), E('th', { class: 'r' }, '↓ downloaded'), E('th', { class: 'r' }, '↑ uploaded'), E('th', { class: 'r' }, 'Total') ])),
 						E('tbody', {}, list.slice(0, 40).map(e => {
 							const h = e.mac ? (hints[e.mac] || {}) : {}, id = e.mac ? devId(e.mac, h.name) : null;
-							const label = e.k === 'router' ? 'Сам роутер (VPN, DNS, обновления)' : e.k === 'v6' ? 'Другие адреса IPv6' : (h.name || (id && id.known ? [ id.label || 'Устройство', id.vendor && id.vendor !== id.label ? id.vendor : '' ].filter(Boolean).join(' ') : '') || e.ip);
+							const label = e.k === 'router' ? 'The router itself (VPN, DNS, updates)' : e.k === 'v6' ? 'Other IPv6 addresses' : (h.name || (id && id.known ? [ id.label || 'Device', id.vendor && id.vendor !== id.label ? id.vendor : '' ].filter(Boolean).join(' ') : '') || e.ip);
 							return E('tr', {}, [
 								E('td', {}, [ id ? devIcon(id) : '', label, e.k !== 'router' && e.k !== 'v6' && label !== e.ip ? E('span', { class: 'nfm-chip' }, e.ip) : '',
 									E('div', { class: 'nfm-mon-bar', 'data-lvl': 'ok', style: 'margin-top:4px;height:4px' }, E('i', { style: 'width:' + Math.max(2, Math.round(100 * (e.rx + e.tx) / mx)) + '%' })) ]),
 								E('td', { class: 'r' }, fmtBytes(e.rx)), E('td', { class: 'r' }, fmtBytes(e.tx)), E('td', { class: 'r' }, E('b', {}, fmtBytes(e.rx + e.tx))) ]);
 						})) ]));
-					if (list.length > 40) kids.push(E('div', { class: 'nfm-note-s' }, 'Показаны 40 самых активных из ' + list.length + '.'));
-					if (list.some(e => e.k === 'router')) kids.push(E('div', { class: 'nfm-note-s', style: 'margin-top:8px' }, 'Строка «Сам роутер» (адрес вашего роутера у провайдера) — это трафик самого роутера: прокси или VPN на нём, обновления, DNS. Трафик устройств через такой прокси считается дважды: у устройства и у роутера. Поэтому в «Всего» и в календаре строка не входит.'));
-					if (wan && (trafficBytes(wan[1]) + trafficBytes(wan[2])) > (sumRx + sumTx) * 1.15) kids.push(E('div', { class: 'nfm-note-s', style: 'margin-top:8px' }, 'Сумма по устройствам (' + fmtBytes(sumRx + sumTx) + ') меньше счётчика WAN: часть трафика не приписывается устройствам (аппаратное ускорение пакетов, служебный трафик, устройства вне первой сотни записей).'));
+					if (list.length > 40) kids.push(E('div', { class: 'nfm-note-s' }, 'Showing the 40 most active of ' + list.length + '.'));
+					if (list.some(e => e.k === 'router')) kids.push(E('div', { class: 'nfm-note-s', style: 'margin-top:8px' }, 'The "The router itself" row (your router address at the ISP) is the router\'s own traffic: a proxy or VPN on it, updates, DNS. Device traffic through such a proxy is counted twice: for the device and for the router. That is why this row is not included in "Total" or in the calendar.'));
+					if (wan && (trafficBytes(wan[1]) + trafficBytes(wan[2])) > (sumRx + sumTx) * 1.15) kids.push(E('div', { class: 'nfm-note-s', style: 'margin-top:8px' }, 'The device sum (' + fmtBytes(sumRx + sumTx) + ') is less than the WAN counter: part of the traffic is not attributed to devices (hardware packet offloading, service traffic, devices outside the first hundred records).'));
 				}
 				if (how) kids.push(E('div', { class: 'nfm-note-s', style: 'margin-top:8px' }, how));
 				body.replaceChildren(...kids);
 			});
 		}
-		/* ---- Сравнение периодов: недели и месяцы по суточным итогам WAN ---- */
+		/* ---- Period comparison: weeks and months by daily WAN totals ---- */
 		const cmpBody = E('div', { class: 'nfm-cmp' });
-		const CMP = { w: 'Неделя к прошлой', m: 'Месяц к прошлому' };
+		const CMP = { w: 'Week vs previous', m: 'Month vs previous' };
 		const cmpTabs = E('div', { class: 'nfm-tabs' }, Object.keys(CMP).map(k =>
 			E('button', { class: 'nfm-tab' + (k === 'w' ? ' on' : ''), type: 'button', click: ev => { S.cmp = k; for (const b of cmpTabs.children) b.classList.toggle('on', b === ev.currentTarget); renderCmp(); } }, CMP[k])));
 		function renderCmp() {
-			const T = S.tr; if (!T) { cmpBody.replaceChildren(E('div', { class: 'nfm-empty' }, 'Загружаю…')); return; }
+			const T = S.tr; if (!T) { cmpBody.replaceChildren(E('div', { class: 'nfm-empty' }, 'Loading…')); return; }
 			const mode = S.cmp || 'w', by = {};
 			for (const r of T.rows || []) by[r[0]] = r;
 			const key = d => String(d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate());
@@ -1945,13 +1954,13 @@ return view.extend({
 			let cur = [], prev = [], hc, hp;
 			if (mode === 'w') {
 				for (let i = 6; i >= 0; i--) { cur.push(shift(now, -i)); prev.push(shift(now, -i - 7)); }
-				hc = [ 'Последние 7 дней', ddmm(cur[0]) + '–' + ddmm(cur[6]) ]; hp = [ 'Предыдущие 7 дней', ddmm(prev[0]) + '–' + ddmm(prev[6]) ];
+				hc = [ 'Last 7 days', ddmm(cur[0]) + '–' + ddmm(cur[6]) ]; hp = [ 'Previous 7 days', ddmm(prev[0]) + '–' + ddmm(prev[6]) ];
 			} else {
 				const y = now.getFullYear(), m = now.getMonth(), n = now.getDate(), pm = new Date(y, m - 1, 1, 12), pdim = new Date(y, m, 0).getDate();
 				for (let d = 1; d <= n; d++) cur.push(new Date(y, m, d, 12));
 				for (let d = 1; d <= Math.min(n, pdim); d++) prev.push(new Date(pm.getFullYear(), pm.getMonth(), d, 12));
-				const mn = d => d.toLocaleDateString('ru-RU', { month: 'long' }), cap = x => x.charAt(0).toUpperCase() + x.slice(1);
-				hc = [ cap(mn(cur[0])), '1–' + n + ' число' ]; hp = [ cap(mn(pm)), '1–' + Math.min(n, pdim) + ' число' ];
+				const mn = d => d.toLocaleDateString('en-US', { month: 'long' }), cap = x => x.charAt(0).toUpperCase() + x.slice(1);
+				hc = [ cap(mn(cur[0])), 'days 1–' + n ]; hp = [ cap(mn(pm)), 'days 1–' + Math.min(n, pdim) ];
 			}
 			const agg = list => {
 				let rx = 0, tx = 0, n = 0, mx = null;
@@ -1965,13 +1974,13 @@ return view.extend({
 				if (Math.abs(p) < 1) return [ '≈ 0%', 'eq' ];
 				return [ (p > 0 ? '↑ +' : '↓ −') + Math.round(Math.abs(p)) + '%', p > 0 ? 'up' : 'dn' ];
 			};
-			const rows = [ [ 'Всего', a.tot, b.tot ], [ 'Принято', a.rx, b.rx ], [ 'Отправлено', a.tx, b.tx ], [ 'В среднем за день', a.avg, b.avg ] ];
-			const cells = [ E('div', { class: 'h' }, ''), E('div', { class: 'h n' }, [ hc[0], E('small', {}, hc[1]) ]), E('div', { class: 'h n' }, [ hp[0], E('small', {}, hp[1]) ]), E('div', { class: 'h n' }, 'Разница') ];
+			const rows = [ [ 'Total', a.tot, b.tot ], [ 'Received', a.rx, b.rx ], [ 'Sent', a.tx, b.tx ], [ 'Daily average', a.avg, b.avg ] ];
+			const cells = [ E('div', { class: 'h' }, ''), E('div', { class: 'h n' }, [ hc[0], E('small', {}, hc[1]) ]), E('div', { class: 'h n' }, [ hp[0], E('small', {}, hp[1]) ]), E('div', { class: 'h n' }, 'Difference') ];
 			for (const [ t, x, y ] of rows) {
 				const c = chg(x, y);
 				cells.push(E('div', {}, t), E('div', { class: 'n' }, a.n ? fmtBytes(x) : '—'), E('div', { class: 'n' }, b.n ? fmtBytes(y) : '—'), E('div', { class: 'n ' + c[1] }, c[0]));
 			}
-			/* качество связи по длинной истории (шаг 30 минут): пинг, потери, пики скорости, нагрузка */
+			/* connection quality from the long history (30-minute step): ping, loss, speed peaks, load */
 			const L = S.lg && S.lg.rows || [];
 			if (L.length) {
 				const ck = new Set(cur.map(key)), pk = new Set(prev.map(key));
@@ -1991,21 +2000,21 @@ return view.extend({
 					const c = x != null && y != null && y > 0 ? chg(x, y) : [ '—', 'eq' ];
 					cells.push(E('div', {}, t), E('div', { class: 'n' }, x != null ? f(x) : '—'), E('div', { class: 'n' }, y != null ? f(y) : '—'), E('div', { class: 'n ' + c[1] }, c[0]));
 				};
-				cells.push(E('div', { class: 'sec' }, 'Качество связи'), E('div', { class: 'sec' }), E('div', { class: 'sec' }), E('div', { class: 'sec' }));
-				line('Пинг в среднем', avg(qa.ping), avg(qb.ping), v => nf0.format(v) + ' мс');
-				line('Потери пакетов', avg(qa.loss), avg(qb.loss), v => nf1.format(v) + '%');
-				line('Пик загрузки', qa.pk || null, qb.pk || null, v => rateText(v));
-				line('Процессор в среднем', avg(qa.cpu), avg(qb.cpu), v => nf0.format(v) + '%');
-				line('Температура в среднем', avg(qa.temp), avg(qb.temp), v => nf1.format(v) + ' °C');
+				cells.push(E('div', { class: 'sec' }, 'Connection quality'), E('div', { class: 'sec' }), E('div', { class: 'sec' }), E('div', { class: 'sec' }));
+				line('Average ping', avg(qa.ping), avg(qb.ping), v => nf0.format(v) + ' ms');
+				line('Packet loss', avg(qa.loss), avg(qb.loss), v => nf1.format(v) + '%');
+				line('Download peak', qa.pk || null, qb.pk || null, v => rateText(v));
+				line('Average CPU', avg(qa.cpu), avg(qb.cpu), v => nf0.format(v) + '%');
+				line('Average temperature', avg(qa.temp), avg(qb.temp), v => nf1.format(v) + ' °C');
 			}
 			const hv = o => o.mx ? ddmm(o.mx[0]) + ' · ' + fmtBytes(o.mx[1]) : '—';
-			cells.splice(cells.findIndex(c => c.classList && c.classList.contains('sec')) < 0 ? cells.length : cells.findIndex(c => c.classList && c.classList.contains('sec')), 0, E('div', {}, 'Самый тяжёлый день'), E('div', { class: 'n' }, hv(a)), E('div', { class: 'n' }, hv(b)), E('div', { class: 'n eq' }, ''));
-			const note = !a.n ? 'За этот период суточных итогов ещё нет.' : !b.n ? 'За прошлый период данных нет: сборщик ведёт суточные итоги с момента установки, сравнение появится позже.'
-				: (a.n < cur.length || b.n < prev.length) ? 'Дней с данными: ' + a.n + ' из ' + cur.length + ' и ' + b.n + ' из ' + prev.length + '. Итоги считаются только по ним.' : 'Трафик через WAN: принято и отправлено провайдеру. ↑ больше, чем раньше, ↓ меньше.';
+			cells.splice(cells.findIndex(c => c.classList && c.classList.contains('sec')) < 0 ? cells.length : cells.findIndex(c => c.classList && c.classList.contains('sec')), 0, E('div', {}, 'Heaviest day'), E('div', { class: 'n' }, hv(a)), E('div', { class: 'n' }, hv(b)), E('div', { class: 'n eq' }, ''));
+			const note = !a.n ? 'No daily totals for this period yet.' : !b.n ? 'No data for the previous period: the collector keeps daily totals since installation, the comparison will appear later.'
+				: (a.n < cur.length || b.n < prev.length) ? 'Days with data: ' + a.n + ' of ' + cur.length + ' and ' + b.n + ' of ' + prev.length + '. Totals are calculated only from them.' : 'Traffic via WAN: received from and sent to the ISP. ↑ more than before, ↓ less.';
 			cmpBody.replaceChildren(E('div', { class: 'nfm-cmp-t' }, cells), E('div', { class: 'nfm-note-s', style: 'margin-top:8px' }, note));
 		}
 
-		/* ---- Экспорт данных в CSV (разделитель «;», кодировка UTF-8 с BOM: открывается в Excel) ---- */
+		/* ---- Data export to CSV (separator ";", UTF-8 with BOM: opens in Excel) ---- */
 		const expNote = E('span', { class: 'nfm-note-s' });
 		function csvText(rows) {
 			return '﻿' + rows.map(r => r.map(v => { v = v == null ? '' : String(v); return /[;"\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(';')).join('\r\n') + '\r\n';
@@ -2021,85 +2030,85 @@ return view.extend({
 		const nonneg = v => { const n = Number(v); return Number.isFinite(n) && n >= 0 ? n : ''; };
 		const stamp = () => isoD(new Date().getFullYear() * 10000 + (new Date().getMonth() + 1) * 100 + new Date().getDate());
 		const EXPORTS = [
-			[ 'Трафик по дням', () => {
+			[ 'Traffic by day', () => {
 				const r = S.tr && S.tr.rows; if (!r || !r.length) return null;
-				return [ 'nightfall-traffic-' + stamp() + '.csv', [ [ 'Дата', 'Принято, байт', 'Отправлено, байт', 'Всего, байт' ] ].concat(r.map(x => { const d = trafficBytes(x[1]), u = trafficBytes(x[2]); return [ isoD(x[0]), d, u, d + u ]; })) ];
+				return [ 'nightfall-traffic-' + stamp() + '.csv', [ [ 'Date', 'Received, bytes', 'Sent, bytes', 'Total, bytes' ] ].concat(r.map(x => { const d = trafficBytes(x[1]), u = trafficBytes(x[2]); return [ isoD(x[0]), d, u, d + u ]; })) ];
 			} ],
-			[ 'Приложения', () => {
+			[ 'Apps', () => {
 				const A = S.wkA; if (!A || !((A.hist || []).length || (A.day || []).length)) return null;
 				const nm = {}, map = monitorBuildIpMacMap(hints, S.devs && S.devs.neigh, S.wifi, S.devs && S.devs.leases);
 				for (const ip in map) { const h = hints[map[ip]] || hints[map[ip].toLowerCase()] || {}; if (h.name) nm[ip] = h.name; }
 				const t = /^\d{8}$/.test(String(A.today || '')) ? isoD(A.today) : stamp();
-				const out = [ [ 'Дата', 'Устройство (IP)', 'Имя', 'Приложение', 'Принято, байт', 'Отправлено, байт', 'Маршрут' ] ];
+				const out = [ [ 'Date', 'Device (IP)', 'Name', 'App', 'Received, bytes', 'Sent, bytes', 'Route' ] ];
 				for (const [ dt, ip, app, route, d, u ] of A.hist || []) out.push([ isoD(dt), ip, nm[ip] || '', app, trafficBytes(d), trafficBytes(u), route ]);
 				for (const [ ip, app, route, d, u ] of A.day || []) out.push([ t, ip, nm[ip] || '', app, trafficBytes(d), trafficBytes(u), route ]);
 				return [ 'nightfall-apps-' + stamp() + '.csv', out ];
 			} ],
-			[ 'Графики (выбранный период)', () => {
+			[ 'Charts (selected period)', () => {
 				const r = S.hist && S.hist.rows; if (!r || !r.length) return null;
-				return [ 'nightfall-metrics-' + stamp() + '.csv', [ [ 'Время', 'Процессор, %', 'Память, %', 'Температура, °C', 'Загрузка, байт/с', 'Отдача, байт/с', 'Пинг до шлюза, мс', 'Пинг до интернета, мс' ] ]
+				return [ 'nightfall-metrics-' + stamp() + '.csv', [ [ 'Time', 'CPU, %', 'Memory, %', 'Temperature, °C', 'Download, bytes/s', 'Upload, bytes/s', 'Gateway ping, ms', 'Internet ping, ms' ] ]
 					.concat(r.map(x => [ isoT(x[0]), nonneg(x[1]), nonneg(x[2]), nonneg(x[3]), nonneg(x[4]), nonneg(x[5]), nonneg(x[6]), nonneg(x[7]) ])) ];
 			} ],
-			[ 'Журнал обрывов и перезагрузок', () => {
+			[ 'Outage and reboot log', () => {
 				const r = S.jrn && S.jrn.rows; if (!r || !r.length) return null;
-				return [ 'nightfall-journal-' + stamp() + '.csv', [ [ 'Время', 'Событие', 'Длительность, с' ] ].concat(r.slice().sort((a, b) => a[0] - b[0]).map(x => [ isoT(x[0]), x[1] === 'outage' ? 'обрыв интернета' : x[1] === 'boot' ? 'перезагрузка' : x[1], x[2] == null ? '' : x[2] ])) ];
+				return [ 'nightfall-journal-' + stamp() + '.csv', [ [ 'Time', 'Event', 'Duration, s' ] ].concat(r.slice().sort((a, b) => a[0] - b[0]).map(x => [ isoT(x[0]), x[1] === 'outage' ? 'internet outage' : x[1] === 'boot' ? 'reboot' : x[1], x[2] == null ? '' : x[2] ])) ];
 			} ]
 		];
 		const expBtns = EXPORTS.map(([ label, make ]) => E('button', { type: 'button', class: 'nfm-btn', click: () => {
 			let r = null; try { r = make(); } catch (e) { r = null; }
-			if (!r) { expNote.textContent = '«' + label + '»: данных пока нет.'; return; }
-			saveCsv(r[0], r[1]); expNote.textContent = 'Сохранён файл ' + r[0] + ' (записей: ' + (r[1].length - 1) + ').';
+			if (!r) { expNote.textContent = '"' + label + '": no data yet.'; return; }
+			saveCsv(r[0], r[1]); expNote.textContent = 'Saved file ' + r[0] + ' (records: ' + (r[1].length - 1) + ').';
 		} }, '⬇ ' + label));
 
 		const hist = E('div', { class: 'nfm-history', hidden: true }, [
 			histNote,
-			E('div', { class: 'nfm-grid' }, [ card([ 'Сводка за день', E('span', { class: 'nfm-spacer' }), E('span', { class: 'nfm-note-s' }, 'с 00:00 по данным сборщика') ], dayBody) ]),
-			E('div', { class: 'nfm-grid' }, [ card([ 'Сводка недели', E('span', { class: 'nfm-spacer' }), E('span', { class: 'nfm-note-s' }, 'последние 7 дней') ], wkBody) ]),
-			E('div', { class: 'nfm-grid' }, [ card('Трафик по месяцам', monBody) ]),
-			E('div', { class: 'nfm-grid' }, [ card([ 'Сравнение периодов', E('span', { class: 'nfm-spacer' }), cmpTabs ], cmpBody) ]),
-			E('div', { class: 'nfm-grid' }, [ card([ 'Тепловая карта по часам', E('span', { class: 'nfm-spacer' }), heatTabs ], heatBody) ]),
+			E('div', { class: 'nfm-grid' }, [ card([ 'Daily summary', E('span', { class: 'nfm-spacer' }), E('span', { class: 'nfm-note-s' }, 'since 00:00 from collector data') ], dayBody) ]),
+			E('div', { class: 'nfm-grid' }, [ card([ 'Weekly summary', E('span', { class: 'nfm-spacer' }), E('span', { class: 'nfm-note-s' }, 'last 7 days') ], wkBody) ]),
+			E('div', { class: 'nfm-grid' }, [ card('Traffic by month', monBody) ]),
+			E('div', { class: 'nfm-grid' }, [ card([ 'Period comparison', E('span', { class: 'nfm-spacer' }), cmpTabs ], cmpBody) ]),
+			E('div', { class: 'nfm-grid' }, [ card([ 'Hourly heat map', E('span', { class: 'nfm-spacer' }), heatTabs ], heatBody) ]),
 			E('div', { class: 'nfm-grid' }, [
-				card([ 'Процессор, память, температура', E('span', { class: 'nfm-spacer' }),
-					E('span', { class: 'nfm-legend' }, [ legendDot('c-cpu', 'Процессор'), legendDot('c-mem', 'Память'), legendDot('c-temp', 'Температура, °C'), legendDot('c-base', 'как обычно') ]), rangeTabs ], histMain.el)
+				card([ 'CPU, memory, temperature', E('span', { class: 'nfm-spacer' }),
+					E('span', { class: 'nfm-legend' }, [ legendDot('c-cpu', 'CPU'), legendDot('c-mem', 'Memory'), legendDot('c-temp', 'Temperature, °C'), legendDot('c-base', 'usual') ]), rangeTabs ], histMain.el)
 			]),
 			E('div', { class: 'nfm-grid nfm-g21' }, [
-				card([ 'Интернет: задержка', E('span', { class: 'nfm-spacer' }),
-					E('span', { class: 'nfm-legend' }, [ legendDot('c-up', 'до шлюза'), legendDot('c-down', 'до интернета') ]) ], histPing.el),
-				card('Качество связи', E('div', {}, [ pingTiles, E('div', { class: 'nfm-note-s', style: 'margin-top:10px' }, 'Пропуски на графике — моменты, когда ответа не было.') ]))
+				card([ 'Internet: latency', E('span', { class: 'nfm-spacer' }),
+					E('span', { class: 'nfm-legend' }, [ legendDot('c-up', 'to gateway'), legendDot('c-down', 'to internet') ]) ], histPing.el),
+				card('Connection quality', E('div', {}, [ pingTiles, E('div', { class: 'nfm-note-s', style: 'margin-top:10px' }, 'Gaps in the chart are moments with no reply.') ]))
 			]),
 			E('div', { class: 'nfm-grid' }, [
-				card([ 'Скорость интернета (WAN)', E('span', { class: 'nfm-spacer' }),
-					E('span', { class: 'nfm-legend' }, [ legendDot('c-down', 'Загрузка'), legendDot('c-up', 'Отдача') ]) ], histNet.el)
+				card([ 'Internet speed (WAN)', E('span', { class: 'nfm-spacer' }),
+					E('span', { class: 'nfm-legend' }, [ legendDot('c-down', 'Download'), legendDot('c-up', 'Upload') ]) ], histNet.el)
 			]),
 			E('div', { class: 'nfm-grid' }, [
-				card('Хранение истории и износ флеш-памяти', flashBox)
+				card('History storage and flash wear', flashBox)
 			]),
-			E('div', { class: 'nfm-grid' }, [ card([ 'Экспорт данных в CSV', E('span', { class: 'nfm-spacer' }), E('span', { class: 'nfm-note-s' }, 'открывается в Excel и Google Таблицах') ], E('div', {}, [ E('div', { class: 'nfm-exp' }, expBtns), E('div', { style: 'margin-top:8px' }, expNote) ])) ]),
-			E('div', { class: 'nfm-grid' }, [ card([ 'Накопители', E('span', { class: 'nfm-spacer' }), E('button', { type: 'button', class: 'nfm-btn', click: () => { dskBody.replaceChildren(E('div', { class: 'nfm-empty' }, 'Ищу накопители…')); loadDisks(); } }, 'Обновить') ], E('div', {}, [ dskBody, dskMsg, E('div', { class: 'nfm-note-s', style: 'margin-top:8px' }, 'История (графики, трафик по дням и приложениям, журнал) сохраняется на накопитель раз в час и не пропадает при перезагрузке. Флешка не изнашивает память роутера.') ])) ]),
+			E('div', { class: 'nfm-grid' }, [ card([ 'Data export to CSV', E('span', { class: 'nfm-spacer' }), E('span', { class: 'nfm-note-s' }, 'opens in Excel and Google Sheets') ], E('div', {}, [ E('div', { class: 'nfm-exp' }, expBtns), E('div', { style: 'margin-top:8px' }, expNote) ])) ]),
+			E('div', { class: 'nfm-grid' }, [ card([ 'Storage', E('span', { class: 'nfm-spacer' }), E('button', { type: 'button', class: 'nfm-btn', click: () => { dskBody.replaceChildren(E('div', { class: 'nfm-empty' }, 'Looking for storage…')); loadDisks(); } }, 'Refresh') ], E('div', {}, [ dskBody, dskMsg, E('div', { class: 'nfm-note-s', style: 'margin-top:8px' }, 'History (charts, traffic by day and by app, log) is saved to storage every hour and survives a reboot. A USB stick does not wear out the router memory.') ])) ]),
 			E('div', { class: 'nfm-grid' }, [ cfgCard ])
 		]);
 
-		/* ---- новые вкладки (v1.21.0): готовые карточки перенесены из «Сети» и «Истории», добавлено недостающее ---- */
-		/* ---- единый журнал: события, обрывы и перезагрузки, блокировки; поиск и фильтр ---- */
-		const LOGK = [ [ 'all', 'Все' ], [ 'ev', 'События' ], [ 'jr', 'Обрывы и перезагрузки' ], [ 'bl', 'Блокировки' ], [ 'pin', 'Закреплённые' ] ];
-		const logQ = E('input', { class: 'nfm-search', type: 'search', placeholder: 'Поиск по журналу…', 'aria-label': 'Поиск по журналу', input: () => renderLogTools() });
+		/* ---- new tabs (v1.21.0): ready-made cards moved from "Network" and "History", missing pieces added ---- */
+		/* ---- unified log: events, outages and reboots, blocks; search and filter ---- */
+		const LOGK = [ [ 'all', 'All' ], [ 'ev', 'Events' ], [ 'jr', 'Outages and reboots' ], [ 'bl', 'Blocks' ], [ 'pin', 'Pinned' ] ];
+		const logQ = E('input', { class: 'nfm-search', type: 'search', placeholder: 'Search the log…', 'aria-label': 'Search the log', input: () => renderLogTools() });
 		const logChips = E('div', { class: 'nfm-tabs', style: 'margin-bottom:10px' }, LOGK.map(([ k, l ]) => E('button', { type: 'button', class: 'nfm-tab' + (k === 'all' ? ' on' : ''), 'data-k': k,
 			click: () => { S.logK = k; renderLogTools(); } }, l)));
 		const logBox = E('div', { class: 'nfm-evlist' });
-		const LOGP = [ [ 0, 'За всё время' ], [ 86400, 'За 24 часа' ], [ 604800, 'За 7 дней' ], [ 2592000, 'За 30 дней' ] ];
-		const logPer = E('select', { class: 'nfm-sel', 'aria-label': 'Период', change: ev => { S.logP = +ev.target.value; renderLogTools(); } }, LOGP.map(([ v, l ]) => E('option', { value: String(v) }, l)));
+		const LOGP = [ [ 0, 'All time' ], [ 86400, 'Last 24 hours' ], [ 604800, 'Last 7 days' ], [ 2592000, 'Last 30 days' ] ];
+		const logPer = E('select', { class: 'nfm-sel', 'aria-label': 'Period', change: ev => { S.logP = +ev.target.value; renderLogTools(); } }, LOGP.map(([ v, l ]) => E('option', { value: String(v) }, l)));
 		let logShown = [];
 		const pinLoad = () => { try { return JSON.parse(window.localStorage.getItem('nfm_pins') || '[]'); } catch (e) { return []; } };
-		const pinToggle = id => { try { const l = pinLoad(), i = l.indexOf(id); if (i >= 0) l.splice(i, 1); else l.unshift(id); window.localStorage.setItem('nfm_pins', JSON.stringify(l.slice(0, 100))); } catch (e) { /* без закрепления */ } renderLogTools(); };
-		const logCsv = E('button', { type: 'button', class: 'nfm-btn', title: 'Скачать показанные записи в файл CSV', click: () => {
+		const pinToggle = id => { try { const l = pinLoad(), i = l.indexOf(id); if (i >= 0) l.splice(i, 1); else l.unshift(id); window.localStorage.setItem('nfm_pins', JSON.stringify(l.slice(0, 100))); } catch (e) { /* no pinning */ } renderLogTools(); };
+		const logCsv = E('button', { type: 'button', class: 'nfm-btn', title: 'Download the shown records as a CSV file', click: () => {
 			const q = v => '"' + String(v).replace(/"/g, '""') + '"';
-			const txt = '\ufeffвремя;тип;событие\n' + logShown.map(x => [ new Date(x.t * 1000).toLocaleString('ru-RU'), ({ ev: 'событие', jr: 'обрыв/перезагрузка', bl: 'блокировка' })[x.k] || x.k, x.txt ].map(q).join(';')).join('\n');
-			const a = E('a', { href: URL.createObjectURL(new Blob([ txt ], { type: 'text/csv;charset=utf-8' })), download: 'nightfall-журнал.csv' }); document.body.appendChild(a); a.click(); a.remove();
-		} }, 'Скачать CSV');
-		/* ---- журнал самого роутера (logread): поиск, уровень, служба ---- */
-		const rlQ = E('input', { class: 'nfm-search', type: 'search', placeholder: 'Поиск по журналу роутера…', 'aria-label': 'Поиск по журналу роутера', input: () => { S.rlLimit = 300; renderRouterLog(); } });
-		const rlSvc = E('select', { class: 'nfm-sel', 'aria-label': 'Служба', change: () => { S.rlLimit = 300; renderRouterLog(); } }, E('option', { value: '' }, 'Все службы'));
-		const RLV = [ [ 'all', 'Все' ], [ 'warn', 'Предупреждения и ошибки' ], [ 'err', 'Только ошибки' ], [ 'info', 'Информация' ], [ 'debug', 'Отладка' ] ];
+			const txt = '﻿time;type;event\n' + logShown.map(x => [ new Date(x.t * 1000).toLocaleString('en-US'), ({ ev: 'event', jr: 'outage/reboot', bl: 'block' })[x.k] || x.k, x.txt ].map(q).join(';')).join('\n');
+			const a = E('a', { href: URL.createObjectURL(new Blob([ txt ], { type: 'text/csv;charset=utf-8' })), download: 'nightfall-log.csv' }); document.body.appendChild(a); a.click(); a.remove();
+		} }, 'Download CSV');
+		/* ---- the router's own log (logread): search, level, service ---- */
+		const rlQ = E('input', { class: 'nfm-search', type: 'search', placeholder: 'Search the router log…', 'aria-label': 'Search the router log', input: () => { S.rlLimit = 300; renderRouterLog(); } });
+		const rlSvc = E('select', { class: 'nfm-sel', 'aria-label': 'Service', change: () => { S.rlLimit = 300; renderRouterLog(); } }, E('option', { value: '' }, 'All services'));
+		const RLV = [ [ 'all', 'All' ], [ 'warn', 'Warnings and errors' ], [ 'err', 'Errors only' ], [ 'info', 'Info' ], [ 'debug', 'Debug' ] ];
 		const rlChipRefs = {};
 		const rlChips = E('div', { class: 'nfm-tabs nfm-log-tabs', style: 'margin-bottom:8px' }, RLV.map(([ k, l ]) => {
 			const count = E('span', { class: 'nfm-log-tab-count' }, '0');
@@ -2110,71 +2119,71 @@ return view.extend({
 		let rlVisible = [];
 		const rlSummary = E('div', { class: 'nfm-log-summary' });
 		const rlDiag = E('div', { class: 'nfm-log-diagnostics' });
-		const rlStatus = E('span', { class: 'nfm-log-status' }, 'Загрузка журнала…');
-		const rlAutoBtn = E('button', { type: 'button', class: 'nfm-btn', title: 'Автоматически получать новые записи каждые 20 секунд', click: () => {
+		const rlStatus = E('span', { class: 'nfm-log-status' }, 'Loading log…');
+		const rlAutoBtn = E('button', { type: 'button', class: 'nfm-btn', title: 'Automatically fetch new records every 20 seconds', click: () => {
 				S.rlAuto = S.rlAuto === false;
 				setRouterLogAutoLabel();
 				if (S.rlAuto) refreshRouterLog();
-			} }, 'Автообновление: вкл');
-		const rlRefreshBtn = E('button', { type: 'button', class: 'nfm-btn', title: 'Получить журнал сейчас', click: () => refreshRouterLog() }, 'Обновить');
-		const rlCopyBtn = E('button', { type: 'button', class: 'nfm-btn', title: 'Скопировать отфильтрованные записи', click: () => copyRouterLog() }, 'Копировать');
-		const rlExportBtn = E('button', { type: 'button', class: 'nfm-btn', title: 'Скачать отфильтрованные записи в CSV', click: () => exportRouterLog() }, 'Экспорт CSV');
-		const rlGroupBtn = E('button', { type: 'button', class: 'nfm-btn', title: 'Объединять одинаковые сообщения', click: () => { S.rlGrouped = S.rlGrouped === false; renderRouterLog(); } }, 'Повторы: сгруппированы');
+			} }, 'Auto-refresh: on');
+		const rlRefreshBtn = E('button', { type: 'button', class: 'nfm-btn', title: 'Fetch the log now', click: () => refreshRouterLog() }, 'Refresh');
+		const rlCopyBtn = E('button', { type: 'button', class: 'nfm-btn', title: 'Copy the filtered records', click: () => copyRouterLog() }, 'Copy');
+		const rlExportBtn = E('button', { type: 'button', class: 'nfm-btn', title: 'Download the filtered records as CSV', click: () => exportRouterLog() }, 'Export CSV');
+		const rlGroupBtn = E('button', { type: 'button', class: 'nfm-btn', title: 'Merge identical messages', click: () => { S.rlGrouped = S.rlGrouped === false; renderRouterLog(); } }, 'Repeats: grouped');
 		const rlTools = E('div', { class: 'nfm-log-tools' }, [ rlAutoBtn, rlRefreshBtn, rlCopyBtn, rlExportBtn, rlGroupBtn, rlStatus ]);
 		const rlBox = E('div', { class: 'nfm-evlist nfm-rlog' });
-		const rlMore = E('div', { class: 'nfm-log-more', hidden: '' }, E('button', { type: 'button', class: 'nfm-btn', click: () => { S.rlLimit = (S.rlLimit || 300) + 300; renderRouterLog(); } }, 'Показать ещё'));
-		const MONRU = { Jan: 'янв.', Feb: 'февр.', Mar: 'мар.', Apr: 'апр.', May: 'мая', Jun: 'июн.', Jul: 'июл.', Aug: 'авг.', Sep: 'сент.', Oct: 'окт.', Nov: 'нояб.', Dec: 'дек.' };
+		const rlMore = E('div', { class: 'nfm-log-more', hidden: '' }, E('button', { type: 'button', class: 'nfm-btn', click: () => { S.rlLimit = (S.rlLimit || 300) + 300; renderRouterLog(); } }, 'Show more'));
+		const MONRU = { Jan: 'Jan', Feb: 'Feb', Mar: 'Mar', Apr: 'Apr', May: 'May', Jun: 'Jun', Jul: 'Jul', Aug: 'Aug', Sep: 'Sep', Oct: 'Oct', Nov: 'Nov', Dec: 'Dec' };
 		const wifiTab = E('div', { hidden: true }, [
 			E('div', { class: 'nfm-grid' }, [
-				card([ 'Wi-Fi клиенты', E('span', { class: 'nfm-spacer' }), E('span', { class: 'nfm-note-s' }, 'нажмите на строку — график сигнала · скорость — согласованная, не текущий трафик') ],
+				card([ 'Wi-Fi clients', E('span', { class: 'nfm-spacer' }), E('span', { class: 'nfm-note-s' }, 'click a row for the signal chart · speed is the negotiated rate, not current traffic') ],
 					E('table', { class: 'nfm-table' }, [
-						E('thead', {}, E('tr', {}, [ E('th', {}, 'Устройство'), E('th', {}, 'Сеть'), E('th', {}, 'Сигнал'),
-							E('th', { class: 'r' }, '↓ линк'), E('th', { class: 'r' }, '↑ линк'), E('th', { class: 'r' }, 'В сети') ])), wifiBody ]))
+						E('thead', {}, E('tr', {}, [ E('th', {}, 'Device'), E('th', {}, 'Network'), E('th', {}, 'Signal'),
+							E('th', { class: 'r' }, '↓ link'), E('th', { class: 'r' }, '↑ link'), E('th', { class: 'r' }, 'Online') ])), wifiBody ]))
 			]),
-			E('div', { class: 'nfm-grid' }, [ card('Диапазоны: 2,4 и 5 ГГц', wbBox) ]),
-			E('div', { class: 'nfm-grid' }, [ card('Рекомендации', wrBox) ]),
-			E('div', { class: 'nfm-grid' }, [ card('Качество Wi‑Fi по клиентам', wqBody) ]),
-			E('div', { class: 'nfm-grid' }, [ card('Подключения и отключения', wjBox) ]),
-			E('div', { class: 'nfm-grid' }, [ card([ 'Сигнал Wi‑Fi по часам', E('span', { class: 'nfm-spacer' }), whTabs ], whBody) ]),
-			E('div', { class: 'nfm-grid' }, [ card([ 'Wi‑Fi: загруженность каналов', E('span', { class: 'nfm-spacer' }) ], airBody) ]),
+			E('div', { class: 'nfm-grid' }, [ card('Bands: 2.4 and 5 GHz', wbBox) ]),
+			E('div', { class: 'nfm-grid' }, [ card('Recommendations', wrBox) ]),
+			E('div', { class: 'nfm-grid' }, [ card('Wi‑Fi quality by client', wqBody) ]),
+			E('div', { class: 'nfm-grid' }, [ card('Connects and disconnects', wjBox) ]),
+			E('div', { class: 'nfm-grid' }, [ card([ 'Wi‑Fi signal by hour', E('span', { class: 'nfm-spacer' }), whTabs ], whBody) ]),
+			E('div', { class: 'nfm-grid' }, [ card([ 'Wi‑Fi: channel congestion', E('span', { class: 'nfm-spacer' }) ], airBody) ]),
 		]);
-		const appTrafficBody = E('div', { class: 'nfm-app-traffic' }, E('div', { class: 'nfm-empty' }, 'Собираю статистику приложений…'));
-		const appPeriod = E('select', { class: 'nfm-sel', 'aria-label': 'Период статистики приложений', change: ev => { S.appPeriod = ev.target.value; renderAppTraffic(); } }, [
-			E('option', { value: 'day' }, 'Сегодня'), E('option', { value: '7' }, '7 дней'), E('option', { value: '30' }, '30 дней')
+		const appTrafficBody = E('div', { class: 'nfm-app-traffic' }, E('div', { class: 'nfm-empty' }, 'Collecting app statistics…'));
+		const appPeriod = E('select', { class: 'nfm-sel', 'aria-label': 'App statistics period', change: ev => { S.appPeriod = ev.target.value; renderAppTraffic(); } }, [
+			E('option', { value: 'day' }, 'Today'), E('option', { value: '7' }, '7 days'), E('option', { value: '30' }, '30 days')
 		]);
-		const appDevice = E('select', { class: 'nfm-sel', 'aria-label': 'Устройство для статистики приложений', change: ev => { S.appDevice = ev.target.value; renderAppTraffic(); } }, E('option', { value: '' }, 'Все устройства'));
+		const appDevice = E('select', { class: 'nfm-sel', 'aria-label': 'Device for app statistics', change: ev => { S.appDevice = ev.target.value; renderAppTraffic(); } }, E('option', { value: '' }, 'All devices'));
 		let appRenderedData = null, appRenderedPeriod = null, appRenderedDevice = null;
 		function renderAppTraffic() {
 			const d = S.appTraffic;
-			if (d === undefined) { appTrafficBody.replaceChildren(E('div', { class: 'nfm-empty' }, 'Загружаю статистику приложений…')); return; }
-			if (!d || typeof d.enabled === 'undefined') { appTrafficBody.replaceChildren(E('div', { class: 'nfm-empty' }, 'Не удалось получить статистику. Проверьте, что сборщик Nightfall запущен.')); return; }
-			if (d.lite) { appTrafficBody.replaceChildren(E('div', { class: 'nfm-empty' }, [ E('b', {}, 'Учёт приложений недоступен в режиме Lite'), E('span', {}, 'Для экономии ресурсов режим Lite отключает DNS-журнал и разбор трафика по приложениям. Переключите монитор в режим «Мощный», если роутер справляется с нагрузкой.') ])); return; }
-			if (!d.enabled) { appTrafficBody.replaceChildren(E('div', { class: 'nfm-empty' }, [ E('b', {}, 'Учёт трафика по приложениям выключен'), E('span', {}, 'Включите его в настройках монитора: История → Настройки → «Учёт трафика по приложениям». После включения потребуется время, чтобы накопить DNS-сопоставления.') ])); return; }
+			if (d === undefined) { appTrafficBody.replaceChildren(E('div', { class: 'nfm-empty' }, 'Loading app statistics…')); return; }
+			if (!d || typeof d.enabled === 'undefined') { appTrafficBody.replaceChildren(E('div', { class: 'nfm-empty' }, 'Could not get statistics. Make sure the Nightfall collector is running.')); return; }
+			if (d.lite) { appTrafficBody.replaceChildren(E('div', { class: 'nfm-empty' }, [ E('b', {}, 'App accounting is unavailable in Lite mode'), E('span', {}, 'To save resources, Lite mode turns off the DNS log and per-app traffic analysis. Switch the monitor to "Full" mode if the router can handle the load.') ])); return; }
+			if (!d.enabled) { appTrafficBody.replaceChildren(E('div', { class: 'nfm-empty' }, [ E('b', {}, 'Per-app traffic accounting is off'), E('span', {}, 'Turn it on in the monitor settings: History → Settings → "Per-app traffic accounting". After turning it on, it takes time to accumulate DNS mappings.') ])); return; }
 			if (d === appRenderedData && S.appPeriod === appRenderedPeriod && S.appDevice === appRenderedDevice) return;
 			const periodDays = S.appPeriod === '30' ? 30 : S.appPeriod === '7' ? 7 : 1;
 			const ips = Array.from(new Set([ ...(d.day || []).map(r => r[0]), ...(d.hist || []).map(r => r[1]) ])).filter(Boolean).sort();
-			/* Группировка адресов использует тот же resolver, что трафик устройств,
-			 * дневной отчёт и карточки. Неоднозначные DHCP/ARP записи не склеиваются. */
+			/* Address grouping uses the same resolver as device traffic,
+			 * the daily report and the cards. Ambiguous DHCP/ARP records are not merged. */
 			const ipMac = monitorBuildIpMacMap(hints, S.devs && S.devs.neigh, S.wifi, S.devs && S.devs.leases);
 			const deviceGroups = {};
 			for (const addr of ips) {
 				const macValue = ipMac[normalizeMonitorIp(addr)] || '';
 				const hint = macValue ? hints[macValue] || hints[macValue.toLowerCase()] || {} : {};
 				const knownIps = new Set((hint.ipaddrs || []).concat(hint.ip6addrs || []).map(normalizeMonitorIp));
-				/* Для одиночного IP сохраняем старый value select: это совместимо
-				 * с сохранённым выбором и существующими сценариями LuCI. */
+				/* For a single IP we keep the old select value: this is compatible
+				 * with the saved selection and existing LuCI scenarios. */
 				const key = macValue && knownIps.size > 1 ? 'mac:' + macValue : addr;
 				const group = deviceGroups[key] || (deviceGroups[key] = { key, mac: macValue, ips: new Set(), label: '' });
 				group.ips.add(normalizeMonitorIp(addr));
 				group.label = hint.name || names[addr] || group.label || addr;
 			}
-			const options = Object.values(deviceGroups).sort((a, b) => a.label.localeCompare(b.label, 'ru'));
+			const options = Object.values(deviceGroups).sort((a, b) => a.label.localeCompare(b.label, 'en'));
 			if (!options.some(group => group.key === S.appDevice)) {
 				const legacy = options.find(group => group.ips.has(normalizeMonitorIp(S.appDevice || '')));
 				S.appDevice = legacy ? legacy.key : '';
 			}
-			appDevice.replaceChildren(E('option', { value: '' }, 'Все устройства'), ...options.map(group =>
-				E('option', { value: group.key }, group.label + (group.ips.size > 1 ? ' · ' + group.ips.size + ' адреса' : ' · ' + Array.from(group.ips)[0]))
+			appDevice.replaceChildren(E('option', { value: '' }, 'All devices'), ...options.map(group =>
+				E('option', { value: group.key }, group.label + (group.ips.size > 1 ? ' · ' + group.ips.size + ' addresses' : ' · ' + Array.from(group.ips)[0]))
 			));
 			appDevice.value = S.appDevice;
 			appPeriod.value = S.appPeriod;
@@ -2183,7 +2192,7 @@ return view.extend({
 			const result = sumMonitorAppTraffic(d, periodDays, selectedGroup ? selectedGroup.ips : '');
 			const total = result.total, fmtShare = n => total ? nf1.format(n / total * 100) + '%' : '0%';
 			const summary = E('div', { class: 'nfm-tiles t4 nfm-app-summary' }, [
-				[ 'Всего трафика', total, 'c-cpu' ], [ 'VPN', result.routes.VPN, 'c-mem' ], [ 'Напрямую', result.routes.Direct, 'c-temp' ], [ 'Неизвестный маршрут', result.routes.Unknown, 'gx' ]
+				[ 'Total traffic', total, 'c-cpu' ], [ 'VPN', result.routes.VPN, 'c-mem' ], [ 'Direct', result.routes.Direct, 'c-temp' ], [ 'Unknown route', result.routes.Unknown, 'gx' ]
 			].map(x => E('div', { class: 'nfm-tile' }, [ x[0], E('b', {}, fmtBytes(x[1])), E('small', { class: 'nfm-note-s' }, fmtShare(x[1])) ])));
 			const appPalette = [ 'var(--c-cpu)', 'var(--c-mem)', 'var(--c-temp)', 'var(--c-down)', 'var(--c-up)', 'var(--c-flash)', 'var(--gx)' ];
 			const catRows = result.categories.map((c, i) => {
@@ -2199,7 +2208,7 @@ return view.extend({
 					]),
 					E('div', { class: 'nfm-app-category-items' }, apps.map(a => E('div', { class: 'nfm-app-item' }, [
 						E('span', { class: 'nfm-app-item-name' }, appTrafficDisplayName(a.name)),
-						E('span', { class: 'nfm-app-item-route' }, [ 'VPN', 'Direct', 'Unknown' ].filter(k => a.routes[k] > 0).map(k => E('small', { class: 'nfm-chip', title: (k === 'VPN' ? 'VPN' : k === 'Direct' ? 'Напрямую' : 'Неизвестный маршрут') + ': ' + fmtBytes(a.routes[k]) }, (k === 'VPN' ? 'VPN' : k === 'Direct' ? 'Напрямую' : 'Неизв.') + ' ' + fmtBytes(a.routes[k])))),
+						E('span', { class: 'nfm-app-item-route' }, [ 'VPN', 'Direct', 'Unknown' ].filter(k => a.routes[k] > 0).map(k => E('small', { class: 'nfm-chip', title: (k === 'VPN' ? 'VPN' : k === 'Direct' ? 'Direct' : 'Unknown route') + ': ' + fmtBytes(a.routes[k]) }, (k === 'VPN' ? 'VPN' : k === 'Direct' ? 'Direct' : 'Unkn.') + ' ' + fmtBytes(a.routes[k])))),
 						E('b', {}, fmtBytes(a.total))
 					])))
 				]);
@@ -2212,7 +2221,7 @@ return view.extend({
 				return appPalette[i % appPalette.length] + ' ' + from.toFixed(2) + '% ' + donutOffset.toFixed(2) + '%';
 			});
 			const donut = E('div', { class: 'nfm-app-donut', style: 'background:' + (total ? 'conic-gradient(' + donutStops.join(',') + ')' : 'var(--nfm-card2)') },
-				E('div', { class: 'nfm-app-donut-center' }, [ E('b', {}, fmtBytes(total)), E('small', {}, 'Всего') ]));
+				E('div', { class: 'nfm-app-donut-center' }, [ E('b', {}, fmtBytes(total)), E('small', {}, 'Total') ]));
 			const legendRows = result.categories.map((c, i) => E('div', { class: 'nfm-app-legend-row' }, [
 				E('i', { class: 'nfm-app-legend-dot', style: '--nfm-app-color:' + appPalette[i % appPalette.length] }),
 				E('span', {}, c.name), E('b', {}, fmtShare(c.total)), E('small', { class: 'nfm-app-legend-size' }, fmtBytes(c.total))
@@ -2221,71 +2230,71 @@ return view.extend({
 			const remaining = legendRows.slice(6);
 			const remainingTotal = result.categories.slice(6).reduce((sum, c) => sum + c.total, 0);
 			if (remaining.length) primaryLegend.appendChild(E('details', { class: 'nfm-app-legend-more' }, [
-				E('summary', {}, [ E('span', {}, 'Прочие (' + remaining.length + ' категорий)'), E('span', {}, fmtBytes(remainingTotal)) ]),
+				E('summary', {}, [ E('span', {}, 'Other (' + remaining.length + ' categories)'), E('span', {}, fmtBytes(remainingTotal)) ]),
 				E('div', { class: 'nfm-app-legend' }, remaining)
 			]));
 			const donutBox = E('div', { class: 'nfm-app-distribution' }, [ donut, primaryLegend ]);
 			const top = result.apps.slice(0, 30);
-			const unknown = result.apps.filter(a => a.category === 'Не определено').slice(0, 12);
+			const unknown = result.apps.filter(a => a.category === 'Unclassified').slice(0, 12);
 			const unknownBox = E('div', { class: 'nfm-app-unknown-list' }, unknown.length ? unknown.map(a => E('div', { class: 'nfm-host' }, [
 				E('span', {}, appTrafficDisplayName(a.name)),
 				E('b', {}, fmtBytes(a.total)),
-				E('small', {}, [ 'VPN', 'Direct', 'Unknown' ].filter(k => a.routes[k] > 0).map(k => (k === 'VPN' ? 'VPN' : k === 'Direct' ? 'Напрямую' : 'Неизв.') + ': ' + fmtBytes(a.routes[k])).join(' · '))
-			])) : [ E('div', { class: 'nfm-empty' }, 'Нераспознанных записей пока нет.') ]);
+				E('small', {}, [ 'VPN', 'Direct', 'Unknown' ].filter(k => a.routes[k] > 0).map(k => (k === 'VPN' ? 'VPN' : k === 'Direct' ? 'Direct' : 'Unkn.') + ': ' + fmtBytes(a.routes[k])).join(' · '))
+			])) : [ E('div', { class: 'nfm-empty' }, 'No unrecognized records yet.') ]);
 			const appsBox = E('div', { class: 'nfm-app-top-list' }, top.length ? top.map(a => E('div', { class: 'nfm-host' }, [
 				E('span', {}, [ appTrafficDisplayName(a.name), E('small', {}, a.category) ]),
 				E('b', {}, fmtBytes(a.total)),
-				E('div', { class: 'nfm-bar' }, E('div', { class: 'nfm-bar-fill ' + (a.category === 'Не определено' ? 'gx' : 'c-cpu'), style: 'width:' + (a.total / Math.max(1, top[0].total) * 100).toFixed(1) + '%' }))
-			])) : [ E('div', { class: 'nfm-empty' }, 'За выбранный период трафик ещё не накоплен.') ]);
+				E('div', { class: 'nfm-bar' }, E('div', { class: 'nfm-bar-fill ' + (a.category === 'Unclassified' ? 'gx' : 'c-cpu'), style: 'width:' + (a.total / Math.max(1, top[0].total) * 100).toFixed(1) + '%' }))
+			])) : [ E('div', { class: 'nfm-empty' }, 'No traffic accumulated for the selected period yet.') ]);
 			appTrafficBody.replaceChildren(
 				E('div', { class: 'nfm-app-toolbar' }, [ appPeriod, appDevice ]),
 				summary,
 				E('div', { class: 'nfm-grid' }, [
-					card('Распределение по категориям', donutBox)
+					card('Distribution by category', donutBox)
 				]),
 				E('div', { class: 'nfm-grid' }, [
-					card('Трафик по категориям', E('div', { class: 'nfm-app-categories' }, catRows.length ? catRows : [ E('div', { class: 'nfm-empty' }, 'Нет данных по категориям.') ]))
+					card('Traffic by category', E('div', { class: 'nfm-app-categories' }, catRows.length ? catRows : [ E('div', { class: 'nfm-empty' }, 'No category data.') ]))
 				]),
 				E('div', { class: 'nfm-grid nfm-g21' }, [
-					card('Топ приложений и доменов', appsBox),
-					card([ 'Не распознано', E('span', { class: 'nfm-note-s' }, unknown.length ? 'Первые 12 записей · без ложной атрибуции' : 'Проверка неизвестного трафика') ], unknownBox)
+					card('Top apps and domains', appsBox),
+					card([ 'Unrecognized', E('span', { class: 'nfm-note-s' }, unknown.length ? 'First 12 records · no false attribution' : 'Unknown traffic check') ], unknownBox)
 				]),
-				E('div', { class: 'nfm-note-s' }, 'Категории строятся по распознанным именам сервисов. Общие CDN, IP без DNS-имени и неоднозначные домены не приписываются приложениям. VPN / Direct / неизвестный маршрут учитываются независимо от категории.')
+				E('div', { class: 'nfm-note-s' }, 'Categories are built from recognized service names. Shared CDNs, IPs without a DNS name and ambiguous domains are not attributed to apps. VPN / Direct / unknown route are counted regardless of category.')
 			);
 		}
 		const appsTab = E('div', { hidden: true }, [
-			E('div', { class: 'nfm-grid' }, [ card([ 'Трафик приложений', E('span', { class: 'nfm-spacer' }), E('span', { class: 'nfm-note-s' }, 'Обновление данных раз в 30 секунд') ], appTrafficBody) ])
+			E('div', { class: 'nfm-grid' }, [ card([ 'App traffic', E('span', { class: 'nfm-spacer' }), E('span', { class: 'nfm-note-s' }, 'Data refreshes every 30 seconds') ], appTrafficBody) ])
 		]);
 		const devsTab = E('div', { hidden: true }, [
-			E('div', { class: 'nfm-grid nfm-g21' }, [ card([ 'Кто дома', E('span', { class: 'nfm-note-s' }, 'по подключениям к Wi‑Fi') ], homeBox), card('Необычная активность', susBox) ]),
+			E('div', { class: 'nfm-grid nfm-g21' }, [ card([ 'Who is home', E('span', { class: 'nfm-note-s' }, 'by Wi‑Fi connections') ], homeBox), card('Unusual activity', susBox) ]),
 			E('div', { class: 'nfm-grid' }, [
-				card([ 'Трафик по устройствам', E('span', { class: 'nfm-spacer' }), T.devTotal = E('span', { class: 'nfm-note-s' }), devSel ], E('div', {}, [
+				card([ 'Traffic by device', E('span', { class: 'nfm-spacer' }), T.devTotal = E('span', { class: 'nfm-note-s' }), devSel ], E('div', {}, [
 					devNote,
 					E('table', { class: 'nfm-table' }, [
-						E('thead', {}, E('tr', {}, [ E('th', {}, 'Устройство'), E('th', { class: 'r' }, '↓ сейчас'), E('th', { class: 'r' }, '↑ сейчас'),
-							E('th', { class: 'r' }, '↓ за день'), E('th', { class: 'r' }, '↑ за день') ])), devBody ]) ]))
+						E('thead', {}, E('tr', {}, [ E('th', {}, 'Device'), E('th', { class: 'r' }, '↓ now'), E('th', { class: 'r' }, '↑ now'),
+							E('th', { class: 'r' }, '↓ today'), E('th', { class: 'r' }, '↑ today') ])), devBody ]) ]))
 			]),
 		]);
 		const logTab = E('div', { hidden: true }, [
-			E('div', { class: 'nfm-grid' }, [ card([ 'Журнал событий', E('span', { class: 'nfm-spacer' }), logPer, logCsv, logQ ], E('div', {}, [ logChips, logBox ])) ]),
-			E('div', { class: 'nfm-grid' }, [ card('Журнал перезагрузок и обрывов связи', E('div', {}, [ jrnTiles, jrnBox ])) ]),
-			E('div', { class: 'nfm-grid' }, [ card([ 'Журнал роутера', E('span', { class: 'nfm-spacer' }), rlSvc, rlQ ], E('div', {}, [ rlChips, rlSummary, rlDiag, rlTools, rlBox, rlMore ])) ])
+			E('div', { class: 'nfm-grid' }, [ card([ 'Event log', E('span', { class: 'nfm-spacer' }), logPer, logCsv, logQ ], E('div', {}, [ logChips, logBox ])) ]),
+			E('div', { class: 'nfm-grid' }, [ card('Reboot and outage log', E('div', {}, [ jrnTiles, jrnBox ])) ]),
+			E('div', { class: 'nfm-grid' }, [ card([ 'Router log', E('span', { class: 'nfm-spacer' }), rlSvc, rlQ ], E('div', {}, [ rlChips, rlSummary, rlDiag, rlTools, rlBox, rlMore ])) ])
 		]);
 		const diagTab = E('div', { hidden: true }, [
-			E('div', { class: 'nfm-grid' }, [ card('Диагностика сети', diagBody) ]),
-			E('div', { class: 'nfm-grid' }, [ card('История проверок', diagHistBox) ]),
-			E('div', { class: 'nfm-grid' }, [ card([ 'Скорость интернета (замеры роутера)', E('span', { class: 'nfm-spacer' }), spdSrc, spdSel, spdBtn ], E('div', {}, [ spdTiles, spdChart.el, spdList, spdNote ])) ]),
+			E('div', { class: 'nfm-grid' }, [ card('Network diagnostics', diagBody) ]),
+			E('div', { class: 'nfm-grid' }, [ card('Check history', diagHistBox) ]),
+			E('div', { class: 'nfm-grid' }, [ card([ 'Internet speed (router tests)', E('span', { class: 'nfm-spacer' }), spdSrc, spdSel, spdBtn ], E('div', {}, [ spdTiles, spdChart.el, spdList, spdNote ])) ]),
 		]);
-		const secTiles = E('div', { class: 'nfm-tiles t4' }, [ [ 'sFail', 'неудачных входов' ], [ 'sNew', 'новых за неделю' ], [ 'sOpen', 'портов открыто для сети' ], [ 'sFw', 'пробросов из интернета' ] ]
+		const secTiles = E('div', { class: 'nfm-tiles t4' }, [ [ 'sFail', 'failed sign-ins' ], [ 'sNew', 'new this week' ], [ 'sOpen', 'ports open to the network' ], [ 'sFw', 'forwards from the internet' ] ]
 			.map(([ k, l ]) => E('div', { class: 'nfm-tile' }, [ l, T[k] = E('b', {}, '–') ])));
-		const secVerdict = E('div', { class: 'nfm-hint' }, 'Собираю данные…');
+		const secVerdict = E('div', { class: 'nfm-hint' }, 'Collecting data…');
 		const secLogins = E('div'), secPorts = E('div'), secDev = E('div'), secUpd = E('div'), secBans = E('div'), secChecks = E('div');
 		const secTab = E('div', { hidden: true }, [
-			E('div', { class: 'nfm-grid' }, [ card('Сводка безопасности', E('div', {}, [ secVerdict, secTiles ])) ]),
-			E('div', { class: 'nfm-grid nfm-g21' }, [ card('Попытки входа (LuCI и SSH)', secLogins), card('Обновления', secUpd) ]),
-			E('div', { class: 'nfm-grid nfm-g21' }, [ card('Открытые порты роутера', secPorts), card('Новые устройства', secDev) ]),
-			E('div', { class: 'nfm-grid' }, [ card('Проверки настроек', secChecks) ]),
-			E('div', { class: 'nfm-grid' }, [ card('Закрытые адреса', secBans) ])
+			E('div', { class: 'nfm-grid' }, [ card('Security summary', E('div', {}, [ secVerdict, secTiles ])) ]),
+			E('div', { class: 'nfm-grid nfm-g21' }, [ card('Sign-in attempts (LuCI and SSH)', secLogins), card('Updates', secUpd) ]),
+			E('div', { class: 'nfm-grid nfm-g21' }, [ card('Open router ports', secPorts), card('New devices', secDev) ]),
+			E('div', { class: 'nfm-grid' }, [ card('Settings checks', secChecks) ]),
+			E('div', { class: 'nfm-grid' }, [ card('Blocked addresses', secBans) ])
 		]);
 
 		const modeBadge = E('span', { class: 'nfm-mode', hidden: true });
@@ -2294,31 +2303,31 @@ return view.extend({
 			const lite = r.mode === 'lite';
 			modeBadge.hidden = false;
 			modeBadge.className = 'nfm-mode' + (lite ? ' lite' : '');
-			modeBadge.textContent = 'Режим: ' + (lite ? 'Lite' : 'Мощный') + (+r.step ? ' · опрос раз в ' + r.step + ' с' : '');
-			modeBadge.title = lite ? 'Lite для слабых роутеров: опрос раз в минуту, без учёта по приложениям и истории Wi‑Fi. Меняется в настройках ниже (LITE).' : 'Мощный режим: опрос каждые 15 секунд, доступны все функции. Для слабого роутера включите Lite в настройках ниже (LITE).';
+			modeBadge.textContent = 'Mode: ' + (lite ? 'Lite' : 'Full') + (+r.step ? ' · polling every ' + r.step + ' s' : '');
+			modeBadge.title = lite ? 'Lite for weak routers: polling once a minute, no per-app accounting and no Wi‑Fi history. Changed in the settings below (LITE).' : 'Full mode: polling every 15 seconds, all features available. For a weak router, enable Lite in the settings below (LITE).';
 		};
-		const pill = E('span', { class: 'nfm-pill' }, `обновляется каждые ${INTERVAL} с`);
-		const pauseBtn = E('button', { class: 'nfm-btn', click: () => setPaused(!S.paused) }, 'Пауза');
+		const pill = E('span', { class: 'nfm-pill' }, `refreshes every ${INTERVAL} s`);
+		const pauseBtn = E('button', { class: 'nfm-btn', click: () => setPaused(!S.paused) }, 'Pause');
 		const onTab = (...k) => k.indexOf(S.tab) >= 0;
 		const TAB_KEYS = [ 'overview', 'net', 'wifi', 'devs', 'apps', 'procs', 'svcs', 'diag', 'sec', 'log', 'hist' ];
 		const tabBtns = {};
-		const tabs = E('div', { class: 'nfm-tabs', role: 'tablist' }, [ [ 'overview', 'Обзор' ], [ 'net', 'Сеть' ], [ 'wifi', 'Wi‑Fi' ], [ 'devs', 'Устройства' ], [ 'apps', 'Трафик' ], [ 'procs', 'Программы' ], [ 'svcs', 'Службы' ], [ 'diag', 'Диагностика' ], [ 'sec', 'Безопасность' ], [ 'log', 'Журнал' ], [ 'hist', 'История' ] ]
+		const tabs = E('div', { class: 'nfm-tabs', role: 'tablist' }, [ [ 'overview', 'Overview' ], [ 'net', 'Network' ], [ 'wifi', 'Wi‑Fi' ], [ 'devs', 'Devices' ], [ 'apps', 'Traffic' ], [ 'procs', 'Programs' ], [ 'svcs', 'Services' ], [ 'diag', 'Diagnostics' ], [ 'sec', 'Security' ], [ 'log', 'Log' ], [ 'hist', 'History' ] ]
 			.map(([ k, l ]) => tabBtns[k] = E('button', { class: 'nfm-tab nfm-ti', 'data-ic': k, role: 'tab', click: () => { S.tab = k; refresh(); } }, l)));
 
-		const svcFilter = E('input', { class: 'nfm-in', type: 'search', placeholder: 'Найти службу…', input: () => renderServices() });
+		const svcFilter = E('input', { class: 'nfm-in', type: 'search', placeholder: 'Find a service…', input: () => renderServices() });
 		const svcBox = E('div');
 		const svcMore = E('div');
 		const svcs = E('div', { hidden: true }, [
-			E('div', { class: 'nfm-grid' }, [ card([ 'Состояние служб', E('span', { class: 'nfm-spacer' }), svcFilter ], E('div', {}, [ svcBox,
-				E('div', { class: 'nfm-note-s', style: 'margin-top:10px' }, 'Красным отмечены службы, которые включены в автозапуск, но сейчас не работают. Ключевые службы (сеть, веб-сервер, SSH, файрвол) нельзя остановить отсюда, чтобы не потерять доступ.') ])) ]),
+			E('div', { class: 'nfm-grid' }, [ card([ 'Service status', E('span', { class: 'nfm-spacer' }), svcFilter ], E('div', {}, [ svcBox,
+				E('div', { class: 'nfm-note-s', style: 'margin-top:10px' }, 'Red marks services that are enabled at boot but not running right now. Key services (network, web server, SSH, firewall) cannot be stopped from here, so you do not lose access.') ])) ]),
 			E('div', { class: 'nfm-grid' }, [ svcMore ])
 		]);
 		{ const hv = (window.location.hash || '').replace('#', ''); if (TAB_KEYS.includes(hv)) S.tab = hv; }
 		const root = E('div', { class: 'nfm' }, [
 			E('style', {}, CSS + XCSS),
 			E('div', { class: 'nfm-top' }, [
-				E('div', {}, [ E('h2', {}, 'Монитор ресурсов'),
-					E('div', { class: 'nfm-sub' }, [ (board.model || board.hostname || 'OpenWrt') + ' · работает ', t('uptime') ]) ]),
+				E('div', {}, [ E('h2', {}, 'Resource Monitor'),
+					E('div', { class: 'nfm-sub' }, [ (board.model || board.hostname || 'OpenWrt') + ' · up ', t('uptime') ]) ]),
 				E('span', { class: 'nfm-spacer' }), modeBadge, pill, pauseBtn, tabs ]),
 			overview, net, wifiTab, devsTab, appsTab, procs, svcs, diagTab, secTab, logTab, hist
 		]);
@@ -2327,7 +2336,7 @@ return view.extend({
 		function runChecked(fn) {
 			return Promise.resolve().then(fn).then(res => {
 				if (res && typeof res.code === 'number' && res.code !== 0)
-					throw new Error((res.stderr || '').trim() || `код возврата ${res.code}`);
+					throw new Error((res.stderr || '').trim() || `exit code ${res.code}`);
 				return res;
 			});
 		}
@@ -2336,7 +2345,7 @@ return view.extend({
 			ui.showModal(title, [
 				E('p', {}, text),
 				E('div', { class: 'button-row' }, [
-					E('button', { class: 'btn', click: ui.hideModal }, 'Отмена'),
+					E('button', { class: 'btn', click: ui.hideModal }, 'Cancel'),
 					E('button', { class: 'btn cbi-button-negative important', click: () => {
 						ui.showModal(null, [ E('p', { class: 'spinning' }, busy) ]);
 						runChecked(fn).then(() => {
@@ -2344,9 +2353,9 @@ return view.extend({
 							else window.setTimeout(ui.hideModal, 2500);
 						}).catch(err => {
 							ui.hideModal();
-							ui.addNotification(null, E('p', {}, 'Не удалось выполнить: ' + (err.message || err)), 'danger');
+							ui.addNotification(null, E('p', {}, 'Could not run: ' + (err.message || err)), 'danger');
 						});
-					} }, 'Выполнить')
+					} }, 'Run')
 				])
 			]);
 		}
@@ -2357,28 +2366,28 @@ return view.extend({
 				hosts.push({ mac: mac.toUpperCase(), name: hints[mac].name || (hints[mac].ipaddrs || [])[0] || mac });
 			hosts.sort((a, b) => a.name.localeCompare(b.name));
 
-			const sel = E('select', { class: 'nfm-sel', style: 'width:100%' }, [ E('option', { value: '' }, '— выберите устройство —') ]
+			const sel = E('select', { class: 'nfm-sel', style: 'width:100%' }, [ E('option', { value: '' }, '— choose a device —') ]
 				.concat(hosts.map(h => E('option', { value: h.mac }, `${h.name} (${h.mac})`))));
-			const man = E('input', { type: 'text', placeholder: 'или введите MAC-адрес: AA:BB:CC:DD:EE:FF', style: 'width:100%;margin-top:8px' });
+			const man = E('input', { type: 'text', placeholder: 'or enter a MAC address: AA:BB:CC:DD:EE:FF', style: 'width:100%;margin-top:8px' });
 
-			ui.showModal('Разбудить устройство', [
-				E('p', {}, `Магический пакет будет отправлен в сеть ${lanDev}. Устройство должно поддерживать Wake-on-LAN.`),
+			ui.showModal('Wake a device', [
+				E('p', {}, `The magic packet will be sent to the ${lanDev} network. The device must support Wake-on-LAN.`),
 				sel, man,
 				E('div', { class: 'button-row' }, [
-					E('button', { class: 'btn', click: ui.hideModal }, 'Отмена'),
+					E('button', { class: 'btn', click: ui.hideModal }, 'Cancel'),
 					E('button', { class: 'btn cbi-button-positive important', click: () => {
 						const mac = (man.value.trim() || sel.value).toUpperCase();
 						if (!/^([0-9A-F]{2}:){5}[0-9A-F]{2}$/.test(mac)) {
-							ui.addNotification(null, E('p', {}, 'Укажите корректный MAC-адрес.'), 'warning');
+							ui.addNotification(null, E('p', {}, 'Enter a valid MAC address.'), 'warning');
 							return;
 						}
 						ui.hideModal();
 						runChecked(() => fs.exec('/usr/bin/etherwake', [ '-b', '-i', lanDev, mac ])).then(() => {
-							ui.addNotification(null, E('p', {}, `Пакет пробуждения отправлен: ${mac}`), 'success');
+							ui.addNotification(null, E('p', {}, `Wake packet sent: ${mac}`), 'success');
 						}).catch(err => {
-							ui.addNotification(null, E('p', {}, 'Не удалось отправить пакет: ' + (err.message || err) + '. Нужен пакет etherwake (apk add etherwake).'), 'danger');
+							ui.addNotification(null, E('p', {}, 'Could not send the packet: ' + (err.message || err) + '. The etherwake package is required (apk add etherwake).'), 'danger');
 						});
-					} }, 'Разбудить')
+					} }, 'Wake')
 				])
 			]);
 		}
@@ -2429,7 +2438,7 @@ return view.extend({
 
 		function fmtDur(sec) {
 			const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60);
-			return h ? `${h} ч ${m} мин` : (m ? `${m} мин` : `${Math.floor(sec)} с`);
+			return h ? `${h} h ${m} min` : (m ? `${m} min` : `${Math.floor(sec)} s`);
 		}
 
 		function hotInfo() {
@@ -2476,20 +2485,20 @@ return view.extend({
 			if (S.tab === 'apps' && due('appTraffic', 30)) jobs.push(callHistory([ 'apps' ]).then(r => { S.appTraffic = r || null; }).catch(() => { S.appTraffic = null; }));
 			if (S.tab === 'net' && due('extip', 120)) jobs.push(callHistory([ 'extip' ]).then(r => { S.extip = r || null; }).catch(() => { S.extip = null; }));
 			if (S.tab === 'net' && due('dns', 30)) jobs.push(fs.exec('/usr/libexec/nightfall-dns', [ 'top' ]).then(r => { try { S.dns = JSON.parse(r.stdout); } catch (e) { S.dns = null; } }).catch(() => { S.dns = null; }));
-			if (S.tab === 'sec' && due('sec', 60)) jobs.push(fs.exec(SECBIN, [ 'summary' ]).then(r => { try { S.sec = JSON.parse(r.stdout); S.secErr = ''; } catch (e) { S.sec = null; S.secErr = 'ответ скрипта не разобран' + (r.stderr ? ': ' + String(r.stderr).slice(0, 120) : ''); } }).catch(e => { S.sec = null; S.secErr = String((e && e.message) || e).slice(0, 120); }));
+			if (S.tab === 'sec' && due('sec', 60)) jobs.push(fs.exec(SECBIN, [ 'summary' ]).then(r => { try { S.sec = JSON.parse(r.stdout); S.secErr = ''; } catch (e) { S.sec = null; S.secErr = 'could not parse the script response' + (r.stderr ? ': ' + String(r.stderr).slice(0, 120) : ''); } }).catch(e => { S.sec = null; S.secErr = String((e && e.message) || e).slice(0, 120); }));
 			if (S.tab === 'sec' && due('bans', 30)) jobs.push(fs.exec(SECBIN, [ 'bans' ]).then(r => { try { S.bans = JSON.parse(r.stdout); } catch (e) { S.bans = null; } }).catch(() => { S.bans = null; }));
 			if (S.tab === 'sec' && due('secu', 600)) jobs.push(fs.exec(SECBIN, [ 'updates' ]).then(r => { try { S.secu = JSON.parse(r.stdout); } catch (e) { S.secu = null; } }).catch(() => { S.secu = null; }));
 			if (S.tab === 'log' && (S.rlog === undefined || (S.rlAuto !== false && due('rlog', 20)))) jobs.push(fs.exec('/usr/libexec/nightfall-log', [ 'read', '800' ]).then(r => { try { S.rlog = JSON.parse(r.stdout); S.rlogUpdated = Date.now(); } catch (e) { S.rlog = null; } }).catch(() => { S.rlog = null; }));
 			if (S.tab === 'log' && due('blog', 30)) jobs.push(fs.exec('/usr/libexec/nightfall-block', [ 'log' ]).then(r => { try { S.blog = JSON.parse(r.stdout); } catch (e) { S.blog = null; } }).catch(() => { S.blog = null; }));
 			if (onTab('hist', 'log') && due('jrn', 30)) jobs.push(callHistory([ 'journal' ]).then(r => { S.jrn = r; }));
-			if (onTab('hist', 'diag') && due('spd', S.spdRun ? 3 : 30)) jobs.push(callHistory([ 'speed' ]).then(r => { S.spd = r; if (S.spdRun && Date.now() - (S.spdT || 0) > 4000 && (!r || !r.running)) { S.spdRun = false; if (r === false) ui.addNotification(null, E('p', {}, 'Замер завершён, но результат не прочитан: ' + MISSING), 'danger'); } }));
+			if (onTab('hist', 'diag') && due('spd', S.spdRun ? 3 : 30)) jobs.push(callHistory([ 'speed' ]).then(r => { S.spd = r; if (S.spdRun && Date.now() - (S.spdT || 0) > 4000 && (!r || !r.running)) { S.spdRun = false; if (r === false) ui.addNotification(null, E('p', {}, 'The test finished, but the result could not be read: ' + MISSING), 'danger'); } }));
 			if (S.tab === 'svcs' && due('svc', 6)) jobs.push(Promise.all([ L.resolveDefault(callInitList(), null), L.resolveDefault(callServiceList(), null) ]).then(r => { S.svc = { init: r[0], run: r[1] }; }));
 			if (S.tab === 'hist' && S.cfg === undefined) { S.cfg = null; jobs.push(callCfg([ 'get' ]).then(r => { S.cfg = r; fillCfg(r && r.values); renderDisks(); })); }
 			if (S.tab === 'hist' && S.dsk === undefined) { S.dsk = null; jobs.push(loadDisks()); }
 			return Promise.all(jobs);
 		}
 
-		const MISSING = 'Сборщик истории не запущен. На роутере выполните: /etc/init.d/nightfall-collector enable && /etc/init.d/nightfall-collector start';
+		const MISSING = 'The history collector is not running. On the router run: /etc/init.d/nightfall-collector enable && /etc/init.d/nightfall-collector start';
 
 		function callCfg(args) {
 			return fs.exec(CFG, args).then(res => {
@@ -2498,7 +2507,7 @@ return view.extend({
 		}
 
 		function fillCfg(v) {
-			if (!v) { cfgMsg.textContent = 'Настройки недоступны: нужна служба сборщика и обновлённый пакет.'; return; }
+			if (!v) { cfgMsg.textContent = 'Settings unavailable: the collector service and an updated package are required.'; return; }
 			cfgMsg.textContent = '';
 			for (const k in cfgInputs) {
 				if (cfgBoolKeys.has(k)) cfgInputs[k].checked = String(v[k] == null ? '0' : v[k]) === '1';
@@ -2510,12 +2519,12 @@ return view.extend({
 			const args = [ 'set' ].concat(Object.keys(cfgInputs).map(k => k + '=' + (cfgBoolKeys.has(k) ? (cfgInputs[k].checked ? '1' : '0') : cfgInputs[k].value.trim())));
 			callCfg(args).then(r => {
 				if (r && r.ok) {
-					cfgMsg.textContent = 'Сохранено, сборщик перезапущен.';
+					cfgMsg.textContent = 'Saved, collector restarted.';
 					S.at.alerts = 0; S.at.hist = 0;
-					callCfg([ 'get' ]).then(c => { S.cfg = c; if (c) fillCfg(c.values); cfgMsg.textContent = 'Сохранено, сборщик перезапущен.'; });
+					callCfg([ 'get' ]).then(c => { S.cfg = c; if (c) fillCfg(c.values); cfgMsg.textContent = 'Saved, collector restarted.'; });
 					window.setTimeout(() => { cfgMsg.textContent = ''; }, 5000);
 				}
-				else ui.addNotification(null, E('p', {}, 'Не сохранено: ' + ((r && r.error) || 'нет ответа от nightfall-config')), 'danger');
+				else ui.addNotification(null, E('p', {}, 'Not saved: ' + ((r && r.error) || 'no response from nightfall-config')), 'danger');
 			});
 		}
 
@@ -2523,25 +2532,25 @@ return view.extend({
 			const d = S.last || {}, out = [], h = hd || {}, info = h.info || {};
 			const rel = board.release || {};
 			const fm = kb => fmtMB(kb);
-			out.push('Nightfall monitor — диагностика, ' + new Date().toLocaleString('ru-RU'));
-			out.push(`Модель: ${board.model || '?'} · ${rel.description || rel.version || 'OpenWrt'} · ядро ${board.kernel || '?'}`);
-			if (d.up != null) out.push(`Аптайм: ${fmtUptime(d.up)} · нагрузка ${(d.load || []).map(v => nf2.format(v)).join(' / ')}`);
-			if (S.cpuNow) out.push(`Процессор: ${(d.cpu || []).length - 1} яд., ${nf0.format(S.cpuNow.pct)}% (программы ${nf0.format(S.cpuNow.apps)}%, система ${nf0.format(S.cpuNow.sys)}%, прерывания ${nf1.format(S.cpuNow.irq)}%, ожидание диска ${nf1.format(S.cpuNow.io)}%)`);
-			if (d.temps) out.push('Температуры (как отдаёт система): ' + (d.temps.length ? d.temps.map(t => `${t[0]}=${nf1.format(t[1] / 1000)}°C`).join(', ') : 'датчиков нет'));
-			if (d.mem) out.push(`Память: занято ${fm(d.mem.total - d.mem.avail)} из ${fm(d.mem.total)}, кеш ${fm(d.mem.cached + d.mem.buffers)}, swap ${fm(d.mem.swap - d.mem.swapfree)} из ${fm(d.mem.swap)}`);
-			if (d.flash) out.push(`Флеш: ${fm(d.flash[1])} из ${fm(d.flash[0])} · /tmp ${d.tmp ? fm(d.tmp[1]) : '–'}`);
-			if (d.ct) out.push(`Соединения: ${d.ct[0]} из ${d.ct[1]}`);
-			out.push(`Интерфейсы (сейчас): ` + (d.net || []).map(n => { const r = (S.rates || {})[n[0]] || { rx: 0, tx: 0 }; return `${n[0]} ↓${rateText(r.rx)} ↑${rateText(r.tx)}`; }).join('; '));
-			out.push(`Wi-Fi клиентов: ${S.wifi ? S.wifi.length : '–'}`);
-			out.push(`Сборщик: ${info.started ? 'работает' : 'НЕ ЗАПУЩЕН (данных нет)'} · WAN ${info.wan_dev || '–'} · шлюз ${info.gateway || '–'} · проверка ${info.targets || '–'} · conntrack_acct=${info.acct || '–'} · flow offloading=${info.offload || '–'} · история сохраняется: ${info.persist === '1' ? 'да' : 'нет'}`);
+			out.push('Nightfall monitor diagnostics, ' + new Date().toLocaleString('en-US'));
+			out.push(`Model: ${board.model || '?'} · ${rel.description || rel.version || 'OpenWrt'} · kernel ${board.kernel || '?'}`);
+			if (d.up != null) out.push(`Uptime: ${fmtUptime(d.up)} · load ${(d.load || []).map(v => nf2.format(v)).join(' / ')}`);
+			if (S.cpuNow) out.push(`CPU: ${(d.cpu || []).length - 1} cores, ${nf0.format(S.cpuNow.pct)}% (programs ${nf0.format(S.cpuNow.apps)}%, system ${nf0.format(S.cpuNow.sys)}%, interrupts ${nf1.format(S.cpuNow.irq)}%, disk wait ${nf1.format(S.cpuNow.io)}%)`);
+			if (d.temps) out.push('Temperatures (as reported by the system): ' + (d.temps.length ? d.temps.map(t => `${t[0]}=${nf1.format(t[1] / 1000)}°C`).join(', ') : 'no sensors'));
+			if (d.mem) out.push(`Memory: used ${fm(d.mem.total - d.mem.avail)} of ${fm(d.mem.total)}, cache ${fm(d.mem.cached + d.mem.buffers)}, swap ${fm(d.mem.swap - d.mem.swapfree)} of ${fm(d.mem.swap)}`);
+			if (d.flash) out.push(`Flash: ${fm(d.flash[1])} of ${fm(d.flash[0])} · /tmp ${d.tmp ? fm(d.tmp[1]) : '–'}`);
+			if (d.ct) out.push(`Connections: ${d.ct[0]} of ${d.ct[1]}`);
+			out.push(`Interfaces (now): ` + (d.net || []).map(n => { const r = (S.rates || {})[n[0]] || { rx: 0, tx: 0 }; return `${n[0]} ↓${rateText(r.rx)} ↑${rateText(r.tx)}`; }).join('; '));
+			out.push(`Wi-Fi clients: ${S.wifi ? S.wifi.length : '–'}`);
+			out.push(`Collector: ${info.started ? 'running' : 'NOT RUNNING (no data)'} · WAN ${info.wan_dev || '–'} · gateway ${info.gateway || '–'} · check ${info.targets || '–'} · conntrack_acct=${info.acct || '–'} · flow offloading=${info.offload || '–'} · history persisted: ${info.persist === '1' ? 'yes' : 'no'}`);
 			const last = (h.rows || []).slice(-1)[0];
-			if (last) out.push(`Последний замер: CPU ${last[1]}%, память ${last[2]}%, температура ${last[3] < 0 ? 'н/д' : last[3] + '°C'}, задержка шлюз ${last[6] < 0 ? 'нет' : last[6] + ' мс'} / интернет ${last[7] < 0 ? 'нет' : last[7] + ' мс'}`);
-			if (cfg && cfg.values) out.push('Настройки: ' + Object.keys(cfg.values).map(k => `${k}=${cfg.values[k]}`).join(' '));
+			if (last) out.push(`Last sample: CPU ${last[1]}%, memory ${last[2]}%, temperature ${last[3] < 0 ? 'n/a' : last[3] + '°C'}, latency gateway ${last[6] < 0 ? 'none' : last[6] + ' ms'} / internet ${last[7] < 0 ? 'none' : last[7] + ' ms'}`);
+			if (cfg && cfg.values) out.push('Settings: ' + Object.keys(cfg.values).map(k => `${k}=${cfg.values[k]}`).join(' '));
 			const act = h.active || [];
-			out.push('Активные предупреждения: ' + (act.length ? act.map(a => a[3]).join('; ') : 'нет'));
+			out.push('Active warnings: ' + (act.length ? act.map(a => a[3]).join('; ') : 'none'));
 			const evs = (h.events || []).slice(-10);
-			if (evs.length) out.push('Последние события:\n' + evs.map(e => `  ${fmtTs(e[0])} [${e[1]}] ${e[2]}`).join('\n'));
-			if (S.full) out.push('Программы по памяти: ' + groupedProcs().sort((a, b) => b.rss - a.rss).slice(0, 6).map(e => `${e.label} ${fmtMB(e.rss)}`).join(', '));
+			if (evs.length) out.push('Recent events:\n' + evs.map(e => `  ${fmtTs(e[0])} [${e[1]}] ${e[2]}`).join('\n'));
+			if (S.full) out.push('Programs by memory: ' + groupedProcs().sort((a, b) => b.rss - a.rss).slice(0, 6).map(e => `${e.label} ${fmtMB(e.rss)}`).join(', '));
 			return out.join('\n');
 		}
 
@@ -2550,12 +2559,12 @@ return view.extend({
 				const text = buildDiag(hd || {}, cfg);
 				const ta = E('textarea', { class: 'nfm-diag', readonly: '' }, text);
 				const fallback = () => {
-					ui.showModal('Диагностика', [
-						E('p', {}, 'Автоматически скопировать не удалось. Выделите текст и скопируйте вручную (Ctrl+C).'), ta,
-						E('div', { class: 'button-row' }, [ E('button', { class: 'btn', click: ui.hideModal }, 'Закрыть') ]) ]);
+					ui.showModal('Diagnostics', [
+						E('p', {}, 'Could not copy automatically. Select the text and copy it manually (Ctrl+C).'), ta,
+						E('div', { class: 'button-row' }, [ E('button', { class: 'btn', click: ui.hideModal }, 'Close') ]) ]);
 					ta.select();
 				};
-				const ok = () => ui.addNotification(null, E('p', {}, 'Диагностика скопирована в буфер обмена. IP- и MAC-адреса устройств в неё не входят.'), 'success');
+				const ok = () => ui.addNotification(null, E('p', {}, 'Diagnostics copied to the clipboard. Device IP and MAC addresses are not included.'), 'success');
 				const legacy = () => {
 					const t = E('textarea', { style: 'position:fixed;opacity:0' }, text);
 					document.body.appendChild(t); t.select();
@@ -2570,16 +2579,16 @@ return view.extend({
 		}
 
 		function fmtTs(ts) {
-			return new Date(ts * 1000).toLocaleString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+			return new Date(ts * 1000).toLocaleString('en-US', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 		}
 
 		function xLabels(end, win) {
 			const out = [];
 			for (let i = 0; i <= 5; i++) {
 				const d = new Date((end - win * (5 - i) / 5) * 1000);
-				out.push(i === 5 ? 'сейчас' : win > 2 * 86400
-					? d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })
-					: d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }));
+				out.push(i === 5 ? 'now' : win > 2 * 86400
+					? d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })
+					: d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }));
 			}
 			return out;
 		}
@@ -2599,31 +2608,31 @@ return view.extend({
 			alertsBox.toggleAttribute('hidden', !visible.length);
 			alertsBox.replaceChildren(...visible.map(x => {
 				const key = String(x && x[0] || 'unknown') + ':' + String(x && x[1] || 0);
-				const title = String(x && x[3] != null && x[3] !== '' ? x[3] : 'Предупреждение без описания');
+				const title = String(x && x[3] != null && x[3] !== '' ? x[3] : 'Warning without description');
 				return E('div', { class: 'nfm-alert' + (x[2] === 'crit' ? ' crit' : '') }, [
-					E('div', { class: 'nfm-alert-copy' }, [ E('b', {}, title), E('small', {}, 'с ' + (x && x[1] ? fmtTs(x[1]) : 'время неизвестно')) ]),
-					E('button', { type: 'button', class: 'nfm-alert-dismiss', title: 'Скрыть после просмотра', click: () => {
+					E('div', { class: 'nfm-alert-copy' }, [ E('b', {}, title), E('small', {}, 'since ' + (x && x[1] ? fmtTs(x[1]) : 'unknown time')) ]),
+					E('button', { type: 'button', class: 'nfm-alert-dismiss', title: 'Hide after viewing', click: () => {
 						dismissed[key] = Date.now();
 						try { window.localStorage.setItem('nfm_alerts_dismissed', JSON.stringify(dismissed)); } catch (e) {}
 						renderAlerts();
-					} }, 'Понятно')
+					} }, 'Got it')
 				]);
 			}));
 
 			const last = S.alerts && S.alerts.last && S.alerts.last[0];
-			if (!S.alerts) T.wanMini.textContent = S.alerts === false ? 'история не собирается' : '–';
-			else if (!last || S.alerts.now - last[0] > 90) T.wanMini.textContent = 'нет данных';
-			else T.wanMini.textContent = (last[7] >= 0 ? nf0.format(last[7]) + ' мс' : 'нет ответа') + (last[6] >= 0 ? ' · шлюз ' + nf0.format(last[6]) + ' мс' : '');
+			if (!S.alerts) T.wanMini.textContent = S.alerts === false ? 'history not collected' : '–';
+			else if (!last || S.alerts.now - last[0] > 90) T.wanMini.textContent = 'no data';
+			else T.wanMini.textContent = (last[7] >= 0 ? nf0.format(last[7]) + ' ms' : 'no response') + (last[6] >= 0 ? ' · gateway ' + nf0.format(last[6]) + ' ms' : '');
 			if (last && S.alerts && S.alerts.now - last[0] <= 90) {
 				rNet.set(last[7] >= 0 ? Math.min(100, last[7]) : 100, last[7] >= 0 ? nf0.format(last[7]) : '×');
-				T.netMain.textContent = last[7] >= 0 ? 'есть' : 'нет ответа';
-				T.netSub.textContent = last[6] >= 0 ? 'шлюз ' + nf0.format(last[6]) + ' мс' : 'пинг до 1.1.1.1';
-			} else { rNet.set(0, '–'); T.netMain.textContent = S.alerts === false ? 'не собирается' : 'нет данных'; T.netSub.textContent = 'нужен сборщик'; }
+				T.netMain.textContent = last[7] >= 0 ? 'up' : 'no response';
+				T.netSub.textContent = last[6] >= 0 ? 'gateway ' + nf0.format(last[6]) + ' ms' : 'ping to 1.1.1.1';
+			} else { rNet.set(0, '–'); T.netMain.textContent = S.alerts === false ? 'not collected' : 'no data'; T.netSub.textContent = 'collector required'; }
 			updVerdict();
 		}
 
 		function renderTop3() {
-			const list = (title, rows) => E('div', {}, [ E('div', { class: 'nfm-k', style: 'margin:0 0 4px' }, title) ].concat(rows.length ? rows.map(x => E('div', { class: 'nfm-host' }, [ E('span', {}, x[0]), E('b', {}, x[1]) ])) : [ E('div', { class: 'nfm-empty' }, 'Пока пусто') ]));
+			const list = (title, rows) => E('div', {}, [ E('div', { class: 'nfm-k', style: 'margin:0 0 4px' }, title) ].concat(rows.length ? rows.map(x => E('div', { class: 'nfm-host' }, [ E('span', {}, x[0]), E('b', {}, x[1]) ])) : [ E('div', { class: 'nfm-empty' }, 'Nothing yet') ]));
 			const progs = S.full ? groupedProcs().sort((a, b) => b.rss - a.rss).slice(0, 3).map(e => [ e.label, fmtMB(e.rss) ]) : [];
 			const dv = S.devs && S.devs.day ? sumMonitorDeviceDailyTraffic(S.devs.day, hints, S.devs.neigh, S.wifi, routerIps, S.devs.leases).slice(0, 3) : [];
 			const identityMap = monitorBuildIpMacMap(hints, S.devs && S.devs.neigh, S.wifi, S.devs && S.devs.leases);
@@ -2632,21 +2641,21 @@ return view.extend({
 				const h = mac ? hints[mac] || hints[mac.toLowerCase()] || {} : {};
 				return h.name || names[ip] || ip;
 			};
-			top3Box.replaceChildren(list('Программы по памяти', progs), E('div', { style: 'height:12px' }), list('Устройства по трафику сегодня', dv.map(x => [ x.mac ? ((hints[x.mac] || hints[x.mac.toLowerCase()] || {}).name || x.ip) : nm(x.ip), fmtBytes(x.total) ])));
+			top3Box.replaceChildren(list('Programs by memory', progs), E('div', { style: 'height:12px' }), list('Devices by traffic today', dv.map(x => [ x.mac ? ((hints[x.mac] || hints[x.mac.toLowerCase()] || {}).name || x.ip) : nm(x.ip), fmtBytes(x.total) ])));
 		}
 
 		function renderDevices() {
 			const dv = S.devs;
 			devNote.toggleAttribute('hidden', true);
 			if (!dv) {
-				devBody.replaceChildren(E('tr', {}, E('td', { colspan: 5, class: 'nfm-empty' }, dv === false ? MISSING : 'Собираю данные…')));
+				devBody.replaceChildren(E('tr', {}, E('td', { colspan: 5, class: 'nfm-empty' }, dv === false ? MISSING : 'Collecting data…')));
 				T.devTotal.textContent = '';
 				return;
 			}
 			const notes = [];
-			if (dv.info && dv.info.acct === '0') notes.push('Учёт байтов в conntrack выключен, цифр не будет. Включите: sysctl -w net.netfilter.nf_conntrack_acct=1 (и добавьте net.netfilter.nf_conntrack_acct=1 в /etc/sysctl.conf).');
-			if (dv.info && dv.info.offload === '1') notes.push('Включён flow offloading: ускоренные соединения не попадают в conntrack-учёт, поэтому цифры по устройствам могут быть занижены. Это ограничение способа подсчёта, настройки файрвола менять не нужно.');
-			if (dv.info && dv.info.flow_hw === '1') notes.push('Включён аппаратный flow offloading: часть пакетов обрабатывается аппаратно и может обходить программные счётчики. Поэтому трафик WAN, устройств и приложений может заметно различаться; Nightfall не меняет эту настройку автоматически.');
+			if (dv.info && dv.info.acct === '0') notes.push('Byte accounting in conntrack is off, so there will be no numbers. Enable it: sysctl -w net.netfilter.nf_conntrack_acct=1 (and add net.netfilter.nf_conntrack_acct=1 to /etc/sysctl.conf).');
+			if (dv.info && dv.info.offload === '1') notes.push('Flow offloading is on: offloaded connections are not counted by conntrack, so per-device numbers may be understated. This is a limitation of the counting method; there is no need to change firewall settings.');
+			if (dv.info && dv.info.flow_hw === '1') notes.push('Hardware flow offloading is on: some packets are handled in hardware and may bypass the software counters. So WAN, device and app traffic may differ noticeably; Nightfall does not change this setting automatically.');
 			if (notes.length) { devNote.textContent = notes.join(' '); devNote.removeAttribute('hidden'); }
 
 			/* conntrack prints IPv6 in full form, DHCP/NDP hints in short form: compare in one form */
@@ -2671,47 +2680,47 @@ return view.extend({
 			const mx = list.length ? Math.max(1, list[0].dd + list[0].du) : 1;
 			let td = 0, tu = 0;
 			for (const r of Object.values(rows)) { td += r.dd; tu += r.du; }
-			T.devTotal.textContent = list.length ? `всего ↓ ${fmtBytes(td)} · ↑ ${fmtBytes(tu)}` + (all.length > list.length ? ` · показаны ${list.length} самых активных из ${all.length}` : '') : '';
+			T.devTotal.textContent = list.length ? `total ↓ ${fmtBytes(td)} · ↑ ${fmtBytes(tu)}` + (all.length > list.length ? ` · showing the ${list.length} most active of ${all.length}` : '') : '';
 
 			const activeWifiMacs = new Set((S.wifi || []).map(c => String(c.mac || '').toUpperCase()).filter(Boolean));
 			devBody.replaceChildren(...(list.length ? list.map(r => {
 				const h = r.mac ? hints[r.mac] || hints[String(r.mac).toLowerCase()] || {} : {};
 				const id = r.mac && r.k !== 'router' && r.k !== 'v6' ? devId(r.mac, h.name) : null;
-				/* Для активной станции не используем имя, найденное только по IP:
-				 * оно может принадлежать старой аренде другого MAC. */
+				/* For an active station we do not use a name found only by IP:
+				 * it may belong to an old lease of another MAC. */
 				const ipName = r.mac && activeWifiMacs.has(String(r.mac).toUpperCase()) ? '' : names[r.ip];
-				const label = r.k === 'v6' ? 'Другие адреса IPv6' : r.k === 'router' ? 'Сам роутер (VPN, DNS, обновления)' : (h.name || ipName || (id && id.known ? (id.label || 'Устройство') : '') || r.ip);
+				const label = r.k === 'v6' ? 'Other IPv6 addresses' : r.k === 'router' ? 'The router itself (VPN, DNS, updates)' : (h.name || ipName || (id && id.known ? (id.label || 'Device') : '') || r.ip);
 				const sub = r.k === 'v6' || r.k === 'router' ? '' : ((h.ipaddrs || [])[0] || r.ip);
-				return E('tr', { class: 'nfm-rowlink', tabindex: r.k === 'v6' || r.k === 'router' ? null : '0', title: r.k === 'v6' || r.k === 'router' ? null : 'Нажмите: карточка устройства',
+				return E('tr', { class: 'nfm-rowlink', tabindex: r.k === 'v6' || r.k === 'router' ? null : '0', title: r.k === 'v6' || r.k === 'router' ? null : 'Click: device card',
 					click: () => { if (r.k !== 'v6' && r.k !== 'router') openDevCard(r); }, keydown: ev => { if (ev.key === 'Enter' && r.k !== 'v6' && r.k !== 'router') openDevCard(r); } }, [
 					E('td', { title: id ? (id.hint ? id.hint + '\n' : '') + r.mac : '' }, [ id ? devIcon(id) : '', label, sub && sub !== label ? E('span', { class: 'nfm-chip' }, sub) : '',
-						id && id.vendor ? E('span', { class: 'nfm-chip' }, id.vendor) : '', id && id.priv ? E('span', { class: 'nfm-chip priv' }, 'частный MAC') : '',
+						id && id.vendor ? E('span', { class: 'nfm-chip' }, id.vendor) : '', id && id.priv ? E('span', { class: 'nfm-chip priv' }, 'private MAC') : '',
 						E('div', { class: 'nfm-bar nfm-bar-sm' }, E('div', { class: 'nfm-bar-fill c-down', style: `width:${100 * (r.dd + r.du) / mx}%` })) ]),
 					E('td', { class: 'r' }, rateText(r.rd)), E('td', { class: 'r' }, rateText(r.ru)),
 					E('td', { class: 'r' }, fmtBytes(r.dd)), E('td', { class: 'r' }, fmtBytes(r.du)) ]);
-			}) : [ E('tr', {}, E('td', { colspan: 5, class: 'nfm-empty' }, 'Пока нет данных: учёт начинается после запуска сборщика, цифры накапливаются в течение дня.')) ]));
+			}) : [ E('tr', {}, E('td', { colspan: 5, class: 'nfm-empty' }, 'No data yet: accounting starts after the collector starts, numbers accumulate during the day.')) ]));
 		}
 
-		/* ---- карточка устройства (по нажатию в «Устройствах»): трафик, приложения, сигнал, время появления, действия ---- */
+		/* ---- device card (on click in "Devices"): traffic, apps, signal, first seen, actions ---- */
 		function openDevCard(r) {
 			const mac = String(r.mac || '').toUpperCase(), ip = r.ip || '';
 			const h = mac ? hints[mac] || hints[mac.toLowerCase()] || {} : {};
-			/* В истории приложений ключом служит IP, поэтому собираем все известные
-			 * IPv4/IPv6-адреса устройства, а не только адрес текущей conntrack-строки. */
+			/* App history is keyed by IP, so we collect all known
+			 * IPv4/IPv6 addresses of the device, not just the address of the current conntrack row. */
 			const deviceIps = new Set([ ip ].concat(h.ipaddrs || [], h.ip6addrs || []).filter(Boolean).map(normalizeMonitorIp));
 			const id = mac ? devId(mac, h.name) : null;
-			const label = (mac && devName(mac)) || names[ip] || ip || 'Устройство';
-			const body = E('div', { class: 'nfm nfm-dc' }, E('div', { class: 'nfm-empty' }, 'Собираю данные…'));
+			const label = (mac && devName(mac)) || names[ip] || ip || 'Device';
+			const body = E('div', { class: 'nfm nfm-dc' }, E('div', { class: 'nfm-empty' }, 'Collecting data…'));
 			const acts = [];
 			if (mac) {
-				acts.push(E('button', { class: 'btn cbi-button-negative', click: () => { if (window.confirm('Заблокировать доступ в интернет для «' + label + '»?')) fs.exec('/usr/libexec/nightfall-block', [ 'block', mac ]).then(() => { ui.hideModal(); window.alert('Доступ закрыт. Снять блокировку можно на этой же вкладке в «Доступ в интернет».'); }).catch(() => window.alert('Не получилось.')); } }, 'Заблокировать'));
-				acts.push(E('button', { class: 'btn', title: 'Отправить «магический пакет», если устройство поддерживает Wake-on-LAN', click: () => fs.exec('/usr/libexec/nightfall-wol', [ 'send', mac ]).then(() => window.alert('Пакет отправлен.')).catch(() => window.alert('Не получилось.')) }, 'Разбудить'));
+				acts.push(E('button', { class: 'btn cbi-button-negative', click: () => { if (window.confirm('Block internet access for "' + label + '"?')) fs.exec('/usr/libexec/nightfall-block', [ 'block', mac ]).then(() => { ui.hideModal(); window.alert('Access blocked. You can unblock it on the same tab under "Internet access".'); }).catch(() => window.alert('Did not work.')); } }, 'Block'));
+				acts.push(E('button', { class: 'btn', title: 'Send a "magic packet" if the device supports Wake-on-LAN', click: () => fs.exec('/usr/libexec/nightfall-wol', [ 'send', mac ]).then(() => window.alert('Packet sent.')).catch(() => window.alert('Did not work.')) }, 'Wake'));
 			}
-			ui.showModal(label, [ body, E('div', { class: 'button-row' }, acts.concat([ E('button', { class: 'btn', click: ui.hideModal }, 'Закрыть') ])) ]);
+			ui.showModal(label, [ body, E('div', { class: 'button-row' }, acts.concat([ E('button', { class: 'btn', click: ui.hideModal }, 'Close') ])) ]);
 			const J = a => callHistory(a).catch(() => null);
 			Promise.all([ J([ 'devdaily' ]), J([ 'apps' ]), mac ? J([ 'wifi', mac ]) : Promise.resolve(null), J([ 'known' ]) ]).then(([ dd, ap, wf, kn ]) => {
-				/* В devdaily хранится MAC на момент записи. Добавляем прежние IP,
-				 * чтобы app history без MAC тоже попадала в карточку после смены адреса. */
+				/* devdaily stores the MAC at the time of recording. We add previous IPs
+				 * so that app history without a MAC also lands in the card after an address change. */
 				if (mac) for (const row of (dd && dd.rows) || [])
 					if (String(row[4] || '').toUpperCase() === mac && row[1]) deviceIps.add(normalizeMonitorIp(row[1]));
 				const ymdOf = d => d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
@@ -2730,20 +2739,20 @@ return view.extend({
 				const evs = ((wf && wf.events) || []).filter(x => String(x[1]).toUpperCase() === mac).slice(-6).reverse();
 				const first = ((kn && kn.rows) || []).find(x => x[0] === mac);
 				const kids = [
-					E('div', { class: 'nfm-note-s' }, [ ip, mac ? ' · ' + mac : '', id && id.vendor ? ' · ' + id.vendor : '', id && id.priv ? ' · частный MAC' : '' ].join('')),
+					E('div', { class: 'nfm-note-s' }, [ ip, mac ? ' · ' + mac : '', id && id.vendor ? ' · ' + id.vendor : '', id && id.priv ? ' · private MAC' : '' ].join('')),
 					E('div', { class: 'nfm-mon-sum' }, [
-						E('div', {}, [ E('span', {}, 'Сегодня'), E('b', {}, fmtBytes((r.dd || 0) + (r.du || 0))) ]),
-						E('div', {}, [ E('span', {}, 'Вчера'), E('b', {}, yest != null ? fmtBytes(yest) : '–') ]),
-						E('div', {}, [ E('span', {}, 'За 30 дней'), E('b', {}, fmtBytes(total30)) ]) ]),
-					E('div', { class: 'nfm-k', style: 'margin:12px 0 6px' }, 'Трафик за 14 дней'),
+						E('div', {}, [ E('span', {}, 'Today'), E('b', {}, fmtBytes((r.dd || 0) + (r.du || 0))) ]),
+						E('div', {}, [ E('span', {}, 'Yesterday'), E('b', {}, yest != null ? fmtBytes(yest) : '–') ]),
+						E('div', {}, [ E('span', {}, 'Last 30 days'), E('b', {}, fmtBytes(total30)) ]) ]),
+					E('div', { class: 'nfm-k', style: 'margin:12px 0 6px' }, 'Traffic over 14 days'),
 					E('div', { class: 'nfm-dc-bars' }, vals.map((v, i) => E('i', { style: 'height:' + Math.max(2, Math.round(60 * v / mx)) + 'px', title: keys[i].slice(6) + '.' + keys[i].slice(4, 6) + ': ' + fmtBytes(v) }))) ];
-				if (topApps.length) kids.push(E('div', { class: 'nfm-k', style: 'margin:12px 0 6px' }, 'Что качает (приложения)'), ...topApps.map(a => E('div', { class: 'nfm-host' }, [ E('span', {}, a[0]), E('b', {}, fmtBytes(a[1])) ])));
+				if (topApps.length) kids.push(E('div', { class: 'nfm-k', style: 'margin:12px 0 6px' }, 'What it downloads (apps)'), ...topApps.map(a => E('div', { class: 'nfm-host' }, [ E('span', {}, a[0]), E('b', {}, fmtBytes(a[1])) ])));
 				if (sig.length) {
 					const last = sig[sig.length - 1], avg = Math.round(sig.reduce((s, v) => s + v, 0) / sig.length);
-					kids.push(E('div', { class: 'nfm-k', style: 'margin:12px 0 6px' }, 'Wi‑Fi'), E('div', { class: 'nfm-host' }, [ E('span', {}, 'Сигнал сейчас'), E('b', {}, last + ' дБм') ]), E('div', { class: 'nfm-host' }, [ E('span', {}, 'Средний за период'), E('b', {}, avg + ' дБм') ]));
+					kids.push(E('div', { class: 'nfm-k', style: 'margin:12px 0 6px' }, 'Wi‑Fi'), E('div', { class: 'nfm-host' }, [ E('span', {}, 'Signal now'), E('b', {}, last + ' dBm') ]), E('div', { class: 'nfm-host' }, [ E('span', {}, 'Average for the period'), E('b', {}, avg + ' dBm') ]));
 				}
-				if (evs.length) kids.push(E('div', { class: 'nfm-k', style: 'margin:12px 0 6px' }, 'Подключения и отключения'), ...evs.map(x => E('div', { class: 'nfm-host' }, [ E('span', {}, x[2] === 'join' ? 'подключился' : 'отключился'), E('small', {}, fmtTs(x[0])) ])));
-				if (first && first[2]) kids.push(E('div', { class: 'nfm-note-s', style: 'margin-top:12px' }, 'Впервые замечено: ' + fmtTs(first[2])));
+				if (evs.length) kids.push(E('div', { class: 'nfm-k', style: 'margin:12px 0 6px' }, 'Connects and disconnects'), ...evs.map(x => E('div', { class: 'nfm-host' }, [ E('span', {}, x[2] === 'join' ? 'connected' : 'disconnected'), E('small', {}, fmtTs(x[0])) ])));
+				if (first && first[2]) kids.push(E('div', { class: 'nfm-note-s', style: 'margin-top:12px' }, 'First seen: ' + fmtTs(first[2])));
 				body.replaceChildren(...kids);
 			});
 		}
@@ -2751,7 +2760,7 @@ return view.extend({
 		function renderDay() {
 			const D = S.day;
 			if (!D || !D.h || !D.h.info || !D.h.info.started) {
-				dayBody.replaceChildren(E('div', { class: 'nfm-empty' }, D ? 'Сборщик истории не запущен — сводки нет.' : 'Загружаю…'));
+				dayBody.replaceChildren(E('div', { class: 'nfm-empty' }, D ? 'The history collector is not running: no summary.' : 'Loading…'));
 				return;
 			}
 			const hwFlow = !!(D.h && D.h.info && D.h.info.flow_hw === '1');
@@ -2761,7 +2770,7 @@ return view.extend({
 			const max = a => a.length ? Math.max(...a) : null, avg = a => a.length ? a.reduce((s, v) => s + v, 0) / a.length : null;
 			const sum = (list, k) => (list || []).reduce((s, x) => s + trafficBytes(x[k]), 0);
 			let dd = sum(D.d && D.d.day, 1), du = sum(D.d && D.d.day, 2), yd = sum(D.d && D.d.yday, 1) + sum(D.d && D.d.yday, 2);
-			/* итоги дня берём из «Трафика по месяцам»: там уже выбран лучший источник (порт WAN или сумма по устройствам) */
+			/* day totals come from "Traffic by month": the best source is already chosen there (WAN port or sum over devices) */
 			let ryDev = false;
 			{
 				const ymd = k => { const x = new Date(); x.setDate(x.getDate() - k); return String(x.getFullYear() * 10000 + (x.getMonth() + 1) * 100 + x.getDate()); };
@@ -2769,30 +2778,30 @@ return view.extend({
 				if (rt) { dd = rt[1]; du = rt[2]; }
 				if (ry) { yd = ry[1] + ry[2]; ryDev = ry[3] === 1; }
 			}
-			/* свой трафик роутера (прокси, VPN, обновления) считаем отдельно, чтобы он не выдавал себя за устройство */
+			/* the router's own traffic (proxy, VPN, updates) is counted separately so it does not pose as a device */
 			routerIps.learn(D.d && D.d.info);
 			let selfB = 0, cliD = 0, cliU = 0;
 			for (const [ ip, d, u ] of (D.d && D.d.day) || []) { if (routerIps.has(ip)) selfB += trafficBytes(d) + trafficBytes(u); else { cliD += trafficBytes(d); cliU += trafficBytes(u); } }
-			let srcNote = 'Скачано и отдано: по счётчикам порта WAN.', swDev = false;
+			let srcNote = 'Downloaded and uploaded: from the WAN port counters.', swDev = false;
 			const rtd = ((S.tr && S.tr.rows) || []).find(r => r[0] === (new Date().getFullYear() * 10000 + (new Date().getMonth() + 1) * 100 + new Date().getDate()) + '');
 			if (rtd && rtd[3] === 1) {
 				swDev = true;
-				srcNote = 'Счётчики порта WAN показывают заметно меньше, чем прошло через устройства, поэтому все итоги по трафику (здесь, в календаре и в сравнении периодов) берутся по данным устройств.' + (hwFlow ? ' Причина: на роутере включено аппаратное ускорение пакетов (Сеть → Межсетевой экран), оно скрывает часть трафика от счётчиков порта.' : ' Вероятная причина: аппаратное ускорение пакетов (Сеть → Межсетевой экран) скрывает трафик от счётчиков порта.');
+				srcNote = 'The WAN port counters show noticeably less than passed through devices, so all traffic totals (here, in the calendar and in the period comparison) are taken from device data.' + (hwFlow ? ' Reason: hardware packet offloading is enabled on the router (Network → Firewall); it hides part of the traffic from the port counters.' : ' Likely reason: hardware packet offloading (Network → Firewall) hides traffic from the port counters.');
 			}
 			if (cliD + cliU > 1.5 * (dd + du) && cliD + cliU > 50e6) {
 				dd = cliD; du = cliU; swDev = true;
-				srcNote = 'Счётчики порта WAN показывают заметно меньше, чем прошло через устройства, поэтому «Скачано» и «Отдано» взяты по данным устройств.' + (hwFlow ? ' Причина: на роутере включено аппаратное ускорение пакетов (Сеть → Межсетевой экран), оно скрывает часть трафика от счётчиков порта.' : ' Вероятная причина: аппаратное ускорение пакетов (Сеть → Межсетевой экран) скрывает трафик от счётчиков порта.');
+				srcNote = 'The WAN port counters show noticeably less than passed through devices, so "Downloaded" and "Uploaded" are taken from device data.' + (hwFlow ? ' Reason: hardware packet offloading is enabled on the router (Network → Firewall); it hides part of the traffic from the port counters.' : ' Likely reason: hardware packet offloading (Network → Firewall) hides traffic from the port counters.');
 			}
 
 			let drops = 0, down = 0;
 			for (const e of D.h.events || []) {
 				if (e[0] < mid) continue;
 				const tx = String(e[2] || '');
-				if (/Нет доступа в интернет/.test(tx) && !/Снова/.test(tx)) drops++;
-				const m = /Снова в норме: Нет доступа в интернет.*длилось (?:(\d+) ч )?(?:(\d+) мин )?(?:(\d+) с)?/.exec(tx);
+				if (/No internet access|Нет доступа в интернет/.test(tx) && !/Back to normal|Снова/.test(tx)) drops++;
+				const m = /Back to normal: No internet access.*lasted (?:(\d+) h )?(?:(\d+) min )?(?:(\d+) s)?/.exec(tx) || /Снова в норме: Нет доступа в интернет.*длилось (?:(\d+) ч )?(?:(\d+) мин )?(?:(\d+) с)?/.exec(tx);
 				if (m) down += (+m[1] || 0) * 3600 + (+m[2] || 0) * 60 + (+m[3] || 0);
 			}
-			const dur = s => s >= 3600 ? Math.floor(s / 3600) + ' ч ' + Math.floor(s % 3600 / 60) + ' мин' : s >= 60 ? Math.floor(s / 60) + ' мин' : s + ' с';
+			const dur = s => s >= 3600 ? Math.floor(s / 3600) + ' h ' + Math.floor(s % 3600 / 60) + ' min' : s >= 60 ? Math.floor(s / 60) + ' min' : s + ' s';
 			const pk = (a, f) => a == null ? '–' : f(a);
 			const tile = (k, v, s) => E('div', { class: 'nfm-tile' }, [ k, E('b', {}, v), s ? E('span', { class: 'nfm-note-s' }, s) : '' ]);
 
@@ -2802,20 +2811,20 @@ return view.extend({
 
 			dayBody.replaceChildren(
 				E('div', { class: 'nfm-tiles d4' }, [
-					tile('Скачано', fmtBytes(dd), 'отдано ' + fmtBytes(du)),
-					tile('Вчера всего', yd ? fmtBytes(yd) : '–', yd ? (ryDev ? 'по данным устройств' : swDev ? 'по счётчикам порта WAN' : 'сегодня ' + nf0.format(100 * (dd + du) / yd) + '% от вчера') : ''),
-					tile('Обрывов интернета', String(drops), drops ? 'без связи ' + dur(down) : 'всё стабильно'),
-					tile('Средний пинг', pk(avg(col(7)), v => nf0.format(v) + ' мс'), pk(max(col(7)), v => 'пик ' + nf0.format(v) + ' мс')),
-					tile('Пик процессора', pk(max(col(1)), v => nf0.format(v) + '%'), pk(avg(col(1)), v => 'в среднем ' + nf0.format(v) + '%')),
-					tile('Пик температуры', pk(max(col(3)), v => nf1.format(v) + ' °C'), pk(avg(col(3)), v => 'в среднем ' + nf1.format(v) + ' °C')),
-					tile('Пик памяти', pk(max(col(2)), v => nf0.format(v) + '%'), pk(avg(col(2)), v => 'в среднем ' + nf0.format(v) + '%'))
+					tile('Downloaded', fmtBytes(dd), 'uploaded ' + fmtBytes(du)),
+					tile('Yesterday total', yd ? fmtBytes(yd) : '–', yd ? (ryDev ? 'from device data' : swDev ? 'from WAN port counters' : 'today ' + nf0.format(100 * (dd + du) / yd) + '% of yesterday') : ''),
+					tile('Internet outages', String(drops), drops ? 'offline for ' + dur(down) : 'all stable'),
+					tile('Average ping', pk(avg(col(7)), v => nf0.format(v) + ' ms'), pk(max(col(7)), v => 'peak ' + nf0.format(v) + ' ms')),
+					tile('CPU peak', pk(max(col(1)), v => nf0.format(v) + '%'), pk(avg(col(1)), v => 'average ' + nf0.format(v) + '%')),
+					tile('Temperature peak', pk(max(col(3)), v => nf1.format(v) + ' °C'), pk(avg(col(3)), v => 'average ' + nf1.format(v) + ' °C')),
+					tile('Memory peak', pk(max(col(2)), v => nf0.format(v) + '%'), pk(avg(col(2)), v => 'average ' + nf0.format(v) + '%'))
 				]),
-				list.length ? E('div', { class: 'nfm-day-top' }, [ E('div', { class: 'nfm-k' }, 'Больше всего трафика сегодня' + (topAll.length > list.length ? ' · показаны ' + list.length + ' из ' + topAll.length + ' устройств' : '')) ].concat(list.map(row => {
+				list.length ? E('div', { class: 'nfm-day-top' }, [ E('div', { class: 'nfm-k' }, 'Most traffic today' + (topAll.length > list.length ? ' · showing ' + list.length + ' of ' + topAll.length + ' devices' : '')) ].concat(list.map(row => {
 					const hint = row.mac ? hints[row.mac] || hints[row.mac.toLowerCase()] || {} : {}, label = hint.name || names[row.ip] || row.ip;
 					return E('div', { class: 'nfm-host' }, [ E('span', {}, [ label, label !== row.ip ? E('small', {}, row.ip) : '' ]), E('b', {}, fmtBytes(row.total)),
 						E('div', { class: 'nfm-bar' }, E('div', { class: 'nfm-bar-fill c-down', style: `width:${100 * row.total / mx}%` })) ]);
 				}))) : '',
-				E('div', { class: 'nfm-note-s', style: 'margin-top:8px' }, srcNote + (selfB > 0 ? ' Собственный трафик роутера: ' + fmtBytes(selfB) + ' (обновления, DNS, замер скорости, прокси или VPN на роутере). В список устройств он не входит.' : '')));
+				E('div', { class: 'nfm-note-s', style: 'margin-top:8px' }, srcNote + (selfB > 0 ? ' The router\'s own traffic: ' + fmtBytes(selfB) + ' (updates, DNS, speed test, proxy or VPN on the router). It is not included in the device list.' : '')));
 		}
 
 		function renderHist() {
@@ -2823,8 +2832,8 @@ return view.extend({
 			const h = S.hist, R = RANGES[S.range], win = R[1];
 			const alive = !!(h && h.info && h.info.started);
 			histNote.toggleAttribute('hidden', alive);
-			if (!alive) histNote.textContent = h === false ? MISSING : 'Сборщик истории не запущен или ещё ничего не записал. Проверьте на роутере: /etc/init.d/nightfall-collector status; ls /tmp/nightfall';
-			if (!h) { evBox.replaceChildren(E('div', { class: 'nfm-empty' }, h === false ? '' : 'Загружаю…')); return; }
+			if (!alive) histNote.textContent = h === false ? MISSING : 'The history collector is not running or has not recorded anything yet. Check on the router: /etc/init.d/nightfall-collector status; ls /tmp/nightfall';
+			if (!h) { evBox.replaceChildren(E('div', { class: 'nfm-empty' }, h === false ? '' : 'Loading…')); return; }
 
 			const end = h.now;
 			const rows = (h.rows || []).filter(r => end - r[0] <= win);
@@ -2843,26 +2852,26 @@ return view.extend({
 			histNet.update(times, { rxB: usual(4), rx, tx }, { left: niceCeil(Math.max(vmax(rx), vmax(tx), 12500)) }, view);
 
 			const ok = net.filter(v => v != null);
-			T.pAvg.textContent = ok.length ? nf0.format(ok.reduce((a, b) => a + b, 0) / ok.length) + ' мс' : '–';
-			T.pMax.textContent = ok.length ? nf0.format(vmax(ok)) + ' мс' : '–';
+			T.pAvg.textContent = ok.length ? nf0.format(ok.reduce((a, b) => a + b, 0) / ok.length) + ' ms' : '–';
+			T.pMax.textContent = ok.length ? nf0.format(vmax(ok)) + ' ms' : '–';
 			const lossRows = rows.filter(r => r[8] >= 0);
 			T.pLoss.textContent = lossRows.length ? nf1.format(lossRows.reduce((a, r) => a + r[8], 0) / lossRows.length) + '%' : '–';
 			const evs = (h.events || []).filter(e => end - e[0] <= win);
-			T.pCut.textContent = String(evs.filter(e => e[1] === 'crit' && /^Нет /.test(e[2])).length);
+			T.pCut.textContent = String(evs.filter(e => e[1] === 'crit' && /^(No|Нет) /.test(e[2])).length);
 
 			const list = (h.events || []).slice().reverse().slice(0, 40);
 			evBox.replaceChildren(...(list.length ? list.map(e => E('div', { class: 'nfm-ev-i ' + e[1] }, [ E('i'), E('time', {}, fmtTs(e[0])), E('span', {}, e[2]) ]))
-				: [ E('div', { class: 'nfm-empty' }, 'Событий пока нет — это хорошо.') ]));
+				: [ E('div', { class: 'nfm-empty' }, 'No events yet, which is good.') ]));
 
 			const i = h.info || {};
-			histInfo.textContent = rows.length < 3 ? 'Данных пока мало: сборщик накапливает точки, график заполнится через несколько минут. ' : '';
-			histInfo.textContent += `Запись каждые ${i.step || 15} с, недельная история — по 5 минут, длинная (30 и 90 дней) — по 30 минут` + (+i.long_n > 0 ? ` (накоплено ${nf1.format(+i.long_n / 48)} сут из ${i.hist_days || 30})` : '') + '. ' +
-				(i.persist === '1' ? 'История сохраняется между перезагрузками. ' : 'История хранится в памяти и обнуляется при перезагрузке роутера. ') +
-				(i.limits ? 'Пороги: ' + i.limits + '. ' : '') + 'Настройки: /etc/nightfall-monitor.conf.';
+			histInfo.textContent = rows.length < 3 ? 'Not enough data yet: the collector is accumulating points, the chart will fill in a few minutes. ' : '';
+			histInfo.textContent += `Recorded every ${i.step || 15} s, the weekly history at 5 minutes, the long one (30 and 90 days) at 30 minutes` + (+i.long_n > 0 ? ` (accumulated ${nf1.format(+i.long_n / 48)} days of ${i.hist_days || 30})` : '') + '. ' +
+				(i.persist === '1' ? 'History is kept across reboots. ' : 'History is kept in memory and is reset when the router reboots. ') +
+				(i.limits ? 'Thresholds: ' + i.limits + '. ' : '') + 'Settings: /etc/nightfall-monitor.conf.';
 		}
 
 
-		/* ---------- что грузит канал ---------- */
+		/* ---------- what is using the link ---------- */
 		function ipLabel(ip) {
 			const map = monitorBuildIpMacMap(hints, S.devs && S.devs.neigh, S.wifi, S.devs && S.devs.leases);
 			const mac = map[normalizeMonitorIp(ip)], h = mac ? hints[mac] || hints[mac.toLowerCase()] || {} : {};
@@ -2871,25 +2880,25 @@ return view.extend({
 
 		function renderDns() {
 			const d = S.dns;
-			if (!d) { dnsBox.replaceChildren(E('div', { class: 'nfm-empty' }, d === false ? MISSING : 'Собираю данные…')); return; }
-			if (!d.enabled) { dnsBox.replaceChildren(E('div', { class: 'nfm-empty' }, 'Журнал DNS-запросов выключен. Включить: uci set dhcp.@dnsmasq[0].logqueries=1; uci commit dhcp; /etc/init.d/dnsmasq restart')); return; }
-			const list = (title, rows, nm) => E('div', {}, [ E('div', { class: 'nfm-k', style: 'margin-bottom:6px' }, title) ].concat(rows.length ? rows.slice(0, 8).map(x => E('div', { class: 'nfm-host' }, [ E('span', {}, nm ? nm(x[0]) : x[0]), E('b', {}, String(x[1])) ])) : [ E('div', { class: 'nfm-empty' }, 'Пока пусто') ]));
+			if (!d) { dnsBox.replaceChildren(E('div', { class: 'nfm-empty' }, d === false ? MISSING : 'Collecting data…')); return; }
+			if (!d.enabled) { dnsBox.replaceChildren(E('div', { class: 'nfm-empty' }, 'The DNS query log is off. To enable: uci set dhcp.@dnsmasq[0].logqueries=1; uci commit dhcp; /etc/init.d/dnsmasq restart')); return; }
+			const list = (title, rows, nm) => E('div', {}, [ E('div', { class: 'nfm-k', style: 'margin-bottom:6px' }, title) ].concat(rows.length ? rows.slice(0, 8).map(x => E('div', { class: 'nfm-host' }, [ E('span', {}, nm ? nm(x[0]) : x[0]), E('b', {}, String(x[1])) ])) : [ E('div', { class: 'nfm-empty' }, 'Nothing yet') ]));
 			const who = ip => names[ip] || ip;
 			dnsBox.replaceChildren(
-				E('div', { class: 'nfm-note-s', style: 'grid-column:1/-1' }, 'Запросов в журнале: ' + d.total + ', не нашлось имён: ' + d.nx + (d.types && d.types.length ? ' · ' + d.types.slice(0, 4).map(x => x[0] + ' ' + x[1]).join(', ') : '')),
-				list('Куда чаще обращаются', d.sites || []), list('Кто спрашивает', d.clients || [], who), list('Не нашлось (NXDOMAIN)', d.nxd || []));
+				E('div', { class: 'nfm-note-s', style: 'grid-column:1/-1' }, 'Queries in the log: ' + d.total + ', names not found: ' + d.nx + (d.types && d.types.length ? ' · ' + d.types.slice(0, 4).map(x => x[0] + ' ' + x[1]).join(', ') : '')),
+				list('Most requested', d.sites || []), list('Who is asking', d.clients || [], who), list('Not found (NXDOMAIN)', d.nxd || []));
 		}
 
 		function renderChannel() {
 			const c = S.chan;
-			if (!c) { chanBox.replaceChildren(E('div', { class: 'nfm-empty' }, c === false ? MISSING : 'Собираю данные…')); return; }
+			if (!c) { chanBox.replaceChildren(E('div', { class: 'nfm-empty' }, c === false ? MISSING : 'Collecting data…')); return; }
 			const fresh = c.now - c.ts <= 60;
 			const srcs = Array.from(new Set((c.svc || []).map(r => r[0])));
 			const want = S.chanDev || '';
-			chanSel.replaceChildren(E('option', { value: '' }, 'Все устройства'), ...srcs.map(ip => E('option', { value: ip }, ipLabel(ip))));
+			chanSel.replaceChildren(E('option', { value: '' }, 'All devices'), ...srcs.map(ip => E('option', { value: ip }, ipLabel(ip))));
 			chanSel.value = srcs.includes(want) ? want : '';
 			if (!srcs.includes(want)) S.chanDev = '';
-			if (!fresh) { chanBox.replaceChildren(E('div', { class: 'nfm-empty' }, 'Нет свежих данных. Нужен включённый учёт байтов в conntrack (см. подсказку выше) и работающий сборщик.')); return; }
+			if (!fresh) { chanBox.replaceChildren(E('div', { class: 'nfm-empty' }, 'No fresh data. Byte accounting in conntrack must be enabled (see the hint above) and the collector must be running.')); return; }
 
 			const sel = S.chanDev || '';
 			const svc = {}, dst = {};
@@ -2909,21 +2918,21 @@ return view.extend({
 				return E('div', {}, [ E('h4', {}, what), E('div', { class: 'nfm-lst' }, rows.length ? rows.map(r => E('div', { class: 'nfm-li' }, [
 					E('span', { class: 'nm' }, r.k), E('span', { class: 'v' }, '↓ ' + rateText(r.d)), E('span', { class: 'v' }, '↑ ' + rateText(r.u)),
 					E('div', { class: 'nfm-bar nfm-bar-sm bar' }, E('div', { class: 'nfm-bar-fill c-down', style: `width:${100 * (r.d + r.u) / mx}%` })) ]))
-					: [ E('div', { class: 'nfm-empty' }, 'Сейчас нет заметного трафика') ]) ]);
+					: [ E('div', { class: 'nfm-empty' }, 'No noticeable traffic right now') ]) ]);
 			};
-			chanBox.replaceChildren(list(svc, 'По службам и портам'), list(dst, 'По адресам в интернете'));
+			chanBox.replaceChildren(list(svc, 'By service and port'), list(dst, 'By internet address'));
 		}
 
-		/* ---------- Wi-Fi клиент: сигнал в динамике ---------- */
+		/* ---------- Wi-Fi client: signal over time ---------- */
 		function wifiDialog(mac, label, c) {
-			const body = E('div', { class: 'nfm nfm-wd' }, E('div', { class: 'nfm-empty' }, 'Загружаю историю сигнала…'));
-			ui.showModal(label, [ body, E('div', { class: 'button-row' }, [ E('button', { class: 'btn', click: ui.hideModal }, 'Закрыть') ]) ]);
+			const body = E('div', { class: 'nfm nfm-wd' }, E('div', { class: 'nfm-empty' }, 'Loading signal history…'));
+			ui.showModal(label, [ body, E('div', { class: 'button-row' }, [ E('button', { class: 'btn', click: ui.hideModal }, 'Close') ]) ]);
 			callHistory([ 'wifi', mac.toLowerCase() ]).then(r => {
 				if (!r) { body.replaceChildren(E('div', { class: 'nfm-hint' }, MISSING)); return; }
 				const rows = (r.rows || []).filter(x => +x[0] > 0).sort((a, b) => a[0] - b[0]);
 				if (rows.length < 2) {
-					body.replaceChildren(E('div', { class: 'nfm-hint' }, 'История сигнала копится раз в минуту с момента запуска сборщика (она хранится только в памяти). Загляните сюда через несколько минут.' +
-						((r.info && r.info.wifi_hist === '0') ? ' Сейчас запись истории Wi-Fi выключена в настройках (WIFI_HIST=0).' : '')));
+					body.replaceChildren(E('div', { class: 'nfm-hint' }, 'Signal history accumulates once a minute since the collector started (it is kept in memory only). Check back in a few minutes.' +
+						((r.info && r.info.wifi_hist === '0') ? ' Wi-Fi history recording is currently off in the settings (WIFI_HIST=0).' : '')));
 					return;
 				}
 				const t0 = rows[0][0], t1 = Math.max(r.now, rows[rows.length - 1][0]), W = 300, H = 120, lo = -95, hi = -30;
@@ -2934,29 +2943,29 @@ return view.extend({
 				const vals = rows.map(x => +x[2]), avg = vals.reduce((a, b) => a + b, 0) / vals.length;
 				const svg = SVG('svg', { viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: 'none' }, grid.concat([
 					SVG('path', { d, fill: 'none', stroke: 'var(--nfm-accent, #0a84ff)', 'stroke-width': 1.8, 'vector-effect': 'non-scaling-stroke', 'stroke-linejoin': 'round' }) ]));
-				const tm = ts => new Date(ts * 1000).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+				const tm = ts => new Date(ts * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 				const evs = (r.events || []).slice().reverse().slice(0, 12);
 				const weak = vals.filter(v => v <= -75).length / vals.length * 100;
 				body.replaceChildren(
-					E('div', { class: 'nfm-note-s', style: 'margin-bottom:6px' }, `${mac.toUpperCase()}${c && c.ssid ? ' · ' + c.ssid : ''} · период ${tm(t0)} — ${tm(t1)} (${fmtDur(t1 - t0)})`),
+					E('div', { class: 'nfm-note-s', style: 'margin-bottom:6px' }, `${mac.toUpperCase()}${c && c.ssid ? ' · ' + c.ssid : ''} · period ${tm(t0)} — ${tm(t1)} (${fmtDur(t1 - t0)})`),
 					svg,
-					E('div', { class: 'nfm-note-s', style: 'display:flex;justify-content:space-between;margin:2px 0 4px' }, [ E('span', {}, tm(t0)), E('span', {}, 'сейчас') ]),
-					E('div', { class: 'nfm-note-s', style: 'margin-bottom:10px' }, 'Линии сетки: −40, −50 … −90 дБм сверху вниз. Выше −65 — хороший сигнал, ниже −75 — слабый.'),
-					E('div', { class: 'nfm-tiles t4' }, [ [ 'сейчас', vals[vals.length - 1] + ' дБм' ], [ 'в среднем', nf0.format(avg) + ' дБм' ], [ 'лучший', Math.max(...vals) + ' дБм' ], [ 'худший', Math.min(...vals) + ' дБм' ] ]
+					E('div', { class: 'nfm-note-s', style: 'display:flex;justify-content:space-between;margin:2px 0 4px' }, [ E('span', {}, tm(t0)), E('span', {}, 'now') ]),
+					E('div', { class: 'nfm-note-s', style: 'margin-bottom:10px' }, 'Grid lines: −40, −50 … −90 dBm from top to bottom. Above −65 is a good signal, below −75 is weak.'),
+					E('div', { class: 'nfm-tiles t4' }, [ [ 'now', vals[vals.length - 1] + ' dBm' ], [ 'average', nf0.format(avg) + ' dBm' ], [ 'best', Math.max(...vals) + ' dBm' ], [ 'worst', Math.min(...vals) + ' dBm' ] ]
 						.map(([ l, v ]) => E('div', { class: 'nfm-tile' }, [ l, E('b', {}, v) ]))),
 					E('div', { class: 'nfm-note-s', style: 'margin:10px 0' }, weak >= 20
-						? `Слабый сигнал (−75 дБм и ниже) около ${nf0.format(weak)}% времени: поднесите устройство ближе к роутеру или подумайте о повторителе.`
-						: 'Сигнал в основном уверенный.'),
-					E('h4', { style: 'margin:10px 0 4px;font-size:12px;color:var(--nfm-dim)' }, 'Подключения и отключения'),
-					E('div', { class: 'nfm-evlist', style: 'max-height:150px' }, evs.length ? evs.map(e => E('div', { class: 'nfm-ev-i ' + (e[2] === 'join' ? 'ok' : 'warn') }, [ E('i'), E('time', {}, fmtTs(e[0])), E('span', {}, e[2] === 'join' ? 'Подключилось' : 'Отключилось') ]))
-						: [ E('div', { class: 'nfm-empty' }, 'Переподключений не было с момента запуска сборщика.') ]));
+						? `Weak signal (−75 dBm or lower) about ${nf0.format(weak)}% of the time: move the device closer to the router or consider a repeater.`
+						: 'The signal is mostly solid.'),
+					E('h4', { style: 'margin:10px 0 4px;font-size:12px;color:var(--nfm-dim)' }, 'Connects and disconnects'),
+					E('div', { class: 'nfm-evlist', style: 'max-height:150px' }, evs.length ? evs.map(e => E('div', { class: 'nfm-ev-i ' + (e[2] === 'join' ? 'ok' : 'warn') }, [ E('i'), E('time', {}, fmtTs(e[0])), E('span', {}, e[2] === 'join' ? 'Connected' : 'Disconnected') ]))
+						: [ E('div', { class: 'nfm-empty' }, 'No reconnects since the collector started.') ]));
 			});
 		}
 
-		/* ---------- журнал перезагрузок и обрывов ---------- */
+		/* ---------- reboot and outage log ---------- */
 		function renderJournal() {
 			const j = S.jrn;
-			if (!j) { jrnBox.replaceChildren(E('div', { class: 'nfm-empty' }, j === false ? MISSING : 'Загружаю…')); return; }
+			if (!j) { jrnBox.replaceChildren(E('div', { class: 'nfm-empty' }, j === false ? MISSING : 'Loading…')); return; }
 			const WEEK = 604800, rows = (j.rows || []).slice().sort((a, b) => b[0] - a[0]);
 			const out = rows.filter(r => r[1] === 'outage' && j.now - r[0] <= WEEK);
 			const sum = out.reduce((a, r) => a + r[2], 0);
@@ -2969,93 +2978,93 @@ return view.extend({
 			const list = rows.slice(0, 30);
 			jrnBox.replaceChildren(...(list.length ? list.map(r => E('div', { class: 'nfm-jr ' + r[1] }, [
 				E('span', { class: 'ic' }, r[1] === 'outage' ? '⚠' : '⟳'), E('time', {}, fmtTs(r[0])),
-				E('span', {}, r[1] === 'outage' ? 'Обрыв связи: ' + r[3] : r[3]), E('b', {}, r[1] === 'outage' ? fmtDur(r[2]) : '') ]))
-				: [ E('div', { class: 'nfm-empty' }, disabled ? 'Журнал выключен (JOURNAL=0 в настройках).' : 'Записей пока нет: журнал пополняется при обрывах связи (от двух неудачных проверок подряд) и перезагрузках роутера.') ]));
+				E('span', {}, r[1] === 'outage' ? 'Outage: ' + r[3] : r[3]), E('b', {}, r[1] === 'outage' ? fmtDur(r[2]) : '') ]))
+				: [ E('div', { class: 'nfm-empty' }, disabled ? 'The log is off (JOURNAL=0 in the settings).' : 'No records yet: the log is filled on connection outages (two failed checks in a row) and router reboots.') ]));
 		}
 
-		/* ---------- замер скорости ---------- */
+		/* ---------- speed test ---------- */
 		function startSpeed() {
-			spdBtn.disabled = true; spdBtn.textContent = 'Идёт замер…';
+			spdBtn.disabled = true; spdBtn.textContent = 'Testing…';
 			S.spdRun = true; S.spdT = Date.now(); S.at.spd = 0;
 			fs.exec(SPEEDBIN, [ 'start' ]).catch(err => {
 				S.spdRun = false;
-				ui.addNotification(null, E('p', {}, 'Не удалось запустить замер: ' + (err.message || err)), 'danger');
+				ui.addNotification(null, E('p', {}, 'Could not start the test: ' + (err.message || err)), 'danger');
 			});
 		}
 
 		function renderSpeed() {
 			const sp = S.spd;
-			if (S.spdRun && Date.now() - (S.spdT || 0) > 60000) S.spdRun = false;   /* замер идёт не дольше ~15 с: дальше не ждём */
+			if (S.spdRun && Date.now() - (S.spdT || 0) > 60000) S.spdRun = false;   /* a test takes no longer than ~15 s: do not wait beyond that */
 			const running = !!(sp && sp.running) || !!S.spdRun;
-			spdBtn.disabled = running; spdBtn.textContent = running ? 'Идёт замер…' : 'Измерить сейчас';
-			if (!sp) { spdList.replaceChildren(E('div', { class: 'nfm-empty' }, sp === false ? MISSING : 'Загружаю…')); return; }
+			spdBtn.disabled = running; spdBtn.textContent = running ? 'Testing…' : 'Test now';
+			if (!sp) { spdList.replaceChildren(E('div', { class: 'nfm-empty' }, sp === false ? MISSING : 'Loading…')); return; }
 			if (sp.info && sp.info.speed_hours != null && document.activeElement !== spdSel) spdSel.value = sp.info.speed_hours;
 			if (S.cfg && S.cfg.values && document.activeElement !== spdSrc) { const u = S.cfg.values.SPEED_URL || SPEED_PRESETS[0][0]; spdSrc.value = SPEED_PRESETS.some(p => p[0] === u) ? u : ''; }
 			const WEEK = 604800, all = (sp.rows || []).filter(r => r[5] === 'ok' && sp.now - r[0] <= WEEK);
 			const ok = all.map(r => +r[1]);
-			T.sLast.textContent = ok.length ? nf1.format(ok[ok.length - 1]) + ' Мбит/с' : '–';
-			T.sAvg.textContent = ok.length ? nf1.format(ok.reduce((a, b) => a + b, 0) / ok.length) + ' Мбит/с' : '–';
-			T.sMax.textContent = ok.length ? nf1.format(Math.max(...ok)) + ' Мбит/с' : '–';
-			T.sMin.textContent = ok.length ? nf1.format(Math.min(...ok)) + ' Мбит/с' : '–';
+			T.sLast.textContent = ok.length ? nf1.format(ok[ok.length - 1]) + ' Mbit/s' : '–';
+			T.sAvg.textContent = ok.length ? nf1.format(ok.reduce((a, b) => a + b, 0) / ok.length) + ' Mbit/s' : '–';
+			T.sMax.textContent = ok.length ? nf1.format(Math.max(...ok)) + ' Mbit/s' : '–';
+			T.sMin.textContent = ok.length ? nf1.format(Math.min(...ok)) + ' Mbit/s' : '–';
 			const mx = ok.length ? Math.max(...ok) : 10;
 			spdChart.update(all.map(r => r[0]), { mbps: ok }, { left: niceCeil(Math.max(mx, 10)) }, { win: WEEK, end: sp.now, labels: xLabels(sp.now, WEEK) });
 			const last = (sp.rows || []).slice(-8).reverse();
 			spdList.replaceChildren(...(last.length ? last.map(r => E('div', { class: 'nfm-li' }, [
-				E('span', { class: 'nm' }, [ fmtTs(r[0]), r[5] !== 'ok' ? E('small', {}, 'не удалось скачать файл') : (+r[4] > 300 ? E('small', {}, 'в это время шёл другой трафик') : '') ]),
-				E('span', { class: 'v' }, r[5] === 'ok' ? nf1.format(+r[1]) + ' Мбит/с' : '–'), E('span', { class: 'v' }, r[5] === 'ok' ? fmtBytes(+r[2]) : '') ]))
-				: [ E('div', { class: 'nfm-empty' }, 'Замеров ещё не было. Нажмите «Измерить сейчас».') ]));
-			spdNote.textContent = 'Роутер скачивает тестовый файл в несколько потоков (каждый поток качает весь файл; по умолчанию 4, число меняется параметром SPEED_STREAMS в /etc/nightfall-monitor.conf) и считает скорость сам, без браузера. Это скорость загрузки до выбранного сервера; адрес меняется в настройках ниже. Если в это время идёт другой трафик, результат занижен.';
+				E('span', { class: 'nm' }, [ fmtTs(r[0]), r[5] !== 'ok' ? E('small', {}, 'could not download the file') : (+r[4] > 300 ? E('small', {}, 'other traffic was flowing at the time') : '') ]),
+				E('span', { class: 'v' }, r[5] === 'ok' ? nf1.format(+r[1]) + ' Mbit/s' : '–'), E('span', { class: 'v' }, r[5] === 'ok' ? fmtBytes(+r[2]) : '') ]))
+				: [ E('div', { class: 'nfm-empty' }, 'No tests yet. Press "Test now".') ]));
+			spdNote.textContent = 'The router downloads a test file in several streams (each stream downloads the whole file; 4 by default, the number is set by the SPEED_STREAMS parameter in /etc/nightfall-monitor.conf) and calculates the speed itself, without the browser. This is the download speed to the selected server; the address is changed in the settings below. If other traffic is flowing at the time, the result is understated.';
 		}
 
-		/* ---------- хранение истории и износ флеш-памяти ---------- */
+		/* ---------- history storage and flash wear ---------- */
 		function renderFlash() {
 			const i = (S.hist && S.hist.info) || (S.jrn && S.jrn.info) || (S.spd && S.spd.info) || null;
-			if (!i) { flashBox.replaceChildren(E('div', { class: 'nfm-empty' }, 'Загружаю…')); return; }
+			if (!i) { flashBox.replaceChildren(E('div', { class: 'nfm-empty' }, 'Loading…')); return; }
 			const hrs = +i.persist_hours || 6, kb = +i.persist_kb || 0;
 			const rows = [
-				[ 'Графики и события', 'в памяти роутера (/tmp), на флеш-память не пишутся' ],
-				[ 'Журнал обрывов и перезагрузок', i.journal === '1' ? 'на флеш, одна короткая запись на событие, не больше 200 строк' : 'выключен' ],
-				[ 'Сохранение между перезагрузками', i.persist === '1' ? `в ${i.persist_dir} раз в ${hrs} ч` + (kb ? `, до ${nf0.format(kb)} КБ за раз` : '') + ', неизменённые файлы пропускаются' : 'выключено, история обнуляется при перезагрузке' ]
+				[ 'Charts and events', 'in router memory (/tmp), not written to flash' ],
+				[ 'Outage and reboot log', i.journal === '1' ? 'on flash, one short record per event, no more than 200 lines' : 'off' ],
+				[ 'Saving across reboots', i.persist === '1' ? `to ${i.persist_dir} every ${hrs} h` + (kb ? `, up to ${nf0.format(kb)} KB at a time` : '') + ', unchanged files are skipped' : 'off, history is reset on reboot' ]
 			];
 			const est = i.persist === '1' && kb ? kb * 24 / hrs : 0;
 			flashBox.replaceChildren(
 				...(i.persist_error === '1' ? [ E('div', { class: 'nfm-hint', style: 'border-color:#e5484d' }, [
-					E('b', { class: 'nfm-warn' }, 'Не удалось сохранить историю. '),
-					'Проверьте, подключён ли накопитель, существует ли папка и есть ли права на запись. После исправления сборщик повторит сохранение автоматически.'
+					E('b', { class: 'nfm-warn' }, 'Could not save history. '),
+					'Check whether the storage is connected, the folder exists and there are write permissions. After the fix, the collector will retry saving automatically.'
 				]) ] : []),
-				...(i.persist_blocked === '1' ? [ E('div', { class: 'nfm-hint', style: 'border-color:#e5484d' }, [ E('b', { class: 'nfm-warn' }, 'Запись заблокирована. '),
-					`Папка ${i.persist_dir} находится на встроенной флеш-памяти роутера, её нельзя изнашивать. Укажите папку на USB или SD-карте. Если это eMMC, SSD или SD-карта, которую можно писать, поставьте «Разрешить сохранение на встроенный накопитель» в 1.` ]) ] : []),
+				...(i.persist_blocked === '1' ? [ E('div', { class: 'nfm-hint', style: 'border-color:#e5484d' }, [ E('b', { class: 'nfm-warn' }, 'Writing is blocked. '),
+					`The folder ${i.persist_dir} is on the router's built-in flash memory, which must not be worn out. Choose a folder on a USB stick or SD card. If this is eMMC, SSD or an SD card that can be written to, set "Allow writing to internal flash memory" to 1.` ]) ] : []),
 				E('div', { class: 'nfm-lst' }, rows.map(([ a, b ]) => E('div', {}, [ E('b', {}, a), E('div', { class: 'nfm-note-s' }, b) ]))),
 				E('div', { class: 'nfm-note-s', style: 'margin-top:10px' }, est
-					? `Оценка записи на накопитель: около ${nf0.format(est / 1024 > 1 ? est / 1024 : est)} ${est / 1024 > 1 ? 'МБ' : 'КБ'} в сутки.`
-					: 'Запись на накопитель не ведётся, износ флеш-памяти минимален. Чтобы переживать перезагрузки, укажите папку на USB/SD в настройках ниже.'));
+					? `Estimated storage writes: about ${nf0.format(est / 1024 > 1 ? est / 1024 : est)} ${est / 1024 > 1 ? 'MB' : 'KB'} per day.`
+					: 'Nothing is written to storage, flash wear is minimal. To survive reboots, set a folder on USB/SD in the settings below.'));
 		}
 
-		/* ---------- состояние служб ---------- */
+		/* ---------- service status ---------- */
 		function svcLog(name) {
-			const body = E('div', { class: 'nfm-evlist', style: 'max-height:55vh;overflow:auto;min-width:min(520px,80vw)' }, E('div', { class: 'nfm-empty' }, 'Читаю журнал…'));
-			ui.showModal('Журнал: ' + name, [ body, E('div', { class: 'button-row' }, [ E('button', { class: 'btn', click: ui.hideModal }, 'Закрыть') ]) ]);
+			const body = E('div', { class: 'nfm-evlist', style: 'max-height:55vh;overflow:auto;min-width:min(520px,80vw)' }, E('div', { class: 'nfm-empty' }, 'Reading the log…'));
+			ui.showModal('Log: ' + name, [ body, E('div', { class: 'button-row' }, [ E('button', { class: 'btn', click: ui.hideModal }, 'Close') ]) ]);
 			fs.exec('/usr/libexec/nightfall-log', [ 'read', '1500' ]).then(r => {
 				let j = null; try { j = JSON.parse(r.stdout); } catch (e) { /* ignore */ }
 				const rows = j && j.rows ? j.rows.filter(x => x[2] === name || (x[2] || '').indexOf(name) === 0).slice(-80).reverse() : [];
-				body.replaceChildren(...(rows.length ? rows.map(x => E('div', { class: 'nfm-ev-i ' + (/err|crit|alert|emerg/.test(x[1]) ? 'crit' : /warn/.test(x[1]) ? 'warn' : 'info') }, [ E('i'), E('time', {}, x[0]), E('span', {}, x[3]) ])) : [ E('div', { class: 'nfm-empty' }, 'В журнале роутера записей этой службы нет.') ]));
-			}).catch(() => body.replaceChildren(E('div', { class: 'nfm-empty' }, 'Не удалось прочитать журнал.')));
+				body.replaceChildren(...(rows.length ? rows.map(x => E('div', { class: 'nfm-ev-i ' + (/err|crit|alert|emerg/.test(x[1]) ? 'crit' : /warn/.test(x[1]) ? 'warn' : 'info') }, [ E('i'), E('time', {}, x[0]), E('span', {}, x[3]) ])) : [ E('div', { class: 'nfm-empty' }, 'The router log has no records for this service.') ]));
+			}).catch(() => body.replaceChildren(E('div', { class: 'nfm-empty' }, 'Could not read the log.')));
 		}
 
 		function svcAction(name, action, label, danger) {
 			const run = () => {
 				ui.showModal(null, [ E('p', { class: 'spinning' }, label + '…') ]);
 				callInitAction(name, action).then(() => window.setTimeout(() => { ui.hideModal(); S.at.svc = 0; tick(); }, 1500))
-					.catch(err => { ui.hideModal(); ui.addNotification(null, E('p', {}, `Не удалось (${name}: ${action}): ` + (err.message || err)), 'danger'); });
+					.catch(err => { ui.hideModal(); ui.addNotification(null, E('p', {}, `Failed (${name}: ${action}): ` + (err.message || err)), 'danger'); });
 			};
 			if (!danger) return run();
-			ui.showModal(`${label}?`, [ E('p', {}, `Служба «${name}» важна для работы роутера. Соединение с панелью может прерваться на несколько секунд.`),
-				E('div', { class: 'button-row' }, [ E('button', { class: 'btn', click: ui.hideModal }, 'Отмена'), E('button', { class: 'btn cbi-button-negative important', click: () => { ui.hideModal(); run(); } }, 'Выполнить') ]) ]);
+			ui.showModal(`${label}?`, [ E('p', {}, `The "${name}" service is important for the router. The connection to the panel may drop for a few seconds.`),
+				E('div', { class: 'button-row' }, [ E('button', { class: 'btn', click: ui.hideModal }, 'Cancel'), E('button', { class: 'btn cbi-button-negative important', click: () => { ui.hideModal(); run(); } }, 'Run') ]) ]);
 		}
 
 		function renderServices() {
 			const sv = S.svc;
-			if (!sv || !sv.init) { svcBox.replaceChildren(E('div', { class: 'nfm-empty' }, sv ? 'Список служб недоступен: нет прав или не поддерживается этой версией LuCI.' : 'Загружаю…')); svcMore.replaceChildren(); return; }
+			if (!sv || !sv.init) { svcBox.replaceChildren(E('div', { class: 'nfm-empty' }, sv ? 'Service list unavailable: no permission or not supported by this LuCI version.' : 'Loading…')); svcMore.replaceChildren(); return; }
 			const q = (svcFilter.value || '').trim().toLowerCase();
 			const run = sv.run || {};
 			const all = Object.keys(sv.init).map(n => {
@@ -3071,27 +3080,27 @@ return view.extend({
 			const row = x => {
 				const prot = SVC_PROTECTED.includes(x.n);
 				const st = x.known ? (x.up ? 'run' : (bad(x) ? 'bad' : 'off')) : 'off';
-				const state = x.known ? (x.up ? 'работает' : (x.en ? 'не работает, хотя включена' : 'остановлена')) : (x.en ? 'включена при загрузке' : 'выключена');
+				const state = x.known ? (x.up ? 'running' : (x.en ? 'not running, although enabled' : 'stopped')) : (x.en ? 'enabled at boot' : 'disabled');
 				return E('div', { class: 'nfm-svc ' + st }, [ E('i', { class: 'st' }),
-					E('div', {}, [ E('div', { class: 'nm' }, x.n), E('div', { class: 'ds' }, [ SVC_INFO[x.n] ? SVC_INFO[x.n] + ' · ' : '', state, x.known && x.en ? ' · автозапуск включён' : (x.known ? ' · автозапуск выключен' : '') ]) ]),
+					E('div', {}, [ E('div', { class: 'nm' }, x.n), E('div', { class: 'ds' }, [ SVC_INFO[x.n] ? SVC_INFO[x.n] + ' · ' : '', state, x.known && x.en ? ' · autostart on' : (x.known ? ' · autostart off' : '') ]) ]),
 					E('div', { class: 'ac' }, [
-						E('button', { class: 'nfm-mini', title: 'Последние записи журнала роутера по этой службе', click: () => svcLog(x.n) }, 'Журнал'),
-						E('button', { class: 'nfm-mini', click: () => svcAction(x.n, 'restart', 'Перезапустить ' + x.n, prot) }, 'Перезапустить'),
-						x.up ? E('button', { class: 'nfm-mini', disabled: prot, title: prot ? 'Ключевая служба: остановка отсюда отключена' : '', click: () => svcAction(x.n, 'stop', 'Остановить ' + x.n) }, 'Остановить')
-							: E('button', { class: 'nfm-mini', click: () => svcAction(x.n, 'start', 'Запустить ' + x.n) }, 'Запустить'),
-						E('button', { class: 'nfm-mini', disabled: prot && x.en, title: prot && x.en ? 'Ключевая служба: автозапуск менять нельзя' : '', click: () => svcAction(x.n, x.en ? 'disable' : 'enable', (x.en ? 'Отключить автозапуск ' : 'Включить автозапуск ') + x.n) }, x.en ? 'Автозапуск: вкл' : 'Автозапуск: выкл') ]) ]);
+						E('button', { class: 'nfm-mini', title: 'Recent router log records for this service', click: () => svcLog(x.n) }, 'Log'),
+						E('button', { class: 'nfm-mini', click: () => svcAction(x.n, 'restart', 'Restart ' + x.n, prot) }, 'Restart'),
+						x.up ? E('button', { class: 'nfm-mini', disabled: prot, title: prot ? 'Key service: stopping from here is disabled' : '', click: () => svcAction(x.n, 'stop', 'Stop ' + x.n) }, 'Stop')
+							: E('button', { class: 'nfm-mini', click: () => svcAction(x.n, 'start', 'Start ' + x.n) }, 'Start'),
+						E('button', { class: 'nfm-mini', disabled: prot && x.en, title: prot && x.en ? 'Key service: autostart cannot be changed' : '', click: () => svcAction(x.n, x.en ? 'disable' : 'enable', (x.en ? 'Disable autostart for ' : 'Enable autostart for ') + x.n) }, x.en ? 'Autostart: on' : 'Autostart: off') ]) ]);
 			};
-			svcBox.replaceChildren(...(proc.length ? proc.map(row) : [ E('div', { class: 'nfm-empty' }, q ? 'Ничего не найдено' : 'Работающих служб не найдено') ]));
-			svcMore.replaceChildren(other.length ? E('details', { class: 'nfm-card' }, [ E('summary', { style: 'cursor:pointer;font-weight:600;font-size:14px' }, `Скрипты без отдельного процесса (${other.length})`),
+			svcBox.replaceChildren(...(proc.length ? proc.map(row) : [ E('div', { class: 'nfm-empty' }, q ? 'Nothing found' : 'No running services found') ]));
+			svcMore.replaceChildren(other.length ? E('details', { class: 'nfm-card' }, [ E('summary', { style: 'cursor:pointer;font-weight:600;font-size:14px' }, `Scripts without a separate process (${other.length})`),
 				E('div', { style: 'margin-top:8px' }, other.map(row)) ]) : '');
 		}
 
 		/* ---------- logic ---------- */
 		function setPaused(p) {
 			S.paused = p;
-			pauseBtn.textContent = p ? 'Продолжить' : 'Пауза';
+			pauseBtn.textContent = p ? 'Resume' : 'Pause';
 			pill.classList.toggle('paused', p);
-			pill.textContent = p ? 'приостановлено' : `обновляется каждые ${INTERVAL} с`;
+			pill.textContent = p ? 'paused' : `refreshes every ${INTERVAL} s`;
 		}
 
 		const show = (el, v) => el.toggleAttribute('hidden', !v);
@@ -3221,7 +3230,7 @@ return view.extend({
 
 		function ifaceTitle(n) {
 			const r = devRole[n];
-			const kind = /^br-|^lan/.test(n) ? 'LAN-мост' : /^(wlan|phy)/.test(n) ? 'Wi-Fi' : null;
+			const kind = /^br-|^lan/.test(n) ? 'LAN bridge' : /^(wlan|phy)/.test(n) ? 'Wi-Fi' : null;
 			return [ n, r ? r.toUpperCase() : kind ];
 		}
 
@@ -3232,27 +3241,27 @@ return view.extend({
 			const h = S.hist;
 			if (h && h.events) for (const e of h.events) items.push({ t: e[0], k: 'ev', cls: e[1], txt: e[2] });
 			const j = S.jrn;
-			if (j && j.rows) for (const r of j.rows) items.push(r[1] === 'outage' ? { t: r[0], k: 'jr', cls: 'crit', txt: 'Обрыв связи: ' + r[3] + (r[2] ? ' (' + fmtDur(r[2]) + ')' : '') } : { t: r[0], k: 'jr', cls: 'info', txt: 'Перезагрузка: ' + r[3] });
+			if (j && j.rows) for (const r of j.rows) items.push(r[1] === 'outage' ? { t: r[0], k: 'jr', cls: 'crit', txt: 'Outage: ' + r[3] + (r[2] ? ' (' + fmtDur(r[2]) + ')' : '') } : { t: r[0], k: 'jr', cls: 'info', txt: 'Reboot: ' + r[3] });
 			const bl = S.blog;
-			if (bl && bl.log) for (const r of bl.log) items.push({ t: r[0], k: 'bl', cls: r[3] === 'on' ? 'warn' : 'info', txt: (r[2] || r[1]) + (r[3] === 'on' ? ': доступ закрыт' : ': доступ открыт') + (r[4] ? ' · ' + r[4] : '') });
-			if (!h && !j && !bl) { logBox.replaceChildren(E('div', { class: 'nfm-empty' }, 'Загружаю…')); return; }
+			if (bl && bl.log) for (const r of bl.log) items.push({ t: r[0], k: 'bl', cls: r[3] === 'on' ? 'warn' : 'info', txt: (r[2] || r[1]) + (r[3] === 'on' ? ': access blocked' : ': access allowed') + (r[4] ? ' · ' + r[4] : '') });
+			if (!h && !j && !bl) { logBox.replaceChildren(E('div', { class: 'nfm-empty' }, 'Loading…')); return; }
 			const seen = new Set();
 			const since = S.logP ? Date.now() / 1000 - S.logP : 0;
 			const pins = pinLoad(), pid = x => x.t + '|' + x.txt;
 			const list = items.filter(x => (k === 'all' || x.k === k || (k === 'pin' && pins.includes(pid(x)))) && (k === 'pin' || x.t >= since || pins.includes(pid(x))) && (!q || x.txt.toLowerCase().includes(q)))
 				.sort((a, b) => (pins.includes(pid(b)) - pins.includes(pid(a))) || b.t - a.t).filter(x => { const id = x.t + '|' + x.txt; if (seen.has(id)) return false; seen.add(id); return true; })				.slice(0, 2000);
 			logShown = list;
-			logBox.replaceChildren(...(list.length ? list.slice(0, 200).map(x => E('div', { class: 'nfm-ev-i ' + x.cls }, [ E('i'), E('time', {}, fmtTs(x.t)), E('span', {}, [ x.txt, E('button', { type: 'button', class: 'nfm-pin' + (pins.includes(pid(x)) ? ' on' : ''), title: pins.includes(pid(x)) ? 'Открепить' : 'Закрепить: запись останется сверху', click: () => pinToggle(pid(x)) }, pins.includes(pid(x)) ? '★' : '☆') ]) ]))
-				: [ E('div', { class: 'nfm-empty' }, q || k !== 'all' ? 'Ничего не найдено. Измените фильтр или запрос.' : 'Записей пока нет.') ]));
+			logBox.replaceChildren(...(list.length ? list.slice(0, 200).map(x => E('div', { class: 'nfm-ev-i ' + x.cls }, [ E('i'), E('time', {}, fmtTs(x.t)), E('span', {}, [ x.txt, E('button', { type: 'button', class: 'nfm-pin' + (pins.includes(pid(x)) ? ' on' : ''), title: pins.includes(pid(x)) ? 'Unpin' : 'Pin: the record will stay at the top', click: () => pinToggle(pid(x)) }, pins.includes(pid(x)) ? '★' : '☆') ]) ]))
+				: [ E('div', { class: 'nfm-empty' }, q || k !== 'all' ? 'Nothing found. Change the filter or query.' : 'No records yet.') ]));
 		}
 		const SECBIN = '/usr/libexec/nightfall-sec';
 		const isExternalIp = ip => !/^(10\.|127\.|0\.|192\.168\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.|100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.|(fe[89ab]|f[cd])[0-9a-f]*:|::1?$)/i.test(ip) && /^[0-9a-f:.]+$/i.test(ip);
-		const secAct = (args, msg) => fs.exec(SECBIN, args).then(r => { let j = null; try { j = JSON.parse(r.stdout); } catch (e) { /* ignore */ } if (!j || !j.ok) window.alert((j && j.error) || 'Не получилось.');
+		const secAct = (args, msg) => fs.exec(SECBIN, args).then(r => { let j = null; try { j = JSON.parse(r.stdout); } catch (e) { /* ignore */ } if (!j || !j.ok) window.alert((j && j.error) || 'Did not work.');
 			S.at.sec = 0; S.at.bans = 0; })
-			.catch(() => window.alert('Не получилось выполнить команду на роутере.'));
-		const banBtn = ip => isExternalIp(ip) ? E('button', { type: 'button', class: 'nfm-btn', title: 'Роутер перестанет принимать пакеты с этого адреса на 24 часа (до перезагрузки роутера)',
-			click: () => { if (window.confirm('Закрыть адрес ' + ip + ' для роутера на 24 часа?')) secAct([ 'ban', ip, '24' ]); } }, 'Закрыть на 24 ч') : '';
-		const RISKY = { 21: 'FTP без шифрования', 23: 'Telnet без шифрования', 445: 'SMB', 139: 'SMB', 3389: 'удалённый рабочий стол', 5900: 'VNC' };
+			.catch(() => window.alert('Could not run the command on the router.'));
+		const banBtn = ip => isExternalIp(ip) ? E('button', { type: 'button', class: 'nfm-btn', title: 'The router will stop accepting packets from this address for 24 hours (until the router reboots)',
+			click: () => { if (window.confirm('Block address ' + ip + ' on the router for 24 hours?')) secAct([ 'ban', ip, '24' ]); } }, 'Block for 24 h') : '';
+		const RISKY = { 21: 'FTP without encryption', 23: 'Telnet without encryption', 445: 'SMB', 139: 'SMB', 3389: 'remote desktop', 5900: 'VNC' };
 		const routerLogLevel = x => {
 			/* BusyBox crond logs a normal job dispatch at cron.err; it does not mean the job failed. */
 			if (String(x[2] || '').toLowerCase() === 'crond' && /^USER\s+\S+\s+pid\s+\d+\s+cmd\s+/.test(String(x[3] || ''))) return 'notice';
@@ -3268,19 +3277,19 @@ return view.extend({
 			return 'info';
 		};
 		const routerLogMeta = {
-			err: { cls: 'crit', tag: 'ERR', title: 'Ошибка' },
-			warn: { cls: 'warn', tag: 'WARN', title: 'Предупреждение' },
-			notice: { cls: 'notice', tag: 'NOTICE', title: 'Уведомление' },
-			info: { cls: 'info', tag: 'INFO', title: 'Информация' },
-			debug: { cls: 'debug', tag: 'DEBUG', title: 'Отладка' }
+			err: { cls: 'crit', tag: 'ERR', title: 'Error' },
+			warn: { cls: 'warn', tag: 'WARN', title: 'Warning' },
+			notice: { cls: 'notice', tag: 'NOTICE', title: 'Notice' },
+			info: { cls: 'info', tag: 'INFO', title: 'Info' },
+			debug: { cls: 'debug', tag: 'DEBUG', title: 'Debug' }
 		};
 		const routerLogDiagMeta = {
-			wan: { title: 'WAN / интернет', hint: 'События потери или восстановления WAN-соединения', cls: 'crit' },
-			dns: { title: 'DNS', hint: 'Ошибки DNS-службы или её конфигурации', cls: 'warn' },
-			wifi: { title: 'Wi-Fi', hint: 'Частые отключения или ошибки аутентификации клиентов', cls: 'warn' },
-			vpn: { title: 'VPN и прокси', hint: 'Ошибки подключения, маршрута или handshake', cls: 'warn' },
-			service: { title: 'Службы роутера', hint: 'Перезапуски, аварийные завершения или нехватка памяти', cls: 'crit' },
-			security: { title: 'Безопасность', hint: 'Повторяющиеся неудачные попытки входа', cls: 'warn' }
+			wan: { title: 'WAN / internet', hint: 'WAN connection loss or recovery events', cls: 'crit' },
+			dns: { title: 'DNS', hint: 'DNS service or configuration errors', cls: 'warn' },
+			wifi: { title: 'Wi-Fi', hint: 'Frequent disconnects or client authentication errors', cls: 'warn' },
+			vpn: { title: 'VPN and proxy', hint: 'Connection, route or handshake errors', cls: 'warn' },
+			service: { title: 'Router services', hint: 'Restarts, crashes or out-of-memory', cls: 'crit' },
+			security: { title: 'Security', hint: 'Repeated failed sign-in attempts', cls: 'warn' }
 		};
 		function routerLogDiagnosis(x) {
 			const svc = String(x[2] || '').toLowerCase(), msg = String(x[3] || '').toLowerCase();
@@ -3327,7 +3336,7 @@ return view.extend({
 			return Array.from(map.values()).sort((a, b) => b.lastIndex - a.lastIndex);
 		}
 		function setRouterLogAutoLabel() {
-			rlAutoBtn.textContent = S.rlAuto === false ? 'Автообновление: выкл' : 'Автообновление: вкл';
+			rlAutoBtn.textContent = S.rlAuto === false ? 'Auto-refresh: off' : 'Auto-refresh: on';
 			rlAutoBtn.classList.toggle('on', S.rlAuto !== false);
 		}
 		function routerLogRowText(x) {
@@ -3335,14 +3344,14 @@ return view.extend({
 		}
 		function copyRouterLogRows(rows) {
 			const value = rows.map(routerLogRowText).join('\n');
-			if (!value) { rlStatus.textContent = 'Нет записей для копирования'; return; }
-			const done = () => { rlStatus.textContent = 'Скопировано: ' + rows.length + ' записей'; };
+			if (!value) { rlStatus.textContent = 'No records to copy'; return; }
+			const done = () => { rlStatus.textContent = 'Copied: ' + rows.length + ' records'; };
 			const fallback = () => {
 				const area = document.createElement('textarea');
 				area.value = value; area.setAttribute('readonly', ''); area.style.position = 'fixed'; area.style.opacity = '0';
 				document.body.appendChild(area); area.select();
 				let ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
-				area.remove(); if (ok) done(); else rlStatus.textContent = 'Не удалось скопировать — используйте экспорт CSV';
+				area.remove(); if (ok) done(); else rlStatus.textContent = 'Could not copy, use CSV export';
 			};
 			if (window.navigator && window.navigator.clipboard && window.navigator.clipboard.writeText)
 				window.navigator.clipboard.writeText(value).then(done).catch(fallback);
@@ -3351,18 +3360,18 @@ return view.extend({
 		function copyRouterLog() { copyRouterLogRows(rlVisible); }
 		function exportRouterLog() {
 			const quote = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
-			const csv = '\ufeffвремя;приоритет;служба;сообщение\n' + rlVisible.map(x => [ x[0], x[1], x[2], x[3] ].map(quote).join(';')).join('\n');
+			const csv = '﻿time;priority;service;message\n' + rlVisible.map(x => [ x[0], x[1], x[2], x[3] ].map(quote).join(';')).join('\n');
 			const url = URL.createObjectURL(new Blob([ csv ], { type: 'text/csv;charset=utf-8' }));
 			const a = E('a', { href: url, download: 'nightfall-router-log.csv' });
 			document.body.appendChild(a); a.click(); a.remove(); window.setTimeout(() => URL.revokeObjectURL(url), 30000);
-			rlStatus.textContent = 'Экспортировано: ' + rlVisible.length + ' записей';
+			rlStatus.textContent = 'Exported: ' + rlVisible.length + ' records';
 		}
 		function refreshRouterLog() {
-			rlStatus.textContent = 'Обновляю журнал…';
+			rlStatus.textContent = 'Refreshing the log…';
 			S.at.rlog = Date.now();
 			fs.exec('/usr/libexec/nightfall-log', [ 'read', '800' ]).then(r => {
 				const data = JSON.parse(r.stdout);
-				if (!data || !data.ok || !Array.isArray(data.rows)) throw new Error('Некорректный ответ');
+				if (!data || !data.ok || !Array.isArray(data.rows)) throw new Error('Invalid response');
 				S.rlog = data; S.rlogUpdated = Date.now();
 			}).catch(() => { S.rlog = null; })
 				.then(() => renderRouterLog());
@@ -3372,13 +3381,13 @@ return view.extend({
 			for (const key of Object.keys(rlChipRefs))
 				rlChipRefs[key].button.classList.toggle('on', key === (S.rlK || 'all'));
 			setRouterLogAutoLabel();
-			rlGroupBtn.textContent = S.rlGrouped === false ? 'Повторы: отдельно' : 'Повторы: сгруппированы';
+			rlGroupBtn.textContent = S.rlGrouped === false ? 'Repeats: separate' : 'Repeats: grouped';
 			rlGroupBtn.classList.toggle('on', S.rlGrouped !== false);
-			if (R === undefined) { rlBox.replaceChildren(E('div', { class: 'nfm-empty' }, 'Загружаю журнал роутера…')); return; }
+			if (R === undefined) { rlBox.replaceChildren(E('div', { class: 'nfm-empty' }, 'Loading the router log…')); return; }
 			if (!R || !R.ok || !Array.isArray(R.rows)) {
 				rlVisible = []; rlSummary.replaceChildren(); rlDiag.replaceChildren();
-				rlBox.replaceChildren(E('div', { class: 'nfm-empty' }, 'Не удалось получить журнал. Выйдите из LuCI и войдите снова после обновления.'));
-				rlStatus.textContent = 'Нет данных'; rlMore.hidden = true; return;
+				rlBox.replaceChildren(E('div', { class: 'nfm-empty' }, 'Could not get the log. Log out of LuCI and sign in again after the update.'));
+				rlStatus.textContent = 'No data'; rlMore.hidden = true; return;
 			}
 			const rows = R.rows.filter(x => Array.isArray(x) && x.length >= 4);
 			const levels = rows.map(x => routerLogLevel(x));
@@ -3386,11 +3395,11 @@ return view.extend({
 			rows.forEach((x, i) => { const l = levels[i]; if (l === 'err') counts.err++; else if (l === 'warn') counts.warn++; else if (l === 'debug') counts.debug++; else counts.info++; });
 			const tabCounts = { all: counts.all, warn: counts.err + counts.warn, err: counts.err, info: counts.info, debug: counts.debug };
 			for (const key of Object.keys(rlChipRefs)) rlChipRefs[key].count.textContent = String(tabCounts[key] || 0);
-			const svcs = Array.from(new Set(rows.map(x => String(x[2] || 'неизвестно')))).sort((a, b) => a.localeCompare(b, 'ru'));
+			const svcs = Array.from(new Set(rows.map(x => String(x[2] || 'unknown')))).sort((a, b) => a.localeCompare(b, 'en'));
 			const currentServices = Array.from(rlSvc.options).slice(1).map(o => o.value);
 			if (currentServices.join('\u0000') !== svcs.join('\u0000')) {
 				const cur = rlSvc.value;
-				rlSvc.replaceChildren(E('option', { value: '' }, 'Все службы'), ...svcs.map(v => E('option', { value: v }, v)));
+				rlSvc.replaceChildren(E('option', { value: '' }, 'All services'), ...svcs.map(v => E('option', { value: v }, v)));
 				rlSvc.value = svcs.includes(cur) ? cur : '';
 			}
 			const diagnostics = {};
@@ -3407,8 +3416,8 @@ return view.extend({
 			const diagKeys = Object.keys(diagnostics);
 			rlDiag.replaceChildren(...(diagKeys.length ? [
 				E('div', { class: 'nfm-log-diagnostics-head' }, [
-					E('b', {}, 'Возможные проблемы'),
-					E('span', {}, 'Подсказки по шаблонам журнала, не окончательный диагноз')
+					E('b', {}, 'Possible problems'),
+					E('span', {}, 'Hints based on log patterns, not a final diagnosis')
 				]),
 				E('div', { class: 'nfm-log-diagnostic-list' }, diagKeys.map(cat => {
 					const meta = routerLogDiagMeta[cat], items = diagnostics[cat];
@@ -3419,7 +3428,7 @@ return view.extend({
 					]);
 					return button;
 				}))
-			] : [ E('div', { class: 'nfm-log-diagnostics-empty' }, 'По текущим записям явных повторяющихся проблем не обнаружено.') ]));
+			] : [ E('div', { class: 'nfm-log-diagnostics-empty' }, 'No obvious recurring problems found in the current records.') ]));
 			const q = rlQ.value.trim().toLowerCase(), key = S.rlK || 'all', service = rlSvc.value;
 			const filtered = rows.filter((x, i) => {
 				const l = levels[i], searchable = (String(x[1]) + ' ' + String(x[2]) + ' ' + String(x[3])).toLowerCase();
@@ -3427,22 +3436,22 @@ return view.extend({
 					(key === 'warn' && (l === 'err' || l === 'warn')) ||
 					(key === 'info' && (l === 'notice' || l === 'info')) || (key === 'debug' && l === 'debug');
 				const diagMatch = !S.rlDiag || routerLogDiagnosis(x) === S.rlDiag;
-				return typeMatch && diagMatch && (!service || String(x[2] || 'неизвестно') === service) && (!q || searchable.includes(q));
+				return typeMatch && diagMatch && (!service || String(x[2] || 'unknown') === service) && (!q || searchable.includes(q));
 			});
 			rlVisible = filtered.slice().reverse();
 			const groups = groupRouterLogRows(filtered);
 			const limit = Math.max(1, S.rlLimit || 300), visible = groups.slice(0, limit);
 			rlSummary.replaceChildren(
-				E('span', { class: 'nfm-log-count' }, [ 'В памяти: ', E('b', {}, String(rows.length)) ]),
-				E('span', { class: 'nfm-log-count crit' }, [ 'Ошибки: ', E('b', {}, String(counts.err)) ]),
-				E('span', { class: 'nfm-log-count warn' }, [ 'Предупреждения: ', E('b', {}, String(counts.warn)) ]),
-				E('span', { class: 'nfm-log-count info' }, [ 'Информация: ', E('b', {}, String(counts.info)) ]),
-				S.rlDiag ? E('button', { type: 'button', class: 'nfm-btn', click: () => { S.rlDiag = ''; renderRouterLog(); } }, 'Сбросить диагностику') : ''
+				E('span', { class: 'nfm-log-count' }, [ 'In memory: ', E('b', {}, String(rows.length)) ]),
+				E('span', { class: 'nfm-log-count crit' }, [ 'Errors: ', E('b', {}, String(counts.err)) ]),
+				E('span', { class: 'nfm-log-count warn' }, [ 'Warnings: ', E('b', {}, String(counts.warn)) ]),
+				E('span', { class: 'nfm-log-count info' }, [ 'Info: ', E('b', {}, String(counts.info)) ]),
+				S.rlDiag ? E('button', { type: 'button', class: 'nfm-btn', click: () => { S.rlDiag = ''; renderRouterLog(); } }, 'Reset diagnostics') : ''
 			);
 			const logScrollTop = rlBox.scrollTop;
 			rlBox.replaceChildren(...(visible.length ? visible.map(group => {
 				const x = group.rows[group.rows.length - 1], l = routerLogLevel(x);
-				const meta = routerLogMeta[l] || routerLogMeta.info, serviceName = String(x[2] || 'неизвестно');
+				const meta = routerLogMeta[l] || routerLogMeta.info, serviceName = String(x[2] || 'unknown');
 				const time = String(x[0] || '').replace(/^([A-Z][a-z]{2}) (\d+) /, (m, a, d) => d + ' ' + (MONRU[a] || a) + ', ');
 				const repeats = group.rows.length;
 				const occurrences = repeats > 1 ? E('div', { class: 'nfm-log-occurrences' }, group.rows.slice().reverse().map(row =>
@@ -3450,7 +3459,7 @@ return view.extend({
 				)) : '';
 				const groupKey = group.key || routerLogFingerprint(x);
 				const item = E('details', { class: 'nfm-rlog-item', 'data-log-key': groupKey }, [
-					E('summary', { class: 'nfm-ev-i ' + meta.cls, title: 'Раскрыть подробности записи' }, [
+					E('summary', { class: 'nfm-ev-i ' + meta.cls, title: 'Expand record details' }, [
 						E('i', { 'aria-hidden': 'true' }), E('time', {}, time),
 						E('span', { class: 'nfm-log-line' }, [
 							E('b', { class: 'nfm-log-service' }, serviceName),
@@ -3462,14 +3471,14 @@ return view.extend({
 					E('div', { class: 'nfm-log-detail' }, [
 						E('div', { class: 'nfm-log-detail-head' }, [
 							E('div', { class: 'nfm-log-detail-meta' }, [
-								E('span', {}, [ 'Служба: ', E('b', {}, serviceName) ]),
-								E('span', {}, [ 'Приоритет syslog: ', E('b', {}, String(x[1] || 'не указан')) ]),
-								E('span', {}, [ 'Класс: ', E('b', {}, meta.title) ]),
-								E('span', {}, [ 'Повторов в буфере: ', E('b', {}, String(repeats)) ]),
-								E('span', {}, [ 'Первое событие: ', E('b', {}, String(group.rows[0][0] || 'не указано')) ]),
-								E('span', {}, [ 'Последнее событие: ', E('b', {}, String(x[0] || 'не указано')) ])
+								E('span', {}, [ 'Service: ', E('b', {}, serviceName) ]),
+								E('span', {}, [ 'Syslog priority: ', E('b', {}, String(x[1] || 'not specified')) ]),
+								E('span', {}, [ 'Class: ', E('b', {}, meta.title) ]),
+								E('span', {}, [ 'Repeats in buffer: ', E('b', {}, String(repeats)) ]),
+								E('span', {}, [ 'First event: ', E('b', {}, String(group.rows[0][0] || 'not specified')) ]),
+								E('span', {}, [ 'Last event: ', E('b', {}, String(x[0] || 'not specified')) ])
 							]),
-							E('button', { type: 'button', class: 'nfm-btn', click: ev => { ev.preventDefault(); copyRouterLogRows(group.rows); } }, repeats > 1 ? 'Копировать группу' : 'Копировать запись')
+							E('button', { type: 'button', class: 'nfm-btn', click: ev => { ev.preventDefault(); copyRouterLogRows(group.rows); } }, repeats > 1 ? 'Copy group' : 'Copy record')
 						]),
 						occurrences,
 						E('pre', { class: 'nfm-log-full' }, String(x[3] || ''))
@@ -3483,18 +3492,18 @@ return view.extend({
 					else delete S.rlExpanded[groupKey];
 				});
 				return item;
-			}) : [ E('div', { class: 'nfm-empty' }, 'Ничего не найдено по выбранным условиям.') ]));
+			}) : [ E('div', { class: 'nfm-empty' }, 'Nothing found for the selected conditions.') ]));
 			rlBox.scrollTop = logScrollTop;
 			rlMore.hidden = groups.length <= visible.length;
-			rlMore.firstChild.textContent = 'Показать ещё (' + Math.min(300, groups.length - visible.length) + ' из ' + groups.length + ')';
-			const updated = S.rlogUpdated ? new Date(S.rlogUpdated).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'ещё не обновлялся';
-			rlStatus.textContent = 'Показано ' + visible.length + ' групп из ' + groups.length + ' · записей ' + filtered.length + ' · обновлено ' + updated;
+			rlMore.firstChild.textContent = 'Show more (' + Math.min(300, groups.length - visible.length) + ' of ' + groups.length + ')';
+			const updated = S.rlogUpdated ? new Date(S.rlogUpdated).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'not refreshed yet';
+			rlStatus.textContent = 'Showing ' + visible.length + ' groups of ' + groups.length + ' · records ' + filtered.length + ' · updated ' + updated;
 		}
 		function renderSec() {
 			const R = S.sec;
 			if (R === undefined) return;
 			if (!R || !R.ok) {
-				secVerdict.className = 'nfm-hint'; secVerdict.textContent = R === false ? MISSING : 'Не удалось получить данные' + (S.secErr ? ' (' + S.secErr + ')' : '') + '. Если там «Permission denied» или «Access denied», выйдите из LuCI и войдите снова (нужны новые права).';
+				secVerdict.className = 'nfm-hint'; secVerdict.textContent = R === false ? MISSING : 'Could not get data' + (S.secErr ? ' (' + S.secErr + ')' : '') + '. If it says "Permission denied" or "Access denied", log out of LuCI and sign in again (new permissions are needed).';
 				return;
 			}
 			const lg = R.logins || {}, fw = R.fw || {}, ports = R.ports || [], nd = R.newdev || [];
@@ -3507,46 +3516,46 @@ return view.extend({
 			const wanClosed = fw.wan_input === 'REJECT' || fw.wan_input === 'DROP';
 			const risky = open.filter(p => RISKY[p[1]]);
 			let msg, cls = 'ok';
-			if (risky.length) { msg = 'Внимание: открыт порт ' + risky.map(p => p[1] + ' (' + RISKY[p[1]] + ')').join(', ') + '. Если он не нужен, выключите службу.'; cls = 'bad'; }
-			else if (fails >= 20) { msg = 'В журнале много неудачных входов (' + fails + '). Если SSH или LuCI доступны из интернета, закройте их или смените пароль.'; cls = 'warn'; }
-			else if (!wanClosed && fw.wan_input) { msg = 'Входящие соединения из интернета на роутер разрешены (политика «' + fw.wan_input + '»). Обычно здесь должно быть «REJECT».'; cls = 'warn'; }
-			else if (reds.length) { msg = 'Из интернета проброшено портов: ' + reds.length + '. Проверьте, что они нужны.'; cls = 'warn'; }
-			else msg = 'Явных проблем не видно: входящие из интернета закрыты' + (fw.wan_input ? ' (' + fw.wan_input + ')' : '') + ', проброшенных портов нет.';
+			if (risky.length) { msg = 'Attention: port ' + risky.map(p => p[1] + ' (' + RISKY[p[1]] + ')').join(', ') + ' is open. If you do not need it, turn off the service.'; cls = 'bad'; }
+			else if (fails >= 20) { msg = 'There are many failed sign-ins in the log (' + fails + '). If SSH or LuCI is reachable from the internet, close it or change the password.'; cls = 'warn'; }
+			else if (!wanClosed && fw.wan_input) { msg = 'Incoming connections from the internet to the router are allowed (policy "' + fw.wan_input + '"). Normally this should be "REJECT".'; cls = 'warn'; }
+			else if (reds.length) { msg = 'Ports forwarded from the internet: ' + reds.length + '. Make sure they are needed.'; cls = 'warn'; }
+			else msg = 'No obvious problems: incoming from the internet is closed' + (fw.wan_input ? ' (' + fw.wan_input + ')' : '') + ', no forwarded ports.';
 			const chk = R.checks || [], badChk = chk.filter(c => c[0] === 'bad');
-			if (badChk.length && cls === 'ok') { msg = 'Есть что исправить: ' + badChk[0][1]; cls = 'bad'; }
+			if (badChk.length && cls === 'ok') { msg = 'Something to fix: ' + badChk[0][1]; cls = 'bad'; }
 			secVerdict.className = 'nfm-hint sec-' + cls; secVerdict.textContent = msg;
-			secChecks.replaceChildren(...(chk.length ? chk.map(c => E('div', { class: 'nfm-ev-i nt ' + ({ bad: 'crit', warn: 'warn', ok: 'info' })[c[0]] }, [ E('i'), E('span', {}, c[1]) ])) : [ E('div', { class: 'nfm-empty' }, 'Нет данных: обновите тему на роутере.') ]));
+			secChecks.replaceChildren(...(chk.length ? chk.map(c => E('div', { class: 'nfm-ev-i nt ' + ({ bad: 'crit', warn: 'warn', ok: 'info' })[c[0]] }, [ E('i'), E('span', {}, c[1]) ])) : [ E('div', { class: 'nfm-empty' }, 'No data: update the theme on the router.') ]));
 
-			const MON = { Jan: 'янв.', Feb: 'февр.', Mar: 'мар.', Apr: 'апр.', May: 'мая', Jun: 'июн.', Jul: 'июл.', Aug: 'авг.', Sep: 'сент.', Oct: 'окт.', Nov: 'нояб.', Dec: 'дек.' };
+			const MON = { Jan: 'Jan', Feb: 'Feb', Mar: 'Mar', Apr: 'Apr', May: 'May', Jun: 'Jun', Jul: 'Jul', Aug: 'Aug', Sep: 'Sep', Oct: 'Oct', Nov: 'Nov', Dec: 'Dec' };
 			const ago = t => String(t).replace(/^([A-Z][a-z]{2}) (\d+) /, (m, a, d) => d + ' ' + (MON[a] || a) + ', ');
 			secLogins.replaceChildren(
-				E('div', { class: 'nfm-s' }, 'Неудачных попыток в журнале: SSH ' + (lg.failed_ssh || 0) + ', LuCI ' + (lg.failed_luci || 0) + '. Журнал роутера хранит только последние события с момента загрузки.'),
-				(lg.top || []).length ? E('div', { style: 'margin:10px 0' }, [ E('div', { class: 'nfm-k' }, 'Чаще всего ломятся с адресов'), ...(lg.top || []).map(x => E('div', { class: 'nfm-host' }, [ E('span', {}, x[0]), E('span', { style: 'display:flex;gap:10px;align-items:center' }, [ E('b', {}, String(x[1])), banBtn(x[0]) ]) ])) ]) : '',
+				E('div', { class: 'nfm-s' }, 'Failed attempts in the log: SSH ' + (lg.failed_ssh || 0) + ', LuCI ' + (lg.failed_luci || 0) + '. The router log keeps only recent events since boot.'),
+				(lg.top || []).length ? E('div', { style: 'margin:10px 0' }, [ E('div', { class: 'nfm-k' }, 'Most attempts come from'), ...(lg.top || []).map(x => E('div', { class: 'nfm-host' }, [ E('span', {}, x[0]), E('span', { style: 'display:flex;gap:10px;align-items:center' }, [ E('b', {}, String(x[1])), banBtn(x[0]) ]) ])) ]) : '',
 				E('div', { class: 'nfm-evlist', style: 'margin-top:8px' }, (lg.recent || []).length ? (lg.recent || []).map(x => E('div', { class: 'nfm-ev-i ' + (x[2] ? 'info' : 'warn') }, [ E('i'), E('time', {}, ago(x[0])),
-					E('span', {}, (x[1] === 'ssh' ? 'SSH' : 'LuCI') + (x[2] ? ': вход ' : ': неудачная попытка ') + x[3] + ' с ' + x[4]) ])) : [ E('div', { class: 'nfm-empty' }, 'Попыток входа в журнале нет.') ]));
+					E('span', {}, (x[1] === 'ssh' ? 'SSH' : 'LuCI') + (x[2] ? ': sign-in ' : ': failed attempt ') + x[3] + ' from ' + x[4]) ])) : [ E('div', { class: 'nfm-empty' }, 'No sign-in attempts in the log.') ]));
 			secPorts.replaceChildren(
-				E('div', { class: 'nfm-note-s', style: 'margin-bottom:8px' }, 'Порты, которые слушает сам роутер. «Для сети» — доступен с других устройств; из интернета его закрывает межсетевой экран' + (fw.wan_input ? ' (входящее на WAN: ' + fw.wan_input + ')' : '') + '.'),
-				E('table', { class: 'nfm-table' }, [ E('thead', {}, E('tr', {}, [ E('th', {}, 'Порт'), E('th', {}, 'Программа'), E('th', {}, 'Кто может подключиться') ])),
-					E('tbody', {}, ports.map(p => E('tr', {}, [ E('td', {}, p[0].toUpperCase() + ' ' + p[1]), E('td', {}, p[3] === '-' ? E('i', {}, 'не определена') : p[3]),
-						E('td', {}, [ p[2] === 'all' ? 'для сети' : 'только сам роутер', RISKY[p[1]] ? E('span', { class: 'nfm-chip', style: 'margin-left:6px' }, RISKY[p[1]]) : '' ]) ]))) ]),
-				reds.length ? E('div', { style: 'margin-top:12px' }, [ E('div', { class: 'nfm-k' }, 'Проброс портов из интернета'), ...reds.map(x => E('div', { class: 'nfm-host' }, [ E('span', {}, (x[0] || 'без имени') + ': ' + (x[1] || 'tcp').toUpperCase() + ' ' + x[2] + ' → ' + x[3] + ':' + (x[4] || x[2])) ])) ]) : '');
-			secDev.replaceChildren(...(nd.length ? nd.map(d => E('div', { class: 'nfm-host' }, [ E('span', {}, [ d[1] || 'без имени', E('small', {}, d[0]) ]), E('b', {}, d[2] ? fmtTs(d[2]) : '') ])) : [ E('div', { class: 'nfm-empty' }, 'Сборщик ещё не видел новых устройств.') ]));
+				E('div', { class: 'nfm-note-s', style: 'margin-bottom:8px' }, 'Ports the router itself listens on. "Network" means reachable from other devices; the firewall closes it from the internet' + (fw.wan_input ? ' (WAN input: ' + fw.wan_input + ')' : '') + '.'),
+				E('table', { class: 'nfm-table' }, [ E('thead', {}, E('tr', {}, [ E('th', {}, 'Port'), E('th', {}, 'Program'), E('th', {}, 'Who can connect') ])),
+					E('tbody', {}, ports.map(p => E('tr', {}, [ E('td', {}, p[0].toUpperCase() + ' ' + p[1]), E('td', {}, p[3] === '-' ? E('i', {}, 'unknown') : p[3]),
+						E('td', {}, [ p[2] === 'all' ? 'network' : 'router only', RISKY[p[1]] ? E('span', { class: 'nfm-chip', style: 'margin-left:6px' }, RISKY[p[1]]) : '' ]) ]))) ]),
+				reds.length ? E('div', { style: 'margin-top:12px' }, [ E('div', { class: 'nfm-k' }, 'Port forwarding from the internet'), ...reds.map(x => E('div', { class: 'nfm-host' }, [ E('span', {}, (x[0] || 'unnamed') + ': ' + (x[1] || 'tcp').toUpperCase() + ' ' + x[2] + ' → ' + x[3] + ':' + (x[4] || x[2])) ])) ]) : '');
+			secDev.replaceChildren(...(nd.length ? nd.map(d => E('div', { class: 'nfm-host' }, [ E('span', {}, [ d[1] || 'unnamed', E('small', {}, d[0]) ]), E('b', {}, d[2] ? fmtTs(d[2]) : '') ])) : [ E('div', { class: 'nfm-empty' }, 'The collector has not seen any new devices yet.') ]));
 			const BN = S.bans;
-			secBans.replaceChildren(...(BN && BN.ok && (BN.bans || []).length ? [ E('div', { class: 'nfm-note-s', style: 'margin-bottom:8px' }, 'Эти адреса не могут обращаться к самому роутеру. Закрытие снимается само по сроку или после перезагрузки роутера.'),
-				...BN.bans.map(b => E('div', { class: 'nfm-host' }, [ E('span', {}, b[0]), E('span', { style: 'display:flex;gap:10px;align-items:center' }, [ E('small', {}, b[1] ? 'осталось ' + b[1] : ''), E('button', { type: 'button', class: 'nfm-btn', click: () => secAct([ 'unban', b[0] ]) }, 'Открыть') ]) ])) ]
-				: [ E('div', { class: 'nfm-empty' }, BN === undefined ? 'Проверяю…' : 'Закрытых адресов нет. Закрыть адрес можно кнопкой рядом с нарушителем в «Попытках входа».') ]));
+			secBans.replaceChildren(...(BN && BN.ok && (BN.bans || []).length ? [ E('div', { class: 'nfm-note-s', style: 'margin-bottom:8px' }, 'These addresses cannot reach the router itself. The block is lifted automatically when it expires or after a router reboot.'),
+				...BN.bans.map(b => E('div', { class: 'nfm-host' }, [ E('span', {}, b[0]), E('span', { style: 'display:flex;gap:10px;align-items:center' }, [ E('small', {}, b[1] ? 'remaining ' + b[1] : ''), E('button', { type: 'button', class: 'nfm-btn', click: () => secAct([ 'unban', b[0] ]) }, 'Unblock') ]) ])) ]
+				: [ E('div', { class: 'nfm-empty' }, BN === undefined ? 'Checking…' : 'No blocked addresses. You can block an address with the button next to the offender in "Sign-in attempts".') ]));
 			const U = S.secu;
 			if (U && U.ok) {
 				const th = U.theme || {};
 				secUpd.replaceChildren(
 					E('div', { class: 'nfm-host' }, [ E('span', {}, 'Nightfall'), E('b', {}, th.installed ? 'v' + th.installed : '–') ]),
-					th.latest ? E('div', { class: 'nfm-s' }, th.new ? [ 'Вышла новая версия v' + th.latest + '. Обновить: команда /update в Telegram-боте или установщик в терминале роутера (install-update.sh --list покажет версии).' ] : 'Установлена последняя версия.') : E('div', { class: 'nfm-s' }, 'Не удалось проверить новую версию (нет связи с GitHub).'),
+					th.latest ? E('div', { class: 'nfm-s' }, th.new ? [ 'A new version v' + th.latest + ' is out. To update: the /update command in the Telegram bot or the installer in the router terminal (install-update.sh --list shows versions).' ] : 'The latest version is installed.') : E('div', { class: 'nfm-s' }, 'Could not check for a new version (no connection to GitHub).'),
 					E('div', { class: 'nfm-host' }, [ E('span', {}, 'OpenWrt'), E('b', {}, U.openwrt || '–') ]),
-					E('div', { class: 'nfm-host' }, [ E('span', {}, 'Ядро'), E('b', {}, U.kernel || '–') ]),
-					E('div', { class: 'nfm-note-s', style: 'margin-top:8px' }, 'Обновления пакетов и прошивки проверяйте в «Система → Программное обеспечение» и «Система → Резервное копирование / обновление».'));
-			} else secUpd.replaceChildren(E('div', { class: 'nfm-empty' }, U === undefined ? 'Проверяю…' : 'Не удалось получить данные.'));
+					E('div', { class: 'nfm-host' }, [ E('span', {}, 'Kernel'), E('b', {}, U.kernel || '–') ]),
+					E('div', { class: 'nfm-note-s', style: 'margin-top:8px' }, 'Check package and firmware updates in "System → Software" and "System → Backup / Flash Firmware".'));
+			} else secUpd.replaceChildren(E('div', { class: 'nfm-empty' }, U === undefined ? 'Checking…' : 'Could not get data.'));
 		}
-		/* «Устройства»: карточка «Доступ в интернет» (блокировка, лимиты, расписание, группы) — та же, что на «Обзоре» */
+		/* "Devices": the "Internet access" card (blocking, limits, schedule, groups), the same as on "Overview" */
 		let blk = null, blkTried = false;
 		function renderDevBlock() {
 			if (blk || blkTried) return;
@@ -3554,9 +3563,9 @@ return view.extend({
 			const holder = E('div', { class: 'nfm-grid' });
 			devsTab.insertBefore(holder, devsTab.firstChild);
 			L.require('nightfall-overview').then(m => {
-				if (!m || typeof m.blockCard !== 'function') throw new Error('нет');
+				if (!m || typeof m.blockCard !== 'function') throw new Error('no');
 				blk = m.blockCard(); holder.appendChild(blk.el); blk.start();
-			}).catch(() => { holder.appendChild(card('Доступ в интернет', E('div', { class: 'nfm-empty' }, 'Блокировка и расписание доступны на странице «Обзор» (Статус → Обзор), карточка «Доступ в интернет».'))); });
+			}).catch(() => { holder.appendChild(card('Internet access', E('div', { class: 'nfm-empty' }, 'Blocking and schedules are available on the "Overview" page (Status → Overview), "Internet access" card.'))); });
 		}
 
 		function refresh() {
@@ -3575,31 +3584,31 @@ return view.extend({
 			const cn = d.cpu.length - 1;
 			const c = S.cpuNow;
 			rCpu.set(c ? c.pct : 0, c ? nf0.format(c.pct) + '%' : '–');
-			T.cpuCores.textContent = `${cn} ${cn === 1 ? 'ядро' : (cn < 5 ? 'ядра' : 'ядер')}`;
-			T.cpuLoad.textContent = 'нагрузка ' + d.load.map(v => nf2.format(v)).join(' · ');
+			T.cpuCores.textContent = `${cn} ${cn === 1 ? 'core' : 'cores'}`;
+			T.cpuLoad.textContent = 'load ' + d.load.map(v => nf2.format(v)).join(' · ');
 
 			const tp = S.temps;
 			if (tp.main != null) {
 				const cls = tp.main >= 85 ? 'hot' : tp.main >= 70 ? 'warn' : '';
 				rTemp.set(tp.main, nf0.format(tp.main) + '°');
 				rTemp.el.querySelector('.nfm-ring-fg').setAttribute('class', 'nfm-ring-fg c-temp ' + cls);
-				T.tempMain.textContent = 'процессор ' + fmtTemp(tp.main);
-				T.tempSub.textContent = tp.wifi.length ? 'Wi-Fi ' + tp.wifi.map(v => nf0.format(v) + '°').join(' / ') : 'датчики Wi-Fi не найдены';
+				T.tempMain.textContent = 'CPU ' + fmtTemp(tp.main);
+				T.tempSub.textContent = tp.wifi.length ? 'Wi-Fi ' + tp.wifi.map(v => nf0.format(v) + '°').join(' / ') : 'no Wi-Fi sensors found';
 			} else {
 				rTemp.set(0, '–');
-				T.tempMain.textContent = 'нет датчика';
-				T.tempSub.textContent = 'система не сообщает температуру';
+				T.tempMain.textContent = 'no sensor';
+				T.tempSub.textContent = 'the system does not report temperature';
 			}
 
 			const m = d.mem, used = m.total - m.avail;
 			rMem.set(100 * used / m.total, nf0.format(100 * used / m.total) + '%');
-			T.memMain.textContent = `${fmtMB(used)} из ${fmtMB(m.total)}`;
-			T.memSub.textContent = `кеш ${fmtMB(m.cached + m.buffers)} · /tmp ${d.tmp ? fmtMB(d.tmp[1]) : '–'}`;
+			T.memMain.textContent = `${fmtMB(used)} of ${fmtMB(m.total)}`;
+			T.memSub.textContent = `cache ${fmtMB(m.cached + m.buffers)} · /tmp ${d.tmp ? fmtMB(d.tmp[1]) : '–'}`;
 
 			if (d.flash) {
 				rFlash.set(100 * d.flash[1] / d.flash[0], nf0.format(100 * d.flash[1] / d.flash[0]) + '%');
-				T.flashMain.textContent = `${fmtMB(d.flash[1])} из ${fmtMB(d.flash[0])}`;
-				T.flashSub.textContent = `Свободно: ${fmtMB(d.flash[0] - d.flash[1])}`;
+				T.flashMain.textContent = `${fmtMB(d.flash[1])} of ${fmtMB(d.flash[0])}`;
+				T.flashSub.textContent = `Free: ${fmtMB(d.flash[0] - d.flash[1])}`;
 				T.flashTotal.textContent = fmtMB(d.flash[0]);
 				T.flashFree.textContent = fmtMB(d.flash[0] - d.flash[1]);
 			}
@@ -3613,7 +3622,7 @@ return view.extend({
 				const i = coreRefs.length;
 				const fill = E('div', { class: 'nfm-bar-fill c-cpu' }), val = E('b', {}, '–');
 				coresBox.appendChild(E('div', { class: 'nfm-core' }, [
-					E('div', { class: 'nfm-core-h' }, [ E('span', {}, `Ядро ${i + 1}`), val ]), E('div', { class: 'nfm-bar' }, fill) ]));
+					E('div', { class: 'nfm-core-h' }, [ E('span', {}, `Core ${i + 1}`), val ]), E('div', { class: 'nfm-bar' }, fill) ]));
 				coreRefs.push({ fill, val });
 			}
 			S.cores.forEach((v, i) => {
@@ -3639,17 +3648,17 @@ return view.extend({
 			sparkDown.update(S.times, h.rx, hm); sparkUp.update(S.times, h.tx, hm);
 			const dr = fmtRate(rt.rx), ur = fmtRate(rt.tx);
 			T.dlN.textContent = dr[0]; T.dlU.textContent = dr[1]; T.ulN.textContent = ur[0]; T.ulU.textContent = ur[1];
-			T.ctMini.textContent = `${nf0.format(d.ct[0])}${d.ct[1] ? ' из ' + nf0.format(d.ct[1]) : ''}`;
+			T.ctMini.textContent = `${nf0.format(d.ct[0])}${d.ct[1] ? ' of ' + nf0.format(d.ct[1]) : ''}`;
 			if (S.tab === 'overview') renderTop3();
 			updVerdict();
 
 			if (S.tab === 'net') {
 				T.nDlN.textContent = dr[0]; T.nDlU.textContent = dr[1]; T.nUlN.textContent = ur[0]; T.nUlU.textContent = ur[1];
 				T.nDlTot.textContent = cur ? fmtBytes(cur[1]) : '–'; T.nUlTot.textContent = cur ? fmtBytes(cur[5]) : '–';
-				T.ctN.textContent = nf0.format(d.ct[0]); T.ctMax.textContent = d.ct[1] ? 'из ' + nf0.format(d.ct[1]) : '';
+				T.ctN.textContent = nf0.format(d.ct[0]); T.ctMax.textContent = d.ct[1] ? 'of ' + nf0.format(d.ct[1]) : '';
 				T.ctBar.style.width = d.ct[1] ? Math.min(100, 100 * d.ct[0] / d.ct[1]) + '%' : '0';
 				const pr = S.full ? S.full.ctp : null;
-				T.ctProto.textContent = pr ? `TCP ${nf0.format(pr[0])} · UDP ${nf0.format(pr[1])} · прочие ${nf0.format(pr[2])}` : 'подробности недоступны';
+				T.ctProto.textContent = pr ? `TCP ${nf0.format(pr[0])} · UDP ${nf0.format(pr[1])} · other ${nf0.format(pr[2])}` : 'details unavailable';
 
 				if (netSel.options.length !== d.net.length)
 					netSel.replaceChildren(...d.net.map(n => { const o = ifaceTitle(n[0]); return E('option', { value: n[0] }, o[1] ? `${o[0]} (${o[1]})` : o[0]); }));
@@ -3669,9 +3678,9 @@ return view.extend({
 					hostsBox.replaceChildren(...(top.length ? top.map(([ ip, n ]) => E('div', { class: 'nfm-host' }, [
 						E('span', {}, [ names[ip] || ip, names[ip] ? E('small', {}, ip) : '' ]), E('b', {}, nf0.format(n)),
 						E('div', { class: 'nfm-bar' }, E('div', { class: 'nfm-bar-fill c-cpu', style: `width:${100 * n / mx}%` })) ]))
-						: [ E('div', { class: 'nfm-empty' }, 'Активных соединений нет') ]));
+						: [ E('div', { class: 'nfm-empty' }, 'No active connections') ]));
 				} else {
-					hostsBox.replaceChildren(E('div', { class: 'nfm-empty' }, S.full ? 'Таблица соединений недоступна (нужен nf_conntrack).' : 'Собираю данные…'));
+					hostsBox.replaceChildren(E('div', { class: 'nfm-empty' }, S.full ? 'Connection table unavailable (nf_conntrack required).' : 'Collecting data…'));
 				}
 			}
 
@@ -3695,8 +3704,8 @@ return view.extend({
 			if (hot) {
 				hotBox.classList.toggle('danger', hot.crit);
 				hotBox.classList.toggle('warning', !hot.crit);
-				hotBox.firstChild.textContent = hot.crit ? 'Критический перегрев процессора' : 'Процессор перегрет';
-				hotBox.lastChild.textContent = `Температура ${fmtTemp(hot.temp)} держится выше ${HOT_WARN} °C уже более ${Math.max(1, Math.round(hot.dur / 60))} мин. Проверьте вентиляцию и не накрывайте роутер.`;
+				hotBox.firstChild.textContent = hot.crit ? 'Critical CPU overheating' : 'CPU is overheating';
+				hotBox.lastChild.textContent = `Temperature ${fmtTemp(hot.temp)} has stayed above ${HOT_WARN} °C for more than ${Math.max(1, Math.round(hot.dur / 60))} min. Check ventilation and do not cover the router.`;
 			}
 
 			/* wifi clients */
@@ -3706,16 +3715,16 @@ return view.extend({
 					const mac = (c.mac || '').toUpperCase(), h = hints[mac] || hints[mac.toLowerCase()] || {};
 					const deviceName = c.displayName || (!c.proxyStation ? h.name : '') || (!c.proxyStation ? (h.ipaddrs || [])[0] : '') || (!c.proxyStation ? c.ip : '') || mac;
 					const lvl = c.proxy ? 0 : c.signal >= -55 ? 4 : c.signal >= -65 ? 3 : c.signal >= -75 ? 2 : 1;
-					const link = x => x && x.rate ? nf0.format(x.rate / 1000) + '\u00a0Мбит/с' : '–';
-					return E('tr', { class: 'nfm-click', title: 'Показать сигнал в динамике', click: () => { if (!c.proxy) wifiDialog(mac, deviceName, c); } }, [
+					const link = x => x && x.rate ? nf0.format(x.rate / 1000) + ' Mbit/s' : '–';
+					return E('tr', { class: 'nfm-click', title: 'Show signal over time', click: () => { if (!c.proxy) wifiDialog(mac, deviceName, c); } }, [
 						E('td', {}, [ deviceName, (c.displayName || (!c.proxyStation && h.name)) ? E('span', { class: 'nfm-chip' }, mac) : '' ]),
-						E('td', {}, [ c.ssid, c.proxy ? E('span', { class: 'nfm-chip' }, 'за точкой доступа') : c.proxyStation ? E('span', { class: 'nfm-chip' }, 'точка доступа / мост') : c.band ? E('span', { class: 'nfm-chip' }, BANDS[c.band] || c.band) : '' ]),
-						E('td', {}, c.proxy ? '—' : [ E('span', { class: 'nfm-sig' + (lvl <= 2 ? ' weak' : '') }, [ 1, 2, 3, 4 ].map(n => E('i', { class: n <= lvl ? 'on' : '' }))), `${c.signal} дБм` ]),
+						E('td', {}, [ c.ssid, c.proxy ? E('span', { class: 'nfm-chip' }, 'behind an access point') : c.proxyStation ? E('span', { class: 'nfm-chip' }, 'access point / bridge') : c.band ? E('span', { class: 'nfm-chip' }, BANDS[c.band] || c.band) : '' ]),
+						E('td', {}, c.proxy ? '—' : [ E('span', { class: 'nfm-sig' + (lvl <= 2 ? ' weak' : '') }, [ 1, 2, 3, 4 ].map(n => E('i', { class: n <= lvl ? 'on' : '' }))), `${c.signal} dBm` ]),
 						E('td', { class: 'r' }, c.proxy ? '—' : link(c.tx)), E('td', { class: 'r' }, c.proxy ? '—' : link(c.rx)),
-						E('td', { class: 'r' }, c.proxy ? ((c.proxyState === 'REACHABLE' || c.proxyState === 'DELAY' || c.proxyState === 'PROBE') ? 'через ретранслятор · доступен' : 'через ретранслятор · не подтверждён') : c.connected_time != null ? fmtDur(c.connected_time) : '–') ]);
+						E('td', { class: 'r' }, c.proxy ? ((c.proxyState === 'REACHABLE' || c.proxyState === 'DELAY' || c.proxyState === 'PROBE') ? 'via repeater · reachable' : 'via repeater · unconfirmed') : c.connected_time != null ? fmtDur(c.connected_time) : '–') ]);
 				});
 				wifiBody.replaceChildren(...(rows.length ? rows : [ E('tr', {}, E('td', { colspan: 6, class: 'nfm-empty' },
-					S.wifi ? 'Подключённых Wi-Fi клиентов нет' : 'Данные о Wi-Fi недоступны' + (wifiErr ? ' (' + wifiErr + ')' : ''))) ]));
+					S.wifi ? 'No Wi-Fi clients connected' : 'Wi-Fi data unavailable' + (wifiErr ? ' (' + wifiErr + ')' : ''))) ]));
 			}
 
 			/* memory by program */
@@ -3726,9 +3735,9 @@ return view.extend({
 				const sumRss = g.reduce((s, e) => s + e.rss, 0);
 				const kernel = Math.max(0, f.mem.total - f.mem.free - sumRss);
 				const items = top.map(e => ({ label: e.label, cls: e.cls, kb: e.rss }));
-				if (restRss > 0) items.push({ label: 'Остальные программы', cls: 'gx', kb: restRss });
-				items.push({ label: 'Ядро, буферы и /tmp', cls: 'hatch', kb: kernel });
-				items.push({ label: 'Свободно', cls: 'free', kb: f.mem.free });
+				if (restRss > 0) items.push({ label: 'Other programs', cls: 'gx', kb: restRss });
+				items.push({ label: 'Kernel, buffers and /tmp', cls: 'hatch', kb: kernel });
+				items.push({ label: 'Free', cls: 'free', kb: f.mem.free });
 				memStack.replaceChildren(...items.map(i => E('div', { class: 'nfm-seg ' + i.cls, title: `${i.label}: ${fmtMB(i.kb)}`, style: `flex:${i.kb} 1 0` })));
 				memLegend.replaceChildren(...items.map(i => E('span', { class: 'nfm-leg' }, [
 					E('i', { class: 'nfm-dot ' + (i.cls === 'hatch' || i.cls === 'free' ? '' : i.cls), style: i.cls === 'hatch' ? 'background:repeating-linear-gradient(135deg,var(--nfm-border) 0 2px,transparent 2px 4px);border:1px solid var(--nfm-border)'
@@ -3756,13 +3765,13 @@ return view.extend({
 				if (wifi !== undefined) S.wifi = wifi;
 				let d = null;
 				try { d = JSON.parse(res.stdout); } catch (e) {}
-				if (!d) throw new Error(res.stderr || 'нет данных');
+				if (!d) throw new Error(res.stderr || 'no data');
 				ingest(d);
 				if (!S.paused && pill.classList.contains('paused')) pill.classList.remove('paused');
-				if (!S.paused) pill.textContent = `обновляется каждые ${INTERVAL} с`;
+				if (!S.paused) pill.textContent = `refreshes every ${INTERVAL} s`;
 				refresh();
 			}).catch(err => {
-				pill.textContent = 'нет данных: ' + (err.message || err);
+				pill.textContent = 'no data: ' + (err.message || err);
 				pill.classList.add('paused');
 			});
 		}

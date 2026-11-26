@@ -20,9 +20,9 @@
   ],
   "shortcuts": [
     {
-      "name": "Статус",
-      "short_name": "Статус",
-      "description": "Обзор роутера",
+      "name": "Status",
+      "short_name": "Status",
+      "description": "Router overview",
       "url": "/cgi-bin/luci/admin/status/overview",
       "icons": [
         {
@@ -33,9 +33,9 @@
       ]
     },
     {
-      "name": "Монитор ресурсов",
-      "short_name": "Монитор",
-      "description": "Нагрузка, температура, трафик",
+      "name": "Resource Monitor",
+      "short_name": "Monitor",
+      "description": "Load, temperature, traffic",
       "url": "/cgi-bin/luci/admin/status/nightfall-monitor",
       "icons": [
         {
@@ -46,9 +46,9 @@
       ]
     },
     {
-      "name": "Wi-Fi клиенты",
-      "short_name": "Клиенты",
-      "description": "Кто подключён и уровень сигнала",
+      "name": "Wi-Fi clients",
+      "short_name": "Clients",
+      "description": "Who is connected and signal strength",
       "url": "/cgi-bin/luci/admin/status/nightfall-monitor#net",
       "icons": [
         {
@@ -59,9 +59,9 @@
       ]
     },
     {
-      "name": "Службы",
-      "short_name": "Службы",
-      "description": "Состояние и перезапуск служб",
+      "name": "Services",
+      "short_name": "Services",
+      "description": "Service status and restarts",
       "url": "/cgi-bin/luci/admin/status/nightfall-monitor#svcs",
       "icons": [
         {
@@ -72,9 +72,9 @@
       ]
     },
     {
-      "name": "Перезапустить Wi-Fi",
+      "name": "Restart Wi-Fi",
       "short_name": "Wi-Fi",
-      "description": "Быстрое действие (потребуется подтверждение)",
+      "description": "Quick action (confirmation required)",
       "url": "/cgi-bin/luci/admin/status/overview#nf-wifi",
       "icons": [
         {

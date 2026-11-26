@@ -1,12 +1,12 @@
 #!/bin/sh
-# Nightfall: сводка безопасности для вкладки «Безопасность» монитора. Ничего не меняет, только читает.
-#   nightfall-sec summary  — JSON: неудачные и успешные входы (LuCI, SSH), новые устройства, открытые порты, проброс портов
-#   nightfall-sec updates  — JSON: версия темы и последний релиз, выпуск OpenWrt, ядро
-#   nightfall-sec ban АДРЕС [ЧАСОВ]  — закрыть внешний адрес для самого роутера (по умолчанию 24 ч, не больше 720)
-#   nightfall-sec unban АДРЕС        — снять закрытие
-#   nightfall-sec bans               — JSON: закрытые адреса и сколько осталось
-#   nightfall-sec watch              — для сборщика: печатает текст, если неудачных входов стало заметно больше
-# Для проверок: NF_NFT (вместо nft), NF_LOGREAD (команда вместо logread), NF_PROC (вместо /proc), NF_KNOWN, NF_UCI (вместо uci), NF_UPDATEBIN.
+# Nightfall: security summary for the monitor's "Security" tab. Changes nothing, read-only.
+#   nightfall-sec summary  — JSON: failed and successful sign-ins (LuCI, SSH), new devices, open ports, port forwards
+#   nightfall-sec updates  — JSON: theme version and latest release, OpenWrt release, kernel
+#   nightfall-sec ban ADDRESS [HOURS] — block an external address from the router itself (24 h by default, at most 720)
+#   nightfall-sec unban ADDRESS      — remove the block
+#   nightfall-sec bans               — JSON: blocked addresses and time remaining
+#   nightfall-sec watch              — for the collector: prints a text if failed sign-ins grew noticeably
+# For checks: NF_NFT (instead of nft), NF_LOGREAD (command used instead of logread), NF_PROC (instead of /proc), NF_KNOWN, NF_UCI (instead of uci), NF_UPDATEBIN.
 LOGREAD=${NF_LOGREAD:-logread}
 PROC=${NF_PROC:-/proc}
 KNOWN=${NF_KNOWN:-/etc/nightfall-known.list}
@@ -18,7 +18,7 @@ DIR=${NF_DIR:-/tmp/nightfall}
 BANT=nightfall_ban
 jesc() { sed 's/\\/\\\\/g; s/"/\\"/g'; }
 
-logins() {   # разбор системного журнала: dropbear (SSH) и LuCI (uhttpd)
+logins() {   # parse the system log: dropbear (SSH) and LuCI (uhttpd)
 	$LOGREAD 2>/dev/null | awk '
 	function add(kind, ok, user, ip, t) { if (ip ~ /^[0-9.]+:[0-9]+$/) sub(/:[0-9]+$/, "", ip); else if (ip ~ /^\[.*\]:[0-9]+$/) { sub(/\]:[0-9]+$/, "", ip); sub(/^\[/, "", ip) } n++; K[n] = kind; O[n] = ok; U[n] = user; I[n] = ip; T[n] = t }
 	{
@@ -54,7 +54,7 @@ logins() {   # разбор системного журнала: dropbear (SSH) 
 	}'
 }
 
-newdevs() {  # последние 10 устройств, которых сборщик увидел впервые: [mac, имя, время]
+newdevs() {  # the last 10 devices the collector saw for the first time: [mac, name, time]
 	printf '['
 	[ -r "$KNOWN" ] && awk -F'|' 'NF >= 3 && $1 != "" { l[++n] = $0 } END {
 		from = n - 9; if (from < 1) from = 1; first = 1
@@ -63,15 +63,15 @@ newdevs() {  # последние 10 устройств, которых сбор
 	printf ']'
 }
 
-hex2ip() {   # 0100007F -> 127.0.0.1 ; IPv6 (32 hex) -> признак "::" / "::1" / иное
+hex2ip() {   # 0100007F -> 127.0.0.1 ; IPv6 (32 hex) -> marker "::" / "::1" / other
 	case "${#1}" in
 	8) printf '%d.%d.%d.%d' "0x$(echo "$1" | cut -c7-8)" "0x$(echo "$1" | cut -c5-6)" "0x$(echo "$1" | cut -c3-4)" "0x$(echo "$1" | cut -c1-2)" ;;
 	*) case "$1" in 00000000000000000000000000000000) echo '::' ;; 00000000000000000000000001000000) echo '::1' ;; *) echo 'v6' ;; esac ;;
 	esac
 }
 
-ports() {    # слушающие TCP/UDP: [протокол, порт, где слушает (all|local), программа]
-	# один проход по /proc/*/fd вместо поиска на каждый порт (на роутере с сотнями дескрипторов иначе не укладывается в лимит ответа)
+ports() {    # listening TCP/UDP: [protocol, port, where it listens (all|local), program]
+	# one pass over /proc/*/fd instead of a search per port (on a router with hundreds of descriptors it would not fit the response time limit otherwise)
 	MAP=$(ls -l "$PROC"/[0-9]*/fd/* 2>/dev/null | awk '/socket:\[[0-9]+\]/ { ino = $NF; sub(/^socket:\[/, "", ino); sub(/\]$/, "", ino); d = $(NF-2); sub(/\/fd\/.*/, "", d); n = split(d, a, "/"); if (!(ino in seen)) { seen[ino] = 1; print ino, a[n] } }')
 	for pr in tcp tcp6 udp udp6; do
 		f="$PROC/net/$pr"; [ -r "$f" ] || continue
@@ -87,7 +87,7 @@ ports() {    # слушающие TCP/UDP: [протокол, порт, где �
 	done | sort -u | awk 'BEGIN { printf "["; first = 1 } { printf "%s[\"%s\",%d,\"%s\",\"%s\"]", first ? "" : ",", $1, $2, $3, $4; first = 0 } END { printf "]" }'
 }
 
-forwards() {  # проброс портов из интернета (redirect) и политика входящего трафика зоны wan
+forwards() {  # port forwards from the internet (redirect) and the inbound policy of the wan zone
 	$UCI -q show firewall 2>/dev/null | awk -F"[.=]" '
 	/=redirect$/ { r[$2] = 1 }
 	{ line = $0; sub(/^[^=]*=/, "", line); gsub(/\047/, "", line); k = $0; sub(/=.*/, "", k); n = split(k, p, "."); if (n == 3) v[p[2] SUBSEP p[3]] = line }
@@ -106,16 +106,16 @@ forwards() {  # проброс портов из интернета (redirect) �
 	printf ',"wan_input":"%s"}' "${pol:-}"
 }
 
-checks() {   # проверки настроек: [уровень bad|warn|ok, текст]
+checks() {   # settings checks: [level bad|warn|ok, text]
 	out=""
 	add() { out="$out${out:+,}[\"$1\",\"$(printf '%s' "$2" | jesc)\"]"; }
-	# пароль root
+	# root password
 	if [ -r "$SHADOW" ]; then
 		h=$(awk -F: '$1 == "root" { print $2; exit }' "$SHADOW")
-		if [ -z "$h" ]; then add bad "Пароль root не задан: зайти в роутер может любой из вашей сети."
-		else add ok "Пароль root задан."; fi
+		if [ -z "$h" ]; then add bad "Root password is not set: anyone on your network can sign in to the router."
+		else add ok "Root password is set."; fi
 	fi
-	# шифрование Wi-Fi
+	# Wi-Fi encryption
 	$UCI -q show wireless 2>/dev/null | awk -F"[.=]" '
 		/=wifi-iface$/ { r[$2] = 1 }
 		{ line = $0; sub(/^[^=]*=/, "", line); gsub(/\047/, "", line); k = $0; sub(/=.*/, "", k); n = split(k, p, "."); if (n == 3) v[p[2] SUBSEP p[3]] = line }
@@ -124,38 +124,38 @@ checks() {   # проверки настроек: [уровень bad|warn|ok, �
 			e = v[s SUBSEP "encryption"]; nm = v[s SUBSEP "ssid"]; if (nm == "") nm = s
 			print nm "\t" e } }' | while IFS="$(printf '\t')" read -r nm enc; do
 		case "$enc" in
-		''|none) echo "bad|Сеть «$nm» без пароля: подключиться может любой." ;;
-		wep*) echo "bad|Сеть «$nm» использует WEP: он взламывается за минуты, включите WPA2 или WPA3." ;;
-		psk|psk+*|psk-mixed*|wpa|wpa+*|*tkip*) echo "warn|Сеть «$nm» допускает устаревшее шифрование ($enc): оставьте WPA2 (psk2+ccmp) или WPA3 (sae)." ;;
-		*) echo "ok|Сеть «$nm»: шифрование $enc." ;;
+		''|none) echo "bad|Network '$nm' has no password: anyone can connect." ;;
+		wep*) echo "bad|Network '$nm' uses WEP: it can be cracked in minutes, switch to WPA2 or WPA3." ;;
+		psk|psk+*|psk-mixed*|wpa|wpa+*|*tkip*) echo "warn|Network '$nm' allows outdated encryption ($enc): keep WPA2 (psk2+ccmp) or WPA3 (sae)." ;;
+		*) echo "ok|Network '$nm': encryption $enc." ;;
 		esac
 	done > "$DIR/.chk.$$" 2>/dev/null
 	if [ -s "$DIR/.chk.$$" ]; then
 		while IFS='|' read -r lv tx; do add "$lv" "$tx"; done < "$DIR/.chk.$$"
 	fi
 	rm -f "$DIR/.chk.$$" 2>/dev/null
-	# Dropbear: PasswordAuth управляет парольной аутентификацией в целом,
-	# RootPasswordAuth отдельно запрещает парольный вход root (-g).
-	# Для root парольный вход возможен, только если оба параметра включены.
+	# Dropbear: PasswordAuth controls password authentication as a whole,
+	# RootPasswordAuth separately denies root password sign-in (-g).
+	# Root password sign-in is possible only if both options are on.
 	pa=$($UCI -q get dropbear.@dropbear[0].PasswordAuth 2>/dev/null)
 	rpa=$($UCI -q get dropbear.@dropbear[0].RootPasswordAuth 2>/dev/null)
-	# Значения по умолчанию Dropbear/OpenWrt — включено; учитываем также старые bool-значения.
+	# Dropbear/OpenWrt defaults are on; old bool values are handled too.
 	case "$pa" in 0|off|false|no|disabled) pa=off ;; *) pa=on ;; esac
 	case "$rpa" in 0|off|false|no|disabled) rpa=off ;; *) rpa=on ;; esac
 	if [ "$pa" = on ] && [ "$rpa" = on ]; then
-		add warn "SSH: парольный вход root включён (PasswordAuth и RootPasswordAuth). Для защиты отключите парольную аутентификацию и используйте SSH-ключи."
+		add warn "SSH: root password sign-in is on (PasswordAuth and RootPasswordAuth). For protection, turn off password authentication and use SSH keys."
 	else
-		add ok "SSH: парольный вход root выключен ($([ "$pa" = off ] && echo "PasswordAuth" || echo "RootPasswordAuth")); вход по ключу остаётся доступен."
+		add ok "SSH: root password sign-in is off ($([ "$pa" = off ] && echo "PasswordAuth" || echo "RootPasswordAuth")); key sign-in remains available."
 	fi
 	if [ "$pa" = on ] && [ "$rpa" = off ]; then
-		add ok "SSH: парольная аутентификация для непривилегированных пользователей разрешена; для root запрещена."
+		add ok "SSH: password authentication is allowed for unprivileged users; denied for root."
 	fi
-	[ "$($UCI -q get uhttpd.main.redirect_https 2>/dev/null)" = "1" ] && add ok "LuCI: http перенаправляется на https." || add warn "LuCI доступен по http (пароль идёт открытым текстом внутри сети). Включите «Redirect all HTTP to HTTPS»."
+	[ "$($UCI -q get uhttpd.main.redirect_https 2>/dev/null)" = "1" ] && add ok "LuCI: http is redirected to https." || add warn "LuCI is available over http (the password travels in plain text inside the network). Turn on 'Redirect all HTTP to HTTPS'."
 	printf '[%s]' "$out"
 }
 
-# ---- закрытие адреса: своя таблица nft (переживает перезапуск межсетевого экрана, не переживает перезагрузку) ----
-valid_ip() {   # только внешние адреса: чтобы нельзя было закрыть себя или локальную сеть
+# ---- address blocking: own nft table (survives a firewall restart, does not survive a reboot) ----
+valid_ip() {   # external addresses only: so you cannot block yourself or the local network
 	case "$1" in
 	*[!0-9a-fA-F:.]*|'') return 1 ;;
 	*:*) case "$1" in ::|::1|[fF][eE][89abAB]*|[fF][cCdD]*) return 1 ;; esac
@@ -180,14 +180,14 @@ NFTEOF
 
 case "$1" in
 ban)
-	valid_ip "$2" || { echo '{"ok":false,"error":"Можно закрывать только внешние адреса (не локальные, не адрес самого роутера)."}'; exit 1; }
+	valid_ip "$2" || { echo '{"ok":false,"error":"Only external addresses can be blocked (not local ones, not the router address)."}'; exit 1; }
 	h=${3:-24}; case "$h" in ''|*[!0-9]*) h=24 ;; esac; [ "$h" -ge 1 ] && [ "$h" -le 720 ] || h=24
-	command -v "$NFT" >/dev/null 2>&1 || { echo '{"ok":false,"error":"На роутере нет nft: закрытие адресов недоступно."}'; exit 1; }
-	ban_setup || { echo '{"ok":false,"error":"Не удалось подготовить правила nft."}'; exit 1; }
-	$NFT add element inet $BANT "$(set_of "$2")" "{ $2 timeout ${h}h }" 2>/dev/null || { echo '{"ok":false,"error":"Не удалось закрыть адрес."}'; exit 1; }
+	command -v "$NFT" >/dev/null 2>&1 || { echo '{"ok":false,"error":"The router has no nft: address blocking is unavailable."}'; exit 1; }
+	ban_setup || { echo '{"ok":false,"error":"Failed to prepare nft rules."}'; exit 1; }
+	$NFT add element inet $BANT "$(set_of "$2")" "{ $2 timeout ${h}h }" 2>/dev/null || { echo '{"ok":false,"error":"Failed to block the address."}'; exit 1; }
 	printf '{"ok":true,"ip":"%s","hours":%s}\n' "$2" "$h" ;;
 unban)
-	valid_ip "$2" || { echo '{"ok":false,"error":"Некорректный адрес."}'; exit 1; }
+	valid_ip "$2" || { echo '{"ok":false,"error":"Invalid address."}'; exit 1; }
 	$NFT delete element inet $BANT "$(set_of "$2")" "{ $2 }" 2>/dev/null
 	printf '{"ok":true}\n' ;;
 bans)
@@ -197,14 +197,14 @@ bans)
 	done | awk 'BEGIN { first = 1 } { printf "%s[\"%s\",\"%s\"]", first ? "" : ",", $1, $2; first = 0 }'
 	printf ']}\n' ;;
 watch)
-	# раз в несколько минут: если неудачных входов стало на SEC_FAILS и больше, чем при прошлой проверке, пишем сообщение
+	# every few minutes: if failed sign-ins grew by SEC_FAILS or more since the previous check, print a message
 	lim=${NF_SECFAILS:-10}
 	now=$(logins | sed -n 's/.*"failed_ssh":\([0-9]*\),"failed_luci":\([0-9]*\).*/\1 \2/p' | awk '{ print $1 + $2 }')
 	prev=$(cat "$DIR/sec.fails" 2>/dev/null)
 	mkdir -p "$DIR" 2>/dev/null; echo "${now:-0}" > "$DIR/sec.fails"
 	[ -n "$prev" ] || exit 0
 	d=$(( ${now:-0} - prev ))
-	[ "$d" -ge "$lim" ] 2>/dev/null && echo "Много неудачных входов в роутер: $d за последнее время (SSH и LuCI). Откройте «Монитор → Безопасность»: там можно закрыть адрес нарушителя."
+	[ "$d" -ge "$lim" ] 2>/dev/null && echo "Many failed sign-ins to the router: $d recently (SSH and LuCI). Open \"Monitor → Security\": you can block the offending address there."
 	exit 0 ;;
 summary)
 	printf '{"ok":true,"now":%s,"logins":' "$(date +%s)"

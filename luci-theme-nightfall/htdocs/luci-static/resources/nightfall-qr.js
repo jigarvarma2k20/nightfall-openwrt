@@ -1,10 +1,10 @@
 'use strict';
 'require baseclass';
 
-/* Мини-кодировщик QR: байтовый режим, коррекция M, версии 1–10 (до 213 байт). Возвращает матрицу [строки][столбцы] из 0/1. */
+/* Mini QR encoder: byte mode, error correction M, versions 1–10 (up to 213 bytes). Returns a [rows][columns] matrix of 0/1. */
 function nfQr(text) {
 	const data = Array.from(new TextEncoder().encode(text));
-	/* [ECC на блок, блоков в группе 1, данных в блоке 1, блоков в группе 2, данных в блоке 2] */
+	/* [ECC per block, blocks in group 1, data per block 1, blocks in group 2, data per block 2] */
 	const V = [ null, [ 10, 1, 16, 0, 0 ], [ 16, 1, 28, 0, 0 ], [ 26, 1, 44, 0, 0 ], [ 18, 2, 32, 0, 0 ], [ 24, 2, 43, 0, 0 ], [ 16, 4, 27, 0, 0 ], [ 18, 4, 31, 0, 0 ], [ 22, 2, 38, 2, 39 ], [ 22, 3, 36, 2, 37 ], [ 26, 4, 43, 1, 44 ] ];
 	const AL = [ null, [], [ 6, 18 ], [ 6, 22 ], [ 6, 26 ], [ 6, 30 ], [ 6, 34 ], [ 6, 22, 38 ], [ 6, 24, 42 ], [ 6, 26, 46 ], [ 6, 28, 50 ] ];
 	const cap = v => V[v][1] * V[v][2] + V[v][3] * V[v][4];
@@ -12,14 +12,14 @@ function nfQr(text) {
 	for (let v = 1; v <= 10; v++) if (data.length + 2 + (v >= 10 ? 1 : 0) <= cap(v)) { ver = v; break; }
 	if (!ver) return null;
 	const total = cap(ver);
-	/* биты данных */
+	/* data bits */
 	const bits = [];
 	const put = (val, n) => { for (let i = n - 1; i >= 0; i--) bits.push((val >>> i) & 1); };
 	put(4, 4); put(data.length, ver >= 10 ? 16 : 8); data.forEach(b => put(b, 8));
 	put(0, Math.min(4, total * 8 - bits.length)); while (bits.length % 8) bits.push(0);
 	const cw = []; for (let i = 0; i < bits.length; i += 8) { let b = 0; for (let j = 0; j < 8; j++) b = (b << 1) | bits[i + j]; cw.push(b); }
 	for (let p = 0; cw.length < total; p ^= 1) cw.push(p ? 0x11 : 0xEC);
-	/* Рид-Соломон */
+	/* Reed-Solomon */
 	const exp = new Array(512), log = new Array(256);
 	for (let i = 0, x = 1; i < 255; i++) { exp[i] = x; log[x] = i; x <<= 1; if (x & 256) x ^= 0x11d; }
 	for (let i = 255; i < 512; i++) exp[i] = exp[i - 255];
@@ -37,7 +37,7 @@ function nfQr(text) {
 	const out = [];
 	for (let i = 0; i < Math.max(d1, d2); i++) blocks.forEach(b => { if (i < b.d.length) out.push(b.d[i]); });
 	for (let i = 0; i < ecn; i++) blocks.forEach(b => out.push(b.e[i]));
-	/* матрица */
+	/* matrix */
 	const N = 17 + 4 * ver, M = [], R = [];
 	for (let i = 0; i < N; i++) { M.push(new Array(N).fill(0)); R.push(new Array(N).fill(false)); }
 	const set = (r, c, v) => { if (r >= 0 && c >= 0 && r < N && c < N) { M[r][c] = v ? 1 : 0; R[r][c] = true; } };
@@ -57,7 +57,7 @@ function nfQr(text) {
 		const vb = (ver << 12) | rem;
 		for (let i = 0; i < 18; i++) { const v = (vb >>> i) & 1, a = N - 11 + (i % 3), b = Math.floor(i / 3); set(b, a, v); set(a, b, v); }
 	}
-	/* данные по зигзагу */
+	/* data in zigzag order */
 	const bitsOut = []; out.forEach(b => { for (let i = 7; i >= 0; i--) bitsOut.push((b >>> i) & 1); });
 	const place = mask => {
 		const G = M.map(r => r.slice()); let k = 0, up = true;
@@ -74,7 +74,7 @@ function nfQr(text) {
 			}
 			up = !up;
 		}
-		/* формат: уровень M = 00 */
+		/* format: level M = 00 */
 		let rem = mask;
 		for (let i = 0; i < 10; i++) rem = (rem << 1) ^ ((rem >>> 9) * 0x537);
 		const fb = ((mask << 10) | rem) ^ 0x5412;

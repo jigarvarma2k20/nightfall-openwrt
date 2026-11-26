@@ -1,39 +1,39 @@
 #!/bin/sh
-# Тест nightfall-sec (вкладка «Безопасность»): журнал входов, порты, проброс, новые устройства. Без роутера, на заглушках.
+# nightfall-sec test ("Security" tab): sign-in log, ports, forwards, new devices. No router needed, uses stubs.
 cd "$(dirname "$0")/.." || exit 1
 S="$PWD/luci-app-nightfall-monitor/root/usr/libexec/nightfall-sec"
 T=$(mktemp -d); trap 'rm -rf "$T"' EXIT
 ok=0; bad=0
-want() { case "$3" in *"$2"*) ok=$((ok + 1)); echo "ok  $1" ;; *) bad=$((bad + 1)); echo "ОШИБКА: $1 — нет «$2» в: $3" ;; esac; }
-nowant() { case "$3" in *"$2"*) bad=$((bad + 1)); echo "ОШИБКА: $1 — лишнее «$2»" ;; *) ok=$((ok + 1)); echo "ok  $1" ;; esac; }
+want() { case "$3" in *"$2"*) ok=$((ok + 1)); echo "ok  $1" ;; *) bad=$((bad + 1)); echo "FAIL: $1 — no \"$2\" in: $3" ;; esac; }
+nowant() { case "$3" in *"$2"*) bad=$((bad + 1)); echo "FAIL: $1 — unexpected \"$2\"" ;; *) ok=$((ok + 1)); echo "ok  $1" ;; esac; }
 
 T=$T . "$PWD/tools/sec-fixtures.sh" "$T"
 export NF_SHADOW="$T/shadow" NF_DIR="$T/d"
 export NF_LOGREAD="$T/logread" NF_PROC="$T/proc" NF_KNOWN="$T/known" NF_UCI="$T/uci" NF_UPDATEBIN="$T/upd"
 out=$(sh "$S" summary)
-echo "$out" | node -e 'JSON.parse(require("fs").readFileSync(0,"utf8"))' 2>/dev/null && { ok=$((ok + 1)); echo "ok  summary — корректный JSON"; } || { bad=$((bad + 1)); echo "ОШИБКА: summary не JSON: $out"; }
-want "неудачных входов по SSH: 3" '"failed_ssh":3' "$out"
-want "неудачных входов в LuCI: 1" '"failed_luci":1' "$out"
-want "самый частый адрес-нарушитель" '["203.0.113.5",2]' "$out"
-want "успешный вход виден" '"ssh",1,"root","192.168.1.10"' "$out"
-want "LuCI: вход отмечен" '"luci",0,"root","203.0.113.9"' "$out"
+echo "$out" | node -e 'JSON.parse(require("fs").readFileSync(0,"utf8"))' 2>/dev/null && { ok=$((ok + 1)); echo "ok  summary — valid JSON"; } || { bad=$((bad + 1)); echo "FAIL: summary is not JSON: $out"; }
+want "failed SSH sign-ins: 3" '"failed_ssh":3' "$out"
+want "failed LuCI sign-ins: 1" '"failed_luci":1' "$out"
+want "most frequent offending address" '["203.0.113.5",2]' "$out"
+want "successful sign-in is visible" '"ssh",1,"root","192.168.1.10"' "$out"
+want "LuCI: sign-in recorded" '"luci",0,"root","203.0.113.9"' "$out"
 printf '%s' "$out" | node -e '
 const d = JSON.parse(require("fs").readFileSync(0, "utf8"));
 const rows = d.newdev || [];
-if (rows.length < 2 || rows[0][0] !== "aa:bb:cc:dd:ee:02" || rows[0][1] !== "Камера" || rows[1][0] !== "aa:bb:cc:dd:ee:01" || !(rows[0][2] > rows[1][2])) process.exit(1);
-' && { ok=$((ok + 1)); echo "ok  новые устройства: последнее первым"; } || { bad=$((bad + 1)); echo "ОШИБКА: новые устройства: неверный порядок или метки времени"; }
-want "порт 22 слушает dropbear на всех адресах" '["tcp",22,"all","dropbear"]' "$out"
-want "порт 8080 слушает только локально" '["tcp",8080,"local"' "$out"
-want "порт 80 по IPv6 — uhttpd" '["tcp",80,"all","uhttpd"]' "$out"
-want "UDP 53 виден" '["udp",53,"all"' "$out"
-want "проброс порта из интернета" '["Web","tcp","8080","192.168.1.5","80"]' "$out"
-nowant "выключенный проброс не показывается" "Off" "$out"
-want "проверка: пустой пароль root" '["bad","Пароль root не задан' "$out"
-want "проверка: сеть без пароля" '["bad","Сеть «Guest» без пароля' "$out"
-want "проверка: устаревшее шифрование" '["warn","Сеть «Old» допускает устаревшее' "$out"
-want "проверка: хорошее шифрование" '["ok","Сеть «Home»: шифрование sae-mixed' "$out"
-nowant "проверка: выключенная сеть не считается" "«Off»" "$out"
-want "проверка: SSH только по ключам" '["ok","SSH: парольный вход root выключен (PasswordAuth)' "$out"
+if (rows.length < 2 || rows[0][0] !== "aa:bb:cc:dd:ee:02" || rows[0][1] !== "Camera" || rows[1][0] !== "aa:bb:cc:dd:ee:01" || !(rows[0][2] > rows[1][2])) process.exit(1);
+' && { ok=$((ok + 1)); echo "ok  new devices: latest first"; } || { bad=$((bad + 1)); echo "FAIL: new devices: wrong order or timestamps"; }
+want "port 22 is dropbear listening on all addresses" '["tcp",22,"all","dropbear"]' "$out"
+want "port 8080 listens locally only" '["tcp",8080,"local"' "$out"
+want "port 80 over IPv6 — uhttpd" '["tcp",80,"all","uhttpd"]' "$out"
+want "UDP 53 is visible" '["udp",53,"all"' "$out"
+want "port forward from the internet" '["Web","tcp","8080","192.168.1.5","80"]' "$out"
+nowant "disabled forward is not shown" "Off" "$out"
+want "check: empty root password" '["bad","Root password is not set' "$out"
+want "check: network without password" '["bad","Network '"'"'Guest'"'"' has no password' "$out"
+want "check: outdated encryption" '["warn","Network '"'"'Old'"'"' allows outdated' "$out"
+want "check: good encryption" '["ok","Network '"'"'Home'"'"': encryption sae-mixed' "$out"
+nowant "check: disabled network is not counted" "'Off'" "$out"
+want "check: SSH keys only" '["ok","SSH: root password sign-in is off (PasswordAuth)' "$out"
 # Dropbear: root password login requires both PasswordAuth and RootPasswordAuth.
 AUTH_UCI="$T/uci-auth"
 cat > "$AUTH_UCI" <<'U'
@@ -47,20 +47,20 @@ exec "$NF_UCI_BASE" "$@"
 U
 chmod +x "$AUTH_UCI"
 NF_UCI_BASE="$T/uci" NF_UCI="$AUTH_UCI" NF_TEST_PA=on NF_TEST_RPA=on sh "$S" summary > "$T/auth-on.json"
-want "SSH: оба параметра on — пароль root разрешён" '["warn","SSH: парольный вход root включён' "$(cat "$T/auth-on.json")"
+want "SSH: both options on — root password allowed" '["warn","SSH: root password sign-in is on' "$(cat "$T/auth-on.json")"
 NF_UCI_BASE="$T/uci" NF_UCI="$AUTH_UCI" NF_TEST_PA=on NF_TEST_RPA=off sh "$S" summary > "$T/auth-root-off.json"
-want "SSH: RootPasswordAuth off — пароль root запрещён" '["ok","SSH: парольный вход root выключен (RootPasswordAuth)' "$(cat "$T/auth-root-off.json")"
-want "SSH: RootPasswordAuth off не скрывает пароль для обычных пользователей" '["ok","SSH: парольная аутентификация для непривилегированных пользователей разрешена' "$(cat "$T/auth-root-off.json")"
+want "SSH: RootPasswordAuth off — root password denied" '["ok","SSH: root password sign-in is off (RootPasswordAuth)' "$(cat "$T/auth-root-off.json")"
+want "SSH: RootPasswordAuth off does not hide password auth for regular users" '["ok","SSH: password authentication is allowed for unprivileged users' "$(cat "$T/auth-root-off.json")"
 NF_UCI_BASE="$T/uci" NF_UCI="$AUTH_UCI" NF_TEST_PA=off NF_TEST_RPA=on sh "$S" summary > "$T/auth-all-off.json"
-want "SSH: PasswordAuth off выключает парольную аутентификацию" '["ok","SSH: парольный вход root выключен (PasswordAuth)' "$(cat "$T/auth-all-off.json")"
-want "проверка: LuCI по http" '["warn","LuCI доступен по http' "$out"
-want "политика входящего на WAN" '"wan_input":"REJECT"' "$out"
-nowant "соединение ESTABLISHED не считается портом" '50000' "$(echo "$out" | sed 's/"ssh",1,"root","192.168.1.10"//')"
+want "SSH: PasswordAuth off turns password authentication off" '["ok","SSH: root password sign-in is off (PasswordAuth)' "$(cat "$T/auth-all-off.json")"
+want "check: LuCI over http" '["warn","LuCI is available over http' "$out"
+want "WAN inbound policy" '"wan_input":"REJECT"' "$out"
+nowant "an ESTABLISHED connection is not counted as a port" '50000' "$(echo "$out" | sed 's/"ssh",1,"root","192.168.1.10"//')"
 u=$(sh "$S" updates)
-want "updates: версия темы" '"installed":"1.0.0"' "$u"
-want "updates: есть новая" '"new":1' "$u"
-NF_LOGREAD=true sh "$S" summary >/dev/null && { ok=$((ok + 1)); echo "ok  пустой журнал не ломает сводку"; } || { bad=$((bad + 1)); echo "ОШИБКА: пустой журнал"; }
-# быстрая диагностика: шлюз, интернет, DNS (заглушки команд)
+want "updates: theme version" '"installed":"1.0.0"' "$u"
+want "updates: a new one is available" '"new":1' "$u"
+NF_LOGREAD=true sh "$S" summary >/dev/null && { ok=$((ok + 1)); echo "ok  empty log does not break the summary"; } || { bad=$((bad + 1)); echo "FAIL: empty log"; }
+# quick diagnostics: gateway, internet, DNS (command stubs)
 D="$PWD/luci-app-nightfall-monitor/root/usr/libexec/nightfall-diag"
 mkdir -p "$T/bin"
 printf '#!/bin/sh\necho "default via 192.168.1.1 dev eth0"\n' > "$T/bin/ip"
@@ -68,15 +68,15 @@ printf '#!/bin/sh\necho "round-trip min/avg/max = 9.0/12.4/15.0 ms"\n' > "$T/bin
 printf '#!/bin/sh\nexit 0\n' > "$T/bin/nslookup"
 chmod +x "$T/bin/ip" "$T/bin/ping" "$T/bin/nslookup"
 c=$(PATH="$T/bin:$PATH" sh "$D" check)
-want "check: шлюз отвечает" "✅ Шлюз 192.168.1.1: 12 мс" "$c"
-want "check: интернет отвечает" "✅ Интернет: 1.1.1.1 — 12 мс" "$c"
-want "check: DNS разрешается" "✅ DNS: ya.ru разрешается" "$c"
+want "check: gateway responds" "✅ Gateway 192.168.1.1: 12 ms" "$c"
+want "check: internet responds" "✅ Internet: 1.1.1.1 — 12 ms" "$c"
+want "check: DNS resolves" "✅ DNS: ya.ru resolves" "$c"
 printf '#!/bin/sh\nexit 1\n' > "$T/bin/ping"; printf '#!/bin/sh\nexit 1\n' > "$T/bin/nslookup"
 c=$(PATH="$T/bin:$PATH" sh "$D" check)
-want "check: нет интернета виден" "❌ Интернет: 1.1.1.1 не отвечает" "$c"
-want "check: DNS не работает виден" "❌ DNS: google.com не разрешается" "$c"
+want "check: no internet is visible" "❌ Internet: 1.1.1.1 is not responding" "$c"
+want "check: DNS failure is visible" "❌ DNS: google.com does not resolve" "$c"
 
-# закрытие адреса через nft (заглушка)
+# address blocking via nft (stub)
 cat > "$T/nft" <<'N'
 #!/bin/sh
 echo "$*" >> "$NFT_LOG"
@@ -89,96 +89,96 @@ exit 0
 N
 chmod +x "$T/nft"; export NFT_LOG="$T/nft.log"; : > "$NFT_LOG"; rm -f "$NFT_LOG.on"
 b=$(NF_NFT="$T/nft" sh "$S" ban 203.0.113.5 2)
-want "ban: внешний адрес закрывается" '"ok":true,"ip":"203.0.113.5","hours":2' "$b"
-want "ban: таблица nft создана" "add rule inet nightfall_ban input ip saddr @b4 drop" "$(cat $NFT_LOG)"
-want "ban: адрес добавлен на 2 часа" "add element inet nightfall_ban b4 { 203.0.113.5 timeout 2h }" "$(cat $NFT_LOG)"
-b=$(NF_NFT="$T/nft" sh "$S" ban 192.168.1.10); want "ban: локальный адрес нельзя" '"ok":false' "$b"
-b=$(NF_NFT="$T/nft" sh "$S" ban 10.0.0.5); want "ban: 10.x нельзя" '"ok":false' "$b"
-b=$(NF_NFT="$T/nft" sh "$S" ban 127.0.0.1); want "ban: loopback нельзя" '"ok":false' "$b"
-b=$(NF_NFT="$T/nft" sh "$S" ban 'a;rm -rf /'); want "ban: мусор вместо адреса отклоняется" '"ok":false' "$b"
-b=$(NF_NFT="$T/nft" sh "$S" ban 256.1.1.1); want "ban: некорректный адрес отклоняется" '"ok":false' "$b"
-b=$(NF_NFT="$T/nft" sh "$S" ban fe80::1); want "ban: link-local IPv6 нельзя" '"ok":false' "$b"
-b=$(NF_NFT="$T/nft" sh "$S" ban 2001:db8::5 99999); want "ban: IPv6 принимается, срок ограничен" '"hours":24' "$b"
-want "ban: IPv6 попал в свой набор" "add element inet nightfall_ban b6 { 2001:db8::5 timeout 24h }" "$(cat $NFT_LOG)"
+want "ban: external address is blocked" '"ok":true,"ip":"203.0.113.5","hours":2' "$b"
+want "ban: nft table created" "add rule inet nightfall_ban input ip saddr @b4 drop" "$(cat $NFT_LOG)"
+want "ban: address added for 2 hours" "add element inet nightfall_ban b4 { 203.0.113.5 timeout 2h }" "$(cat $NFT_LOG)"
+b=$(NF_NFT="$T/nft" sh "$S" ban 192.168.1.10); want "ban: local address not allowed" '"ok":false' "$b"
+b=$(NF_NFT="$T/nft" sh "$S" ban 10.0.0.5); want "ban: 10.x not allowed" '"ok":false' "$b"
+b=$(NF_NFT="$T/nft" sh "$S" ban 127.0.0.1); want "ban: loopback not allowed" '"ok":false' "$b"
+b=$(NF_NFT="$T/nft" sh "$S" ban 'a;rm -rf /'); want "ban: garbage instead of an address is rejected" '"ok":false' "$b"
+b=$(NF_NFT="$T/nft" sh "$S" ban 256.1.1.1); want "ban: invalid address is rejected" '"ok":false' "$b"
+b=$(NF_NFT="$T/nft" sh "$S" ban fe80::1); want "ban: link-local IPv6 not allowed" '"ok":false' "$b"
+b=$(NF_NFT="$T/nft" sh "$S" ban 2001:db8::5 99999); want "ban: IPv6 accepted, duration capped" '"hours":24' "$b"
+want "ban: IPv6 went into its own set" "add element inet nightfall_ban b6 { 2001:db8::5 timeout 24h }" "$(cat $NFT_LOG)"
 b=$(NF_NFT="$T/nft" sh "$S" bans)
-want "bans: список с оставшимся временем" '["203.0.113.5","23h59m10s"]' "$b"
-want "bans: второй адрес" '["198.51.100.7","59m1s"]' "$b"
+want "bans: list with remaining time" '["203.0.113.5","23h59m10s"]' "$b"
+want "bans: second address" '["198.51.100.7","59m1s"]' "$b"
 NF_NFT="$T/nft" sh "$S" unban 203.0.113.5 >/dev/null
-want "unban: адрес снят" "delete element inet nightfall_ban b4 { 203.0.113.5 }" "$(cat $NFT_LOG)"
-# уведомление о всплеске неудачных входов
+want "unban: address removed" "delete element inet nightfall_ban b4 { 203.0.113.5 }" "$(cat $NFT_LOG)"
+# notification about a burst of failed sign-ins
 rm -rf "$T/wd"; mkdir -p "$T/wd"
-w=$(NF_DIR="$T/wd" NF_SECFAILS=3 sh "$S" watch); [ -z "$w" ] && { ok=$((ok + 1)); echo "ok  watch: первый запуск молчит (запоминает счётчик)"; } || { bad=$((bad + 1)); echo "ОШИБКА: watch первый запуск: $w"; }
+w=$(NF_DIR="$T/wd" NF_SECFAILS=3 sh "$S" watch); [ -z "$w" ] && { ok=$((ok + 1)); echo "ok  watch: first run is silent (remembers the counter)"; } || { bad=$((bad + 1)); echo "FAIL: watch first run: $w"; }
 echo 0 > "$T/wd/sec.fails"
-w=$(NF_DIR="$T/wd" NF_SECFAILS=3 sh "$S" watch); want "watch: рост неудачных входов даёт сообщение" "Много неудачных входов" "$w"
-w=$(NF_DIR="$T/wd" NF_SECFAILS=3 sh "$S" watch); [ -z "$w" ] && { ok=$((ok + 1)); echo "ok  watch: без нового роста молчит"; } || { bad=$((bad + 1)); echo "ОШИБКА: watch повторно: $w"; }
-# журнал роутера
+w=$(NF_DIR="$T/wd" NF_SECFAILS=3 sh "$S" watch); want "watch: growth of failed sign-ins produces a message" "Many failed sign-ins" "$w"
+w=$(NF_DIR="$T/wd" NF_SECFAILS=3 sh "$S" watch); [ -z "$w" ] && { ok=$((ok + 1)); echo "ok  watch: silent without new growth"; } || { bad=$((bad + 1)); echo "FAIL: watch repeated: $w"; }
+# router log
 L="$PWD/luci-app-nightfall-monitor/root/usr/libexec/nightfall-log"
 r=$(sh "$L" read 100)
-echo "$r" | node -e 'JSON.parse(require("fs").readFileSync(0,"utf8"))' 2>/dev/null && { ok=$((ok + 1)); echo "ok  nightfall-log: корректный JSON"; } || { bad=$((bad + 1)); echo "ОШИБКА: nightfall-log не JSON: $r"; }
-want "log: служба без номера процесса" '"authpriv.warn","dropbear","Bad password attempt for' "$r"
-want "log: текст сообщения целиком" "from 203.0.113.5:40022" "$r"
-want "log: уровень ошибки ядра сохраняется" '"kern.err","rtw88_8821cu","error beacon valid"' "$r"
-want "log: сообщение steerd с warn сохраняется" '"user.notice","steerd","steer[warn] tunnel:' "$r"
-want "log: уведомление info сохраняется" '"daemon.notice","tachyon","[info] No subscription rules' "$r"
-r=$(sh "$L" read 2); nowant "log: N ограничивает число строк" "02:10:01" "$r"
-r=$(sh "$L" read abc); want "log: мусор вместо N не ломает" '"ok":true' "$r"
+echo "$r" | node -e 'JSON.parse(require("fs").readFileSync(0,"utf8"))' 2>/dev/null && { ok=$((ok + 1)); echo "ok  nightfall-log: valid JSON"; } || { bad=$((bad + 1)); echo "FAIL: nightfall-log is not JSON: $r"; }
+want "log: service without process id" '"authpriv.warn","dropbear","Bad password attempt for' "$r"
+want "log: full message text" "from 203.0.113.5:40022" "$r"
+want "log: kernel error level is kept" '"kern.err","rtw88_8821cu","error beacon valid"' "$r"
+want "log: steerd message with warn is kept" '"user.notice","steerd","steer[warn] tunnel:' "$r"
+want "log: info notice is kept" '"daemon.notice","tachyon","[info] No subscription rules' "$r"
+r=$(sh "$L" read 2); nowant "log: N limits the number of lines" "02:10:01" "$r"
+r=$(sh "$L" read abc); want "log: garbage instead of N does not break" '"ok":true' "$r"
 
 
-# DNS-статистика
+# DNS statistics
 N="$PWD/luci-app-nightfall-monitor/root/usr/libexec/nightfall-dns"
 d=$(NF_LOGREAD="$T/dnslogread" NF_UCI="$T/uci_dns" sh "$N" top)
-echo "$d" | node -e 'JSON.parse(require("fs").readFileSync(0,"utf8"))' 2>/dev/null && { ok=$((ok + 1)); echo "ok  dns: корректный JSON"; } || { bad=$((bad + 1)); echo "ОШИБКА: dns не JSON: $d"; }
-want "dns: всего запросов" '"total":6' "$d"
-want "dns: сайты сводятся к основному домену" '["youtube.com",2]' "$d"
-want "dns: bbc.co.uk учитывается как bbc.co.uk" '["bbc.co.uk",1]' "$d"
-want "dns: клиент 192.168.1.11 — 3 запроса" '["192.168.1.11",3]' "$d"
-want "dns: NXDOMAIN посчитан" '"nx":2' "$d"
-want "dns: список NXDOMAIN" '["nope.example.org",2]' "$d"
-want "dns: типы запросов" '["A",5]' "$d"
-nowant "dns: чужие службы не считаются" "fake.test" "$d"
-d=$(NF_LOGREAD=true NF_UCI="$T/uci_off" sh "$N" top); want "dns: без запросов и без журнала — выключено" '"enabled":false' "$d"
+echo "$d" | node -e 'JSON.parse(require("fs").readFileSync(0,"utf8"))' 2>/dev/null && { ok=$((ok + 1)); echo "ok  dns: valid JSON"; } || { bad=$((bad + 1)); echo "FAIL: dns is not JSON: $d"; }
+want "dns: total queries" '"total":6' "$d"
+want "dns: sites collapse to the main domain" '["youtube.com",2]' "$d"
+want "dns: bbc.co.uk is counted as bbc.co.uk" '["bbc.co.uk",1]' "$d"
+want "dns: client 192.168.1.11 — 3 queries" '["192.168.1.11",3]' "$d"
+want "dns: NXDOMAIN counted" '"nx":2' "$d"
+want "dns: NXDOMAIN list" '["nope.example.org",2]' "$d"
+want "dns: query types" '["A",5]' "$d"
+nowant "dns: other services are not counted" "fake.test" "$d"
+d=$(NF_LOGREAD=true NF_UCI="$T/uci_off" sh "$N" top); want "dns: no queries and no log — disabled" '"enabled":false' "$d"
 
-# маршрут с потерями и bufferbloat (заглушки)
+# route with loss and bufferbloat (stubs)
 printf '#!/bin/sh\ncat <<X\ntraceroute to 1.1.1.1\n 1  192.168.1.1  0.5 ms  0.4 ms  0.4 ms\n 2  * * *\n 3  10.0.0.1  5.0 ms  * 7.0 ms\nX\n' > "$T/bin/traceroute"; chmod +x "$T/bin/traceroute"
 r=$(PATH="$T/bin:$PATH" sh "$D" route 1.1.1.1)
-want "route: первый узел без потерь" "192.168.1.1           0%" "$r"
-want "route: молчащий узел 100%" "100%" "$r"
-want "route: частичные потери 33%" " 33%" "$r"
+want "route: first hop without loss" "192.168.1.1           0%" "$r"
+want "route: silent hop 100%" "100%" "$r"
+want "route: partial loss 33%" " 33%" "$r"
 printf '#!/bin/sh\nn=$(cat "$NF_CNT" 2>/dev/null || echo 0); n=$((n + 1)); echo $n > "$NF_CNT"\n[ "$n" = 1 ] && echo "round-trip min/avg/max = 10.0/12.0/15.0 ms" || echo "round-trip min/avg/max = 100.0/190.0/300.0 ms"\n' > "$T/bin/pingb"
 printf '#!/bin/sh\nsleep 4\n' > "$T/bin/curlb"; chmod +x "$T/bin/pingb" "$T/bin/curlb"
 b=$(NF_CNT="$T/cnt" NF_PING="$T/bin/pingb" NF_CURL="$T/bin/curlb" sh "$D" bloat)
-want "bloat: простой 12 мс" "без нагрузки: 12 мс" "$b"
-want "bloat: под нагрузкой 190 мс" "190 мс (+178 мс)" "$b"
-want "bloat: вывод про SQM" "сильный bufferbloat" "$b"
-b=$(NF_CURL=/nonexistent sh "$D" bloat); want "bloat: без curl подсказка" "Нужен curl" "$b"
+want "bloat: idle 12 ms" "idle: 12 ms" "$b"
+want "bloat: under load 190 ms" "190 ms (+178 ms)" "$b"
+want "bloat: SQM conclusion" "severe bufferbloat" "$b"
+b=$(NF_CURL=/nonexistent sh "$D" bloat); want "bloat: hint without curl" "curl is needed" "$b"
 
-# история адреса WAN и признак NAT провайдера
+# WAN address history and the ISP NAT flag
 H="$PWD/luci-app-nightfall-monitor/root/usr/libexec/nightfall-history"
 mkdir -p "$T/xd"; printf '1700000000 203.0.113.7\n1700005000 100.64.3.9\n1700009000 192.168.8.2\n' > "$T/xd/extip.log"
 x=$(NF_DIR="$T/xd" sh "$H" extip)
-want "extip: белый адрес не NAT" '[1700000000,"203.0.113.7",0]' "$x"
-want "extip: 100.64/10 это CGNAT" '[1700005000,"100.64.3.9",1]' "$x"
-want "extip: частный адрес на WAN это NAT" '[1700009000,"192.168.8.2",1]' "$x"
+want "extip: public address is not NAT" '[1700000000,"203.0.113.7",0]' "$x"
+want "extip: 100.64/10 is CGNAT" '[1700005000,"100.64.3.9",1]' "$x"
+want "extip: private address on WAN is NAT" '[1700009000,"192.168.8.2",1]' "$x"
 
-# история памяти по программам: сбор (функция сборщика) и выдача
+# per-program memory history: collection (collector function) and output
 mkdir -p "$T/pm/1" "$T/pm/2" "$T/pm/3" "$T/pd"
 printf 'Name:\tuhttpd\nVmRSS:\t3000 kB\n' > "$T/pm/1/status"; printf 'Name:\tkthreadd\n' > "$T/pm/2/status"; printf 'Name:\tdnsmasq\nVmRSS:\t9000 kB\n' > "$T/pm/3/status"
 sed -n '/^procmem_point() {/,/^}/p' "$PWD/luci-app-nightfall-monitor/root/usr/libexec/nightfall-collector" > "$T/pmfn.sh"
 ( DIR="$T/pd"; LITE=0; NF_PROCDIR="$T/pm"; . "$T/pmfn.sh"; procmem_point )
 pl=$(cat "$T/pd/procmem.log")
-want "procmem: самая большая программа первой" "dnsmasq:9000 uhttpd:3000" "$pl"
-nowant "procmem: поток ядра без памяти не попал" "kthreadd" "$pl"
-( DIR="$T/pd"; LITE=1; NF_PROCDIR="$T/pm"; . "$T/pmfn.sh"; procmem_point ); [ "$(wc -l < "$T/pd/procmem.log")" = 1 ] && { ok=$((ok + 1)); echo "ok  procmem: в режиме Lite не пишется"; } || { bad=$((bad + 1)); echo "ОШИБКА: procmem пишется в Lite"; }
+want "procmem: the largest program first" "dnsmasq:9000 uhttpd:3000" "$pl"
+nowant "procmem: kernel thread without memory is excluded" "kthreadd" "$pl"
+( DIR="$T/pd"; LITE=1; NF_PROCDIR="$T/pm"; . "$T/pmfn.sh"; procmem_point ); [ "$(wc -l < "$T/pd/procmem.log")" = 1 ] && { ok=$((ok + 1)); echo "ok  procmem: not written in Lite mode"; } || { bad=$((bad + 1)); echo "FAIL: procmem is written in Lite"; }
 n=$(date +%s); printf '%s dnsmasq:5000\n%s dnsmasq:9000 uhttpd:3000\n1000 old:1\n' $((n - 3600)) $((n - 60)) > "$T/pd/procmem.log"
 pj=$(NF_DIR="$T/pd" sh "$H" procmem 24)
-want "procmem: выдача содержит обе свежие точки" '[["dnsmasq",5000]]' "$pj"
-want "procmem: вторая точка с двумя программами" '[["dnsmasq",9000],["uhttpd",3000]]' "$pj"
-nowant "procmem: старая точка отфильтрована" '"old"' "$pj"
-# Соседняя таблица отдаёт состояние записи вместе с MAC: REACHABLE/STALE нельзя смешивать.
+want "procmem: output contains both fresh points" '[["dnsmasq",5000]]' "$pj"
+want "procmem: second point with two programs" '[["dnsmasq",9000],["uhttpd",3000]]' "$pj"
+nowant "procmem: old point filtered out" '"old"' "$pj"
+# The neighbor table returns the entry state together with the MAC: REACHABLE/STALE must not be mixed.
 printf '192.168.1.191 dev br-lan lladdr de:0d:ab:73:aa:8e REACHABLE\n192.168.1.192 dev br-lan lladdr de:0d:ab:73:aa:8e STALE\n192.168.1.193 dev br-lan FAILED\n' > "$T/neigh.txt"
 nj=$(NF_DIR="$T/pm" NF_NEIGH="$T/neigh.txt" sh "$H" devices)
-want "devices: MAC прокси и состояние REACHABLE сохранены" '["192.168.1.191","de:0d:ab:73:aa:8e","REACHABLE"]' "$nj"
-want "devices: состояние STALE не теряется" '["192.168.1.192","de:0d:ab:73:aa:8e","STALE"]' "$nj"
-nowant "devices: FAILED сосед не выдаётся как доступный" '192.168.1.193' "$nj"
+want "devices: proxy MAC and REACHABLE state kept" '["192.168.1.191","de:0d:ab:73:aa:8e","REACHABLE"]' "$nj"
+want "devices: STALE state is not lost" '["192.168.1.192","de:0d:ab:73:aa:8e","STALE"]' "$nj"
+nowant "devices: FAILED neighbor is not reported as reachable" '192.168.1.193' "$nj"
 
-echo; echo "ИТОГО: ok=$ok, ошибок=$bad"; [ "$bad" = 0 ]
+echo; echo "TOTAL: ok=$ok, failed=$bad"; [ "$bad" = 0 ]

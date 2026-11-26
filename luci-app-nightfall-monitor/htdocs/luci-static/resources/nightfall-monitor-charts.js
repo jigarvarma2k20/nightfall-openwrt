@@ -2,7 +2,7 @@
 'require baseclass';
 
 const WINDOW = 300;
-const nf1 = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 1, minimumFractionDigits: 1 });
+const nf1 = new Intl.NumberFormat('en-US', { maximumFractionDigits: 1, minimumFractionDigits: 1 });
 
 function SVG(tag, attrs, children) {
 	const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
@@ -37,7 +37,7 @@ let uid = 0;
 
 /* time series chart: series = [{ key, cls, axis }], axes: left/right max */
 
-/* стиль графиков из настроек темы (Персонализация → Графики): заливка, линия, столбики, ступени; сглаживание */
+/* chart style from the theme settings (Personalization → Charts): fill, line, bars, steps; smoothing */
 function nfPlot(segs, H) {
 	const root = document.documentElement, kind = root.getAttribute('data-nf-chart') || 'area', smooth = root.getAttribute('data-nf-chart-smooth') !== 'off';
 	const f = n => n.toFixed(1);
@@ -45,7 +45,7 @@ function nfPlot(segs, H) {
 	segs.forEach(p => {
 		if (!p.length) return;
 		let d = 'M' + f(p[0][0]) + ' ' + f(p[0][1]);
-		if (kind === 'bars') {   /* столбики: вертикальные штрихи цвета ряда (без заливки) */
+		if (kind === 'bars') {   /* bars: vertical strokes in the series color (no fill) */
 			p.forEach(q => { line += 'M' + f(q[0]) + ' ' + f(q[1]) + 'V' + H; });
 			return;
 		}
@@ -53,7 +53,7 @@ function nfPlot(segs, H) {
 			for (let i = 1; i < p.length; i++) d += 'L' + f(p[i][0]) + ' ' + f(p[i - 1][1]) + 'L' + f(p[i][0]) + ' ' + f(p[i][1]);
 		}
 		else if (smooth && p.length > 2) {
-			/* монотонная кубическая кривая: не выходит за пределы данных и не петляет там, где точки стоят неравномерно (пропуски в истории) */
+			/* monotone cubic curve: does not overshoot the data and does not loop where points are unevenly spaced (gaps in history) */
 			const n = p.length, dx = [], m = [], t = [];
 			for (let i = 0; i < n - 1; i++) { dx[i] = p[i + 1][0] - p[i][0]; m[i] = dx[i] > 0 ? (p[i + 1][1] - p[i][1]) / dx[i] : 0; }
 			t[0] = m[0]; t[n - 1] = m[n - 2];
@@ -105,7 +105,7 @@ function chart(opts) {
 	let cur = { times: [], data: {}, max: {}, now: 0, win: WINDOW }, hoverF = null;
 
 	const yl = E('div', { class: 'nfm-yl' }), yr = E('div', { class: 'nfm-yr' });
-	const xl = E('div', { class: 'nfm-xl' }, [ '−5 мин', '−4 мин', '−3 мин', '−2 мин', '−1 мин', 'сейчас' ].map(t => E('span', {}, t)));
+	const xl = E('div', { class: 'nfm-xl' }, [ '−5 min', '−4 min', '−3 min', '−2 min', '−1 min', 'now' ].map(t => E('span', {}, t)));
 	let xKey = '';
 	const el = E('div', { class: 'nfm-chart' + (opts.right ? ' has-right' : '') , style: opts.height ? `--h:${opts.height}px` : '' }, [
 		yl,
@@ -141,8 +141,8 @@ function chart(opts) {
 		const x = Math.max(0, W - (now - times[best]) / win * W), pct = x / W * 100;
 		xh.setAttribute('x1', x); xh.setAttribute('x2', x); xh.removeAttribute('visibility');
 		const d = new Date(times[best] * 1000);
-		const label = win <= 7200 ? d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-			: d.toLocaleString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+		const label = win <= 7200 ? d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+			: d.toLocaleString('en-US', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 		const rows = [ E('div', { class: 'nfm-tip-t' }, label) ];
 		opts.series.forEach((s, i) => {
 			const v = (data[s.key] || [])[best];
