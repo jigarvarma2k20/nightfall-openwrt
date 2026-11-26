@@ -1,29 +1,29 @@
 #!/bin/sh
-# Установка и обновление Nightfall на роутере (OpenWrt, busybox sh).
+# Install and update Nightfall on the router (OpenWrt, busybox sh).
 #
-#   wget -qO- https://raw.githubusercontent.com/Nikolai752/nightfall-openwrt/main/install-update.sh | sh
-#   (или curl -fsSL ... | sh)
+#   wget -qO- https://raw.githubusercontent.com/jigarvarma2k20/nightfall-openwrt/main/install-update.sh | sh
+#   (or curl -fsSL ... | sh)
 #
-# Параметры (после «| sh -s --»):
-#   --check            только показать установленную и последнюю версию
-#   --force            переустановить, даже если версия уже последняя
-#   --list             показать последние версии (потом: --version vX.Y.Z)
-#   --version vX.Y.Z   поставить конкретную версию (в том числе более старую)
-#   --activate         сразу выбрать Nightfall темой по умолчанию
-#   --file ПУТЬ        поставить из локального архива nightfall-root.tar.gz (без интернета)
-#   -h, --help         эта справка
+# Options (after "| sh -s --"):
+#   --check            only show the installed and the latest version
+#   --force            reinstall even if the latest version is already installed
+#   --list             show recent versions (then: --version vX.Y.Z)
+#   --version vX.Y.Z   install a specific version (including an older one)
+#   --activate         make Nightfall the default theme right away
+#   --file PATH        install from a local nightfall-root.tar.gz archive (no internet)
+#   -h, --help         this help
 #
-# Вручную без интернета: положите nightfall-root.tar.gz и этот скрипт в одну папку на роутере и запустите
+# Manually without internet: put nightfall-root.tar.gz and this script in one folder on the router and run
 #   sh install-update.sh
 #
-# Что делает: узнаёт последнюю версию -> скачивает именно её архив -> сверяет sha256 и подпись (usign) ->
-# проверяет, что версия внутри архива совпадает с ожидаемой -> сохраняет копию заменяемых файлов ->
-# распаковывает (при ошибке возвращает прежние файлы) -> сверяет версию после установки.
-# Старые архивы, оставшиеся в /tmp от прошлых установок, НЕ используются.
+# What it does: finds the latest version -> downloads exactly that archive -> verifies sha256 and the signature (usign) ->
+# checks that the version inside the archive matches the expected one -> backs up the files being replaced ->
+# extracts (restores the previous files on error) -> verifies the version after installation.
+# Old archives left in /tmp by previous installs are NOT used.
 #
-# Для тестов: NF_ROOT (корень вместо /), NF_TMP, NF_API, NF_RAW, NF_DL.
+# For tests: NF_ROOT (root instead of /), NF_TMP, NF_API, NF_RAW, NF_DL.
 
-REPO="Nikolai752/nightfall-openwrt"
+REPO="jigarvarma2k20/nightfall-openwrt"
 ROOT=${NF_ROOT:-}
 TMP=${NF_TMP:-/tmp}
 API=${NF_API:-https://api.github.com/repos/$REPO/releases/latest}
@@ -35,18 +35,18 @@ PUB="$ROOT/etc/nightfall-release.pub"
 WORK="$TMP/nightfall-install.$$"
 
 say() { echo "$*"; }
-die() { echo "ОШИБКА: $*" >&2; exit 1; }
+die() { echo "ERROR: $*" >&2; exit 1; }
 usage() {
 	cat <<'EOT'
-Установка и обновление Nightfall: wget -qO- https://raw.githubusercontent.com/Nikolai752/nightfall-openwrt/main/install-update.sh | sh
-Параметры (после «| sh -s --»):
-  --check            показать установленную и последнюю версию
-  --force            переустановить, даже если версия уже последняя
-  --list             показать последние версии (потом: --version vX.Y.Z)
-  --version vX.Y.Z   поставить конкретную версию (в том числе старую)
-  --activate         сразу выбрать Nightfall темой по умолчанию
-  --file ПУТЬ        поставить из локального архива nightfall-root.tar.gz
-  -h, --help         эта справка
+Install and update Nightfall: wget -qO- https://raw.githubusercontent.com/jigarvarma2k20/nightfall-openwrt/main/install-update.sh | sh
+Options (after "| sh -s --"):
+  --check            show the installed and the latest version
+  --force            reinstall even if the latest version is already installed
+  --list             show recent versions (then: --version vX.Y.Z)
+  --version vX.Y.Z   install a specific version (including an older one)
+  --activate         make Nightfall the default theme right away
+  --file PATH        install from a local nightfall-root.tar.gz archive
+  -h, --help         this help
 EOT
 }
 
@@ -57,29 +57,29 @@ while [ $# -gt 0 ]; do
 	--activate) ACTIVATE=1 ;;
 	--check) CHECK=1 ;;
 	--list) LIST=1 ;;
-	--version) shift; WANT=$1; [ -n "$WANT" ] || die "после --version нужен номер, например v1.16.2" ;;
-	--file) shift; FILE=$1; [ -f "$FILE" ] || die "файл не найден: $FILE" ;;
+	--version) shift; WANT=$1; [ -n "$WANT" ] || die "--version needs a version number, e.g. v1.16.2" ;;
+	--file) shift; FILE=$1; [ -f "$FILE" ] || die "file not found: $FILE" ;;
 	-h|--help) usage; exit 0 ;;
-	*) die "неизвестный параметр: $1 (справка: --help)" ;;
+	*) die "unknown option: $1 (see --help)" ;;
 	esac
 	shift
 done
 
-rm -rf "$WORK"; mkdir -p "$WORK" || die "не удалось создать рабочую папку $WORK"
+rm -rf "$WORK"; mkdir -p "$WORK" || die "failed to create working directory $WORK"
 trap 'rm -rf "$WORK"' EXIT
 
 ensure_base64() {
  command -v base64 >/dev/null 2>&1 && return 0
  if command -v busybox >/dev/null 2>&1 && busybox base64 </dev/null >/dev/null 2>&1; then return 0; fi
- say "Не найдена утилита base64. Устанавливаю coreutils-base64…"
+ say "base64 utility not found. Installing coreutils-base64…"
  if command -v apk >/dev/null 2>&1; then
-  apk update >/dev/null 2>&1 && apk add coreutils-base64 >/dev/null 2>&1 || die "не удалось установить coreutils-base64 через apk. Выполните: apk update && apk add coreutils-base64"
+  apk update >/dev/null 2>&1 && apk add coreutils-base64 >/dev/null 2>&1 || die "failed to install coreutils-base64 with apk. Run: apk update && apk add coreutils-base64"
  elif command -v opkg >/dev/null 2>&1; then
-  opkg update >/dev/null 2>&1 && opkg install coreutils-base64 >/dev/null 2>&1 || die "не удалось установить coreutils-base64 через opkg. Выполните: opkg update && opkg install coreutils-base64"
+  opkg update >/dev/null 2>&1 && opkg install coreutils-base64 >/dev/null 2>&1 || die "failed to install coreutils-base64 with opkg. Run: opkg update && opkg install coreutils-base64"
  else
-  die "не найдена base64 и не обнаружен apk/opkg. Установите coreutils-base64 вручную"
+  die "base64 not found and neither apk nor opkg is available. Install coreutils-base64 manually"
  fi
- command -v base64 >/dev/null 2>&1 || { command -v busybox >/dev/null 2>&1 && busybox base64 </dev/null >/dev/null 2>&1; } || die "coreutils-base64 установлен, но команда base64 недоступна"
+ command -v base64 >/dev/null 2>&1 || { command -v busybox >/dev/null 2>&1 && busybox base64 </dev/null >/dev/null 2>&1; } || die "coreutils-base64 is installed, but the base64 command is not available"
 }
 fetch() { # url out
 	if command -v curl >/dev/null 2>&1; then
@@ -96,7 +96,7 @@ fetch() { # url out
 json_ver() { sed -n 's/.*"version"[^"]*"\([^"]*\)".*/\1/p' | head -n1; }
 installed() { json_ver < "$VERF" 2>/dev/null; }
 
-# версия из архива: файл version.json лежит внутри, путь с «./» или без
+# version from the archive: version.json is inside, with or without a "./" path prefix
 archive_ver() {
 	{ tar -xzOf "$1" ./www/luci-static/nightfall/version.json 2>/dev/null || tar -xzOf "$1" www/luci-static/nightfall/version.json 2>/dev/null; } | json_ver
 }
@@ -113,72 +113,72 @@ latest_tag() {
 }
 
 if [ "$LIST" = 1 ]; then
-	fetch "$APILIST" "$WORK/list.json" 2>/dev/null || die "не удалось получить список версий (нет связи с GitHub)"
+	fetch "$APILIST" "$WORK/list.json" 2>/dev/null || die "failed to get the version list (cannot reach GitHub)"
 	v=$(grep -o '"tag_name"[^,}]*' "$WORK/list.json" | sed 's/.*:[ ]*"\([^"]*\)".*/\1/')
-	[ -n "$v" ] || die "список версий пуст"
-	say "Последние версии (установленная: $(installed 2>/dev/null)):"
+	[ -n "$v" ] || die "the version list is empty"
+	say "Recent versions (installed: $(installed 2>/dev/null)):"
 	echo "$v" | sed 's/^/  /'
-	say "Поставить нужную: wget -qO- https://raw.githubusercontent.com/$REPO/main/install-update.sh | sh -s -- --version <номер>"
+	say "To install one: wget -qO- https://raw.githubusercontent.com/$REPO/main/install-update.sh | sh -s -- --version <version>"
 	exit 0
 fi
 OLD=$(installed)
-say "Установленная версия: ${OLD:-не установлена}"
+say "Current version: ${OLD:-not installed}"
 
-# --- откуда берём архив ---
+# --- where the archive comes from ---
 ARCH=; TAG=; SRC=remote
 if [ -z "$FILE" ]; then
-	# архив рядом со скриптом (ручная установка); при запуске «| sh» $0 не файл, и /tmp не просматривается
+	# archive next to the script (manual install); when run via "| sh", $0 is not a file and /tmp is not scanned
 	case "$0" in */*) [ -f "$0" ] && d=$(dirname "$0") && for n in nightfall-root.tar.gz nightfall-root_tar.gz; do
 		[ -f "$d/$n" ] && { FILE="$d/$n"; break; }
 	done ;; esac
 fi
 if [ -n "$FILE" ]; then
 	SRC=local; ARCH=$FILE
-	say "Локальный архив: $FILE"
+	say "Local archive: $FILE"
 else
 	if [ -n "$WANT" ]; then
 		TAG="v${WANT#v}"
 	else
 		TAG=$(latest_tag)
-		[ -n "$TAG" ] || say "Не удалось узнать последнюю версию через GitHub, беру архив из «latest»; версию проверю по содержимому."
+		[ -n "$TAG" ] || say "Could not get the latest version from GitHub; using the \"latest\" archive and checking the version from its contents."
 	fi
-	[ -n "$TAG" ] && say "Последняя версия: ${TAG#v}"
+	[ -n "$TAG" ] && say "Latest version: ${TAG#v}"
 	if [ "$CHECK" = 1 ]; then
-		[ -n "$TAG" ] || die "не удалось узнать последнюю версию"
-		[ "$OLD" = "${TAG#v}" ] && say "Обновление не требуется." || say "Доступно обновление: ${OLD:-—} -> ${TAG#v}"
+		[ -n "$TAG" ] || die "could not determine the latest version"
+		[ "$OLD" = "${TAG#v}" ] && say "No update needed." || say "Update available: ${OLD:-—} -> ${TAG#v}"
 		exit 0
 	fi
 	if [ -n "$TAG" ] && [ "$OLD" = "${TAG#v}" ] && [ "$FORCE" = 0 ]; then
-		say "Уже установлена эта версия (${OLD}). Для переустановки добавьте --force."
+		say "Already installed: version ${OLD}. Add --force to reinstall."
 		exit 0
 	fi
 	if [ -n "$TAG" ]; then BASE="$DL/download/$TAG"; else BASE="$DL/latest/download"; fi
 	command -v curl >/dev/null 2>&1 || command -v uclient-fetch >/dev/null 2>&1 || command -v wget >/dev/null 2>&1 \
-		|| die "нет curl или wget. Установите: apk add curl ca-bundle"
-	say "Скачиваю ${TAG:-последний релиз}…"
+		|| die "curl or wget not found. Install: apk add curl ca-bundle"
+	say "Downloading ${TAG:-the latest release}…"
 	ARCH="$WORK/nightfall-root.tar.gz"
 	fetch "$BASE/nightfall-root.tar.gz" "$ARCH" \
-		|| die "не удалось скачать архив (${TAG:-latest}). Проверьте интернет и HTTPS (apk add curl ca-bundle) или положите архив рядом со скриптом."
-	fetch "$BASE/nightfall-root.tar.gz.sha256" "$WORK/new.sha256" || die "у релиза нет файла контрольной суммы, установка остановлена"
+		|| die "failed to download the archive (${TAG:-latest}). Check the internet connection and HTTPS (apk add curl ca-bundle), or put the archive next to the script."
+	fetch "$BASE/nightfall-root.tar.gz.sha256" "$WORK/new.sha256" || die "the release has no checksum file; installation stopped"
 	WANTSUM=$(sed -n '1s/[[:space:]].*//p' "$WORK/new.sha256" | tr 'A-F' 'a-f')
 	GOTSUM=$(sha256sum "$ARCH" | sed 's/[[:space:]].*//')
-	[ -n "$WANTSUM" ] && [ "$WANTSUM" = "$GOTSUM" ] || die "контрольная сумма не совпала, архив не установлен"
-	say "Контрольная сумма совпала."
+	[ -n "$WANTSUM" ] && [ "$WANTSUM" = "$GOTSUM" ] || die "checksum mismatch; the archive was not installed"
+	say "Checksum OK."
 	if [ -f "$PUB" ]; then
 		if command -v usign >/dev/null 2>&1; then
-			fetch "$BASE/nightfall-root.tar.gz.sig" "$WORK/new.sig" || die "у релиза нет подписи, установка остановлена"
-			usign -V -m "$ARCH" -p "$PUB" -x "$WORK/new.sig" >/dev/null 2>&1 || die "подпись релиза не подходит, архив не установлен"
-			say "Подпись проверена."
+			fetch "$BASE/nightfall-root.tar.gz.sig" "$WORK/new.sig" || die "the release has no signature; installation stopped"
+			usign -V -m "$ARCH" -p "$PUB" -x "$WORK/new.sig" >/dev/null 2>&1 || die "the release signature is invalid; the archive was not installed"
+			say "Signature verified."
 		else
-			die "в системе установлен ключ проверки релизов, но usign не найден. Установка остановлена; восстановите пакет usign."
+			die "a release verification key is installed, but usign was not found. Installation stopped; reinstall the usign package."
 		fi
 	fi
 fi
 
-# --- проверка архива ---
-tar -tzf "$ARCH" > "$WORK/all.list" 2>/dev/null || die "архив повреждён"
-grep -q 'luci-static/nightfall/' "$WORK/all.list" || die "в архиве нет файлов темы Nightfall"
-# Проверяем каждый компонент пути, включая завершающий компонент "..".
+# --- archive checks ---
+tar -tzf "$ARCH" > "$WORK/all.list" 2>/dev/null || die "the archive is corrupted"
+grep -q 'luci-static/nightfall/' "$WORK/all.list" || die "the archive contains no Nightfall theme files"
+# Check every path component, including a trailing ".." component.
 awk '
 {
   p=$0
@@ -188,10 +188,10 @@ awk '
   for (i=1; i<=n; i++) if (part[i] == "..") bad=1
 }
 END { exit bad }
-' "$WORK/all.list" || die "в архиве недопустимые пути"
-# Проверяем типы записей: разрешены только 7 штатных symlink Nightfall.
-tar -tvzf "$ARCH" > "$WORK/verbose.list" 2>/dev/null || die "не удалось проверить типы записей архива"
-# Разрешаем только штатные symlink Nightfall; любые другие ссылки и спецфайлы запрещены.
+' "$WORK/all.list" || die "the archive contains forbidden paths"
+# Check entry types: only the 7 standard Nightfall symlinks are allowed.
+tar -tvzf "$ARCH" > "$WORK/verbose.list" 2>/dev/null || die "failed to check archive entry types"
+# Allow only the standard Nightfall symlinks; any other links and special files are forbidden.
 validate_archive_types() {
   awk '
   function allowed(p, t) {
@@ -216,22 +216,22 @@ validate_archive_types() {
   END { exit bad }
   ' "$1"
 }
-validate_archive_types "$WORK/verbose.list" || die "в архиве обнаружены недопустимые ссылки или специальные файлы"
+validate_archive_types "$WORK/verbose.list" || die "the archive contains forbidden links or special files"
 NEW=$(archive_ver "$ARCH")
-[ -n "$NEW" ] || die "в архиве нет файла версии (слишком старый или повреждённый архив)"
+[ -n "$NEW" ] || die "the archive has no version file (too old or corrupted)"
 if [ -n "$TAG" ] && [ "$NEW" != "${TAG#v}" ]; then
-	die "в релизе $TAG лежит архив версии $NEW. Сообщите об этом в Issues, установка остановлена."
+	die "release $TAG contains an archive of version $NEW. Please report this in Issues; installation stopped."
 fi
-say "Версия в архиве: $NEW"
+say "Archive version: $NEW"
 if [ "$SRC" = local ] && [ "$OLD" = "$NEW" ] && [ "$FORCE" = 0 ]; then
-	say "Эта версия уже установлена ($NEW). Для переустановки добавьте --force."
+	say "This version is already installed ($NEW). Add --force to reinstall."
 	exit 0
 fi
 
 # --- runtime dependencies ---
 if [ -z "$ROOT" ]; then ensure_base64; fi
 
-# --- остановить сборщик и бота перед заменой файлов ---
+# --- stop the collector and the bot before replacing files ---
 if [ -z "$ROOT" ]; then
 	[ -x /etc/init.d/nightfall-collector ] && /etc/init.d/nightfall-collector stop 2>/dev/null
 	for p in /proc/[0-9]*; do
@@ -242,7 +242,7 @@ if [ -z "$ROOT" ]; then
 	sleep 1
 fi
 
-# --- копия заменяемых файлов, чтобы вернуть всё при сбое ---
+# --- back up the files being replaced, to restore everything on failure ---
 sed 's|^\./||; /\/$/d; /^$/d' "$WORK/all.list" > "$WORK/files.list"
 : > "$WORK/exist.list"; : > "$WORK/added.list"
 while IFS= read -r f; do
@@ -253,41 +253,41 @@ if [ -s "$WORK/exist.list" ]; then
 	if tar -czf "$WORK/backup.tar.gz" -C "${ROOT:-/}" -T "$WORK/exist.list" 2>/dev/null; then
 		HAVEBAK=1
 	else
-		# Сборщик и бот уже остановлены перед заменой файлов — вернём их, раз обновление отменяется.
+		# The collector and the bot were already stopped before replacing files; restart them since the update is cancelled.
 		[ -z "$ROOT" ] && /etc/init.d/nightfall-collector restart 2>/dev/null
-		die "не удалось сохранить прежние файлы; обновление отменено, установленная версия не изменена"
+		die "failed to back up the current files; update cancelled, the installed version is unchanged"
 	fi
 fi
 
 [ -n "$ROOT" ] && mkdir -p "$ROOT"
-say "Устанавливаю версию $NEW…"
+say "Installing version ${NEW}…"
 if ! tar -xzf "$ARCH" -C "${ROOT:-/}"; then
-	say "Ошибка распаковки, возвращаю прежние файлы…"
+	say "Extraction failed, restoring the previous files…"
 	while IFS= read -r f; do rm -rf "${ROOT:?}/$f"; done < "$WORK/added.list"
 	if [ "$HAVEBAK" = 1 ]; then
 		if ! tar -xzf "$WORK/backup.tar.gz" -C "${ROOT:-/}" 2>/dev/null; then
-			die "КРИТИЧЕСКАЯ ОШИБКА: обновление не установлено, но автоматический возврат прежних файлов не удался. Проверьте файлы вручную и свободное место (df -h)."
+			die "CRITICAL ERROR: the update was not installed, and automatic restore of the previous files failed. Check the files manually and the free space (df -h)."
 		fi
 		[ -z "$ROOT" ] && /etc/init.d/nightfall-collector restart 2>/dev/null
 	fi
-	die "не удалось распаковать архив (нет места в /overlay? проверьте: df -h)"
+	die "failed to extract the archive (no space in /overlay? check: df -h)"
 fi
 
-# Проверяем результат до регистрации и перезапуска служб. Несовпадение версии — такой же сбой установки.
+# Verify the result before registering and restarting services. A version mismatch is an installation failure too.
 NOW=$(installed)
 if [ "$NOW" != "$NEW" ]; then
-	say "После распаковки обнаружена версия ${NOW:-не определена}, ожидалась $NEW. Возвращаю прежние файлы…"
+	say "After extraction the version is ${NOW:-unknown}, expected $NEW. Restoring the previous files…"
 	while IFS= read -r f; do rm -rf "${ROOT:-}/$f"; done < "$WORK/added.list"
 	if [ "$HAVEBAK" = 1 ]; then
 		if ! tar -xzf "$WORK/backup.tar.gz" -C "${ROOT:-/}" 2>/dev/null; then
-			die "КРИТИЧЕСКАЯ ОШИБКА: версия не совпала, автоматический возврат прежних файлов не удался. Проверьте файлы вручную и свободное место (df -h)."
+			die "CRITICAL ERROR: version mismatch, and automatic restore of the previous files failed. Check the files manually and the free space (df -h)."
 		fi
 	fi
 	[ -z "$ROOT" ] && /etc/init.d/nightfall-collector restart 2>/dev/null
-	die "проверка версии после распаковки не пройдена; прежняя версия восстановлена"
+	die "post-extraction version check failed; previous version restored"
 fi
 
-# --- права и регистрация ---
+# --- permissions and registration ---
 chmod 755 "$ROOT"/usr/libexec/nightfall-* "$ROOT"/etc/init.d/nightfall-collector 2>/dev/null
 rm -f "$ROOT/www/luci-static/resources/view/nightfall/sysauth.js"
 if [ -z "$ROOT" ]; then
@@ -303,13 +303,13 @@ if [ -z "$ROOT" ]; then
 	/etc/init.d/nightfall-collector restart 2>/dev/null
 fi
 
-# --- итог: версия после установки ---
+# --- result: version after installation ---
 NOW=$(installed)
 if [ "$NOW" != "$NEW" ]; then
-	die "после установки версия ${NOW:-не определена}, ожидалась $NEW. Что-то пошло не так: проверьте свободное место (df -h) и повторите с --force."
+	die "after installation the version is ${NOW:-unknown}, expected $NEW. Something went wrong: check the free space (df -h) and retry with --force."
 fi
-say "Готово. Установлена версия $NOW${OLD:+ (была $OLD)}."
-say "Выйдите из LuCI и войдите снова (права обновляются при входе), затем Ctrl+F5."
-say "На iPhone закройте приложение с экрана «Домой» и откройте заново."
-[ -z "$OLD" ] && say "Тема выбирается в «Система → Система → Язык и стиль» (или запустите с --activate)."
+say "Done. Installed version $NOW${OLD:+ (was $OLD)}."
+say "Log out of LuCI and log in again (permissions are refreshed at login), then press Ctrl+F5."
+say "On iPhone, close the Home Screen app and open it again."
+[ -z "$OLD" ] && say "Select the theme in \"System -> System -> Language and Style\" (or run with --activate)."
 exit 0

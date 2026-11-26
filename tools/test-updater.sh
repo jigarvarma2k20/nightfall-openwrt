@@ -1,5 +1,5 @@
 #!/bin/sh
-# Изолированные тесты LuCI updater: обновление и rollback без OpenWrt/роутера.
+# Isolated LuCI updater tests: update and rollback without OpenWrt/a router.
 set -eu
 cd "$(dirname "$0")/.." || exit 1
 REPO=$(pwd)
@@ -7,7 +7,7 @@ T=$(mktemp -d)
 trap 'rm -rf "$T"' EXIT
 mkdir -p "$T/bin" "$T/fixtures" "$T/stage/www/luci-static/nightfall" "$T/root/www/luci-static/nightfall" "$T/tmp"
 
-# Архив содержит один существующий и один новый файл.
+# The archive contains one existing and one new file.
 printf '{ "version": "2.0.0" }\n' > "$T/stage/www/luci-static/nightfall/version.json"
 printf 'new css\n' > "$T/stage/www/luci-static/nightfall/cascade.css"
 printf 'new only\n' > "$T/stage/www/luci-static/nightfall/new-only.txt"
@@ -22,7 +22,7 @@ ln -s /etc/nightfall-logo.json "$T/stage/www/luci-static/nightfall/logo.json"
 tar -czf "$T/fixtures/nightfall-root.tar.gz" -C "$T/stage" .
 (cd "$T/fixtures" && sha256sum nightfall-root.tar.gz > nightfall-root.tar.gz.sha256)
 
-# Имитируем сеть: updater получает локальные fixtures через curl.
+# Simulate the network: the updater gets local fixtures via curl.
 cat > "$T/bin/curl" <<'EOF'
 #!/bin/sh
 out=
@@ -43,8 +43,8 @@ esac
 EOF
 chmod +x "$T/bin/curl"
 
-# Подмена tar позволяет воспроизводимо испортить версию после распаковки
-# и отдельно смоделировать отказ восстановления backup.tar.gz.
+# Replacing tar makes it possible to reproducibly break the version after extraction
+# and separately simulate a failure to restore backup.tar.gz.
 cat > "$T/bin/tar" <<'EOF'
 #!/bin/sh
 if [ "$1" = "-xzf" ] && [ "$2" = "$NF_TEST_TMP/nightfall-update/new.tar.gz" ]; then
@@ -80,34 +80,34 @@ run_case() {
   [ "$rc" -ne 0 ]
 }
 
-echo "== успешный rollback после ошибки post-install version check =="
+echo "== successful rollback after a post-install version check error =="
 R="$T/root-ok"; D="$T/tmp-ok"
 if run_case "$R" "$D" 0 &&
    grep -q '"state":"rolledback"' "$D/nightfall-update.status" &&
    grep -q '"version": "1.0.0"' "$R/www/luci-static/nightfall/version.json" &&
    [ "$(cat "$R/www/luci-static/nightfall/cascade.css")" = "old css" ] &&
    [ ! -e "$R/www/luci-static/nightfall/new-only.txt" ]; then
-  echo "ok   старые файлы восстановлены, новые удалены, статус rolledback"
+  echo "ok   old files restored, new ones deleted, status rolledback"
 else
-  echo "FAIL успешный rollback: $(cat "$D/nightfall-update.status" 2>/dev/null)"
+  echo "FAIL successful rollback: $(cat "$D/nightfall-update.status" 2>/dev/null)"
   exit 1
 fi
 
-echo "== отказ tar при восстановлении backup =="
+echo "== tar failure while restoring the backup =="
 R="$T/root-fail"; D="$T/tmp-fail"
 if run_case "$R" "$D" 1 &&
    grep -q '"state":"rollback_failed"' "$D/nightfall-update.status" &&
-   grep -q 'КРИТИЧЕСКАЯ ОШИБКА' "$D/nightfall-update.status" &&
-   ! grep -q 'прежние файлы восстановлены' "$D/nightfall-update.status" &&
+   grep -q 'CRITICAL ERROR' "$D/nightfall-update.status" &&
+   ! grep -q 'the previous files were restored' "$D/nightfall-update.status" &&
    [ ! -e "$R/www/luci-static/nightfall/new-only.txt" ]; then
-  echo "ok   ошибка отката отражена как rollback_failed, ложного успеха нет"
+  echo "ok   rollback error reported as rollback_failed, no false success"
 else
-  echo "FAIL отказ rollback tar: $(cat "$D/nightfall-update.status" 2>/dev/null)"
+  echo "FAIL rollback tar failure: $(cat "$D/nightfall-update.status" 2>/dev/null)"
   exit 1
 fi
 
 
-echo "== штатные symlink принимаются, посторонние отклоняются =="
+echo "== standard symlinks accepted, foreign ones rejected =="
 mkdir -p "$T/malicious/www/luci-static/nightfall"
 cp "$T/stage/www/luci-static/nightfall/version.json" "$T/malicious/www/luci-static/nightfall/version.json"
 ln -s ../../../../etc/passwd "$T/malicious/www/luci-static/nightfall/escape"
@@ -117,10 +117,10 @@ R="$T/root-malicious"; D="$T/tmp-malicious"
 if run_case "$R" "$D" 0 nightfall-malicious.tar.gz &&
    grep -q '"state":"error"' "$D/nightfall-update.status" &&
    [ ! -e "$R/etc/passwd" ]; then
-  echo "ok   архив с symlink отклонён до распаковки"
+  echo "ok   archive with symlink rejected before extraction"
 else
-  echo "FAIL архив с symlink не был безопасно отклонён: $(cat "$D/nightfall-update.status" 2>/dev/null)"
+  echo "FAIL archive with symlink was not safely rejected: $(cat "$D/nightfall-update.status" 2>/dev/null)"
   exit 1
 fi
 
-echo "ИТОГО: LuCI updater security/rollback tests passed"
+echo "TOTAL: LuCI updater security/rollback tests passed"

@@ -1,11 +1,11 @@
 #!/bin/sh
-# Nightfall bot: команды в Telegram. Работает в фоне (запускает init-скрипт), отвечает только владельцу (TG_CHAT).
-#   /status   состояние роутера     /clients  кто в сети        /traffic  трафик устройств за сегодня
-#   /apps     трафик по приложениям /speed    последний замер   /help     список команд
-#   /menu     меню с кнопками (так бот и работает: все команды доступны кнопками, плюс блокировка устройств и перезагрузка)
-#   nightfall-bot report            — вывести текст ежедневного отчёта (его отправляет сборщик в заданное время)
-# Получение команд: длинный опрос getUpdates (запросы идут туда же, куда и уведомления: прокси или интерфейс VPN).
-# Для тестов: NF_DIR, NF_PROC, NF_LEASES, NF_NOTIFY, NF_ONCE=1 (обработать один ответ и выйти), NF_NOSLEEP.
+# Nightfall bot: Telegram commands. Runs in the background (started by the init script), answers only the owner (TG_CHAT).
+#   /status   router status         /clients  who is online     /traffic  device traffic for today
+#   /apps     traffic by app        /speed    last speed test   /help     list of commands
+#   /menu     menu with buttons (this is how the bot works: every command is available as a button, plus device blocking and reboot)
+#   nightfall-bot report            — print the daily report text (the collector sends it at the configured time)
+# Receiving commands: getUpdates long polling (requests go the same way as notifications: proxy or VPN interface).
+# For tests: NF_DIR, NF_PROC, NF_LEASES, NF_NOTIFY, NF_ONCE=1 (handle one response and exit), NF_NOSLEEP.
 DIR=${NF_DIR:-/tmp/nightfall}
 PROC=${NF_PROC:-/proc}
 LEASES=${NF_LEASES:-/tmp/dhcp.leases}
@@ -18,7 +18,7 @@ UPDBIN=${NF_UPDATEBIN:-/usr/libexec/nightfall-update}
 BACKUP_TOOL=${NF_BACKUP_TOOL:-/usr/libexec/nightfall-backup}
 WIFI=${NF_WIFI:-wifi}
 INITD=${NF_INITD:-/etc/init.d}
-WDIR=${NF_WIDGETS:-/usr/share/nightfall/widgets}   # HTML-шаблоны виджетов
+WDIR=${NF_WIDGETS:-/usr/share/nightfall/widgets}   # HTML widget templates
 DF=${NF_DF:-df}
 REBOOT=${NF_REBOOT:-reboot}
 DATE_NOW=${NF_DATE_NOW:-}
@@ -29,22 +29,22 @@ USERS=$(cfg TG_USERS)
 FROM=""; ADM=0
 HOST=$(cat "$PROC/sys/kernel/hostname" 2>/dev/null || echo router)
 
-# кнопки под сообщением (inline-клавиатура); ответ без явного второго параметра получает главное меню
-KB_MAIN='{"inline_keyboard":[[{"text":"📊 Статус","callback_data":"status"},{"text":"🖥 Клиенты","callback_data":"clients"}],[{"text":"📈 Трафик","callback_data":"traffic"},{"text":"📱 Приложения","callback_data":"apps"}],[{"text":"⚡ Скорость","callback_data":"speed"},{"text":"🚫 Блокировка","callback_data":"block"}],[{"text":"📶 Гостевой Wi-Fi","callback_data":"gs"},{"text":"⏻ Включить устройство","callback_data":"wk"}],[{"text":"💾 Резервная копия","callback_data":"bk"},{"text":"🔁 Службы","callback_data":"svc"}],[{"text":"🔄 Перезагрузка","callback_data":"rb"},{"text":"🧹 Очистить чат","callback_data":"cl"}],[{"text":"⬆️ Обновления","callback_data":"up"}]]}'
-KB_UPD='{"inline_keyboard":[[{"text":"⬇️ Установить","callback_data":"up:go"}],[{"text":"Позже","callback_data":"menu"},{"text":"Пропустить версию","callback_data":"up:skip"}]]}'
-KB_SPEED='{"inline_keyboard":[[{"text":"▶️ Замерить сейчас","callback_data":"sp:run"}],[{"text":"⬅️ Меню","callback_data":"menu"}]]}'
-KB_BACK='{"inline_keyboard":[[{"text":"⬅️ Меню","callback_data":"menu"}]]}'
-KB_SVC='{"inline_keyboard":[[{"text":"📡 Wi-Fi","callback_data":"rs:wifi"},{"text":"🌐 DHCP и DNS","callback_data":"rs:dns"}],[{"text":"🛡 Брандмауэр","callback_data":"rs:fw"},{"text":"🔌 Сеть","callback_data":"rs:net"}],[{"text":"⬅️ Меню","callback_data":"menu"}]]}'
-KB_REBOOT='{"inline_keyboard":[[{"text":"✅ Да, перезагрузить","callback_data":"rb:yes"},{"text":"Отмена","callback_data":"menu"}]]}'
-KB_RESTORE_CONFIRM='{"inline_keyboard":[[{"text":"✅ Восстановить настройки","callback_data":"bk:apply:ID"}],[{"text":"Отмена","callback_data":"bk:cancel:ID"}]]}'
-MID=""   # id сообщения с нажатой кнопкой: если он есть, ответ правит это сообщение, а не шлёт новое
-UMID=""  # id сообщения-команды, которую написал человек (его удаляем, чтобы в чате оставался только ответ)
-LASTID="" # id последнего отправленного ботом сообщения
-MSGS="$DIR/bot.msgs"   # id сообщений бота и команд: по ним работает очистка чата
+# buttons under a message (inline keyboard); a reply without an explicit second argument gets the main menu
+KB_MAIN='{"inline_keyboard":[[{"text":"📊 Status","callback_data":"status"},{"text":"🖥 Clients","callback_data":"clients"}],[{"text":"📈 Traffic","callback_data":"traffic"},{"text":"📱 Apps","callback_data":"apps"}],[{"text":"⚡ Speed","callback_data":"speed"},{"text":"🚫 Blocking","callback_data":"block"}],[{"text":"📶 Guest Wi-Fi","callback_data":"gs"},{"text":"⏻ Wake device","callback_data":"wk"}],[{"text":"💾 Backup","callback_data":"bk"},{"text":"🔁 Services","callback_data":"svc"}],[{"text":"🔄 Reboot","callback_data":"rb"},{"text":"🧹 Clear chat","callback_data":"cl"}],[{"text":"⬆️ Updates","callback_data":"up"}]]}'
+KB_UPD='{"inline_keyboard":[[{"text":"⬇️ Install","callback_data":"up:go"}],[{"text":"Later","callback_data":"menu"},{"text":"Skip this version","callback_data":"up:skip"}]]}'
+KB_SPEED='{"inline_keyboard":[[{"text":"▶️ Test now","callback_data":"sp:run"}],[{"text":"⬅️ Menu","callback_data":"menu"}]]}'
+KB_BACK='{"inline_keyboard":[[{"text":"⬅️ Menu","callback_data":"menu"}]]}'
+KB_SVC='{"inline_keyboard":[[{"text":"📡 Wi-Fi","callback_data":"rs:wifi"},{"text":"🌐 DHCP and DNS","callback_data":"rs:dns"}],[{"text":"🛡 Firewall","callback_data":"rs:fw"},{"text":"🔌 Network","callback_data":"rs:net"}],[{"text":"⬅️ Menu","callback_data":"menu"}]]}'
+KB_REBOOT='{"inline_keyboard":[[{"text":"✅ Yes, reboot","callback_data":"rb:yes"},{"text":"Cancel","callback_data":"menu"}]]}'
+KB_RESTORE_CONFIRM='{"inline_keyboard":[[{"text":"✅ Restore settings","callback_data":"bk:apply:ID"}],[{"text":"Cancel","callback_data":"bk:cancel:ID"}]]}'
+MID=""   # id of the message whose button was pressed: if set, the reply edits that message instead of sending a new one
+UMID=""  # id of the command message the person typed (deleted so that only the reply stays in the chat)
+LASTID="" # id of the last message sent by the bot
+MSGS="$DIR/bot.msgs"   # ids of bot and command messages: chat cleanup works from this list
 reply() {
 	if [ -n "$MID" ]; then
 		r=$("$NOTIFY" edit "$MID" "$1" "${2-$KB_MAIN}" 2>/dev/null)
-		# правка не удалась и notify прислал новое сообщение: запоминаем его, старое удаляем (иначе в чате остаются две панели с кнопками)
+		# the edit failed and notify sent a new message: remember it, delete the old one (otherwise two button panels stay in the chat)
 		LASTID=$(printf '%s' "$r" | sed -n 's/.*"message_id":\([0-9][0-9]*\).*/\1/p' | head -n 1)
 		if [ -n "$LASTID" ]; then track "$LASTID"; echo "$LASTID" > "$DIR/bot.panel"; purge "$MID"; fi
 	else
@@ -54,26 +54,26 @@ reply() {
 	fi
 }
 track() { echo "$1" >> "$MSGS"; tail -n 100 "$MSGS" > "$MSGS.t" 2>/dev/null && mv "$MSGS.t" "$MSGS"; }
-# purge ID…: удалить сообщения одним запросом, в фоне (Telegram сам пропускает уже удалённые и старше 48 часов)
+# purge ID…: delete messages in one request, in the background (Telegram itself skips ones already deleted or older than 48 hours)
 purge() {
 	ids=$(printf '%s\n' "$@" | grep -E '^[0-9]+$' | sort -un | head -n 100 | paste -sd, -)
 	[ -n "$ids" ] || return 0
 	"$NOTIFY" raw deleteMessages -d "chat_id=$CHAT" -d "message_ids=[$ids]" >/dev/null 2>&1 &
 }
 
-# ---- форматирование ----
-BYTES='function fb(b,   x) { x = "Б"; if (b >= 1024) { b /= 1024; x = "КБ" } if (b >= 1024) { b /= 1024; x = "МБ" } if (b >= 1024) { b /= 1024; x = "ГБ" } return (x == "Б" ? sprintf("%d %s", b, x) : sprintf("%.1f %s", b, x)) }'
-dur() { awk -v s="$1" 'BEGIN { d = int(s / 86400); h = int(s % 86400 / 3600); m = int(s % 3600 / 60); if (d) printf "%d д %d ч", d, h; else if (h) printf "%d ч %d мин", h, m; else printf "%d мин", m }'; }
+# ---- formatting ----
+BYTES='function fb(b,   x) { x = "B"; if (b >= 1024) { b /= 1024; x = "KB" } if (b >= 1024) { b /= 1024; x = "MB" } if (b >= 1024) { b /= 1024; x = "GB" } return (x == "B" ? sprintf("%d %s", b, x) : sprintf("%.1f %s", b, x)) }'
+dur() { awk -v s="$1" 'BEGIN { d = int(s / 86400); h = int(s % 86400 / 3600); m = int(s % 3600 / 60); if (d) printf "%d d %d h", d, h; else if (h) printf "%d h %d min", h, m; else printf "%d min", m }'; }
 
-names() {   # печатает «ip имя» из аренд DHCP (для подписей)
+names() {   # prints "ip name" from DHCP leases (for labels)
 	[ -r "$LEASES" ] && awk '{ print $3, ($4 == "*" ? "" : $4) }' "$LEASES"
 }
 
-# полоска из 10 делений и цветная точка по процентам (зелёная до 70, жёлтая до 90, дальше красная)
+# a 10-segment bar and a colored dot by percentage (green below 70, yellow below 90, red above)
 bar() { awk -v p="$1" 'BEGIN { n = int(p / 10 + 0.5); if (n > 10) n = 10; if (n < 0) n = 0; s = ""; for (i = 0; i < 10; i++) s = s (i < n ? "▰" : "▱"); printf "%s", s }'; }
 dot() { awk -v p="$1" -v a="${2:-70}" -v b="${3:-90}" 'BEGIN { printf "%s", (p + 0 < a ? "🟢" : (p + 0 < b ? "🟡" : "🔴")) }'; }
 
-status_build() {   # собирает текст «Статуса» в $STXT (простой текст: так же выглядит подпись виджета и ответ на старых клиентах)
+status_build() {   # builds the "Status" text into $STXT (plain text: also used as the widget caption and the reply on older clients)
 	up=$(awk '{ print int($1) }' "$PROC/uptime" 2>/dev/null)
 	ld=$(awk '{ print $1 " " $2 " " $3 }' "$PROC/loadavg" 2>/dev/null)
 	mp=$(awk '/^MemTotal:/ { t = $2 } /^MemAvailable:/ { a = $2 } END { if (t) printf "%d", 100 * (t - a) / t; else printf 0 }' "$PROC/meminfo" 2>/dev/null)
@@ -82,33 +82,33 @@ status_build() {   # собирает текст «Статуса» в $STXT (п
 	set -- $last
 	temp=${4:-}; netms=${8:-}
 	cpu=${2:-0}; case "$cpu" in ''|*[!0-9.]*) cpu=0 ;; esac
-	ni="🔴"; net="НЕТ СВЯЗИ"
-	if [ -n "$netms" ]; then   # пинг в истории дробный (12.3), поэтому сравниваем через awk
-		net=$(awk -v n="$netms" 'BEGIN { if (n + 0 >= 0 && n ~ /^[0-9.]+$/) printf "есть, %.0f мс", n; else print "НЕТ СВЯЗИ" }')
-		case "$net" in есть*) ni="🟢" ;; esac
-	else net="нет данных"; ni="⚪"
+	ni="🔴"; net="OFFLINE"
+	if [ -n "$netms" ]; then   # the ping in history is fractional (12.3), so compare with awk
+		net=$(awk -v n="$netms" 'BEGIN { if (n + 0 >= 0 && n ~ /^[0-9.]+$/) printf "online, %.0f ms", n; else print "OFFLINE" }')
+		case "$net" in online*) ni="🟢" ;; esac
+	else net="no data"; ni="⚪"
 	fi
-	tp=$(awk -v n="$temp" 'BEGIN { if (n ~ /^[0-9]+(\.[0-9]+)?$/ && n + 0 >= 0) printf "%.1f", n; else printf -1 }')   # температура дробная (67.8): целочисленный test её не принимал
-	if [ "$tp" = "-1" ]; then ti="⚪"; t="н/д"; else ti=$(dot "$tp" 70 85); t="$tp °C"; fi
+	tp=$(awk -v n="$temp" 'BEGIN { if (n ~ /^[0-9]+(\.[0-9]+)?$/ && n + 0 >= 0) printf "%.1f", n; else printf -1 }')   # temperature is fractional (67.8): integer test did not accept it
+	if [ "$tp" = "-1" ]; then ti="⚪"; t="n/a"; else ti=$(dot "$tp" 70 85); t="$tp °C"; fi
 	fp=/; [ -d /overlay ] && fp=/overlay
-	rinfo=$($DF -kP "$fp" 2>/dev/null | awk 'function sz(k) { if (k >= 1048576) return sprintf("%.1f ГБ", k / 1048576); return sprintf("%.1f МБ", k / 1024) }
-		NR == 2 && $2 > 0 { printf "%d|%s из %s", 100 * $3 / $2, sz($3), sz($2) }')
+	rinfo=$($DF -kP "$fp" 2>/dev/null | awk 'function sz(k) { if (k >= 1048576) return sprintf("%.1f GB", k / 1048576); return sprintf("%.1f MB", k / 1024) }
+		NR == 2 && $2 > 0 { printf "%d|%s of %s", 100 * $3 / $2, sz($3), sz($2) }')
 	rp=${rinfo%%|*}; rtxt=${rinfo#*|}
-	case "$rp" in ''|*[!0-9]*) rp=0; rtxt="нет данных" ;; esac
-	rate=$(awk -v rx="${5:-0}" -v tx="${6:-0}" 'BEGIN { printf "↓ %.1f · ↑ %.1f Мбит/с", rx * 8 / 1e6, tx * 8 / 1e6 }')
-	STXT="📊 $HOST · работает $(dur "${up:-0}")
+	case "$rp" in ''|*[!0-9]*) rp=0; rtxt="no data" ;; esac
+	rate=$(awk -v rx="${5:-0}" -v tx="${6:-0}" 'BEGIN { printf "↓ %.1f · ↑ %.1f Mbit/s", rx * 8 / 1e6, tx * 8 / 1e6 }')
+	STXT="📊 $HOST · up $(dur "${up:-0}")
 
-$ni Интернет: $net
-⚡ Сейчас: $rate
+$ni Internet: $net
+⚡ Now: $rate
 
-$(dot "$cpu") Процессор  $(bar "$cpu")  ${cpu}%
-$(dot "$mp") Память  $(bar "$mp")  ${mp}% · ${mtot:-?} МБ
-$(dot "$rp") ПЗУ  $(bar "$rp")  ${rp}% · $rtxt
-$ti Температура: $t
-⚙️ Нагрузка: $ld"
+$(dot "$cpu") CPU  $(bar "$cpu")  ${cpu}%
+$(dot "$mp") Memory  $(bar "$mp")  ${mp}% · ${mtot:-?} MB
+$(dot "$rp") Storage  $(bar "$rp")  ${rp}% · $rtxt
+$ti Temperature: $t
+⚙️ Load: $ld"
 }
 
-# те же данные числами, для виджета: {"h":имя,"c":процессор %,"m":память %,"r":ПЗУ %,"t":°C или -1,"p":пинг мс или -1,"d":↓ Мбит/с,"u":↑ Мбит/с,"w":секунд работы}
+# the same data as numbers, for the widget: {"h":name,"c":CPU %,"m":memory %,"r":storage %,"t":°C or -1,"p":ping ms or -1,"d":↓ Mbit/s,"u":↑ Mbit/s,"w":uptime seconds}
 status_json() {
 	hn=$(printf '%s' "$HOST" | tr -d '"\\' | cut -c1-24)
 	set -- $(tail -n 1 "$DIR/hist.fine" 2>/dev/null)
@@ -123,16 +123,16 @@ status_json() {
 			printf "{\"h\":\"%s\",\"c\":%.0f,\"m\":%.0f,\"r\":%.0f,\"t\":%.1f,\"p\":%.0f,\"d\":%.1f,\"u\":%.1f,\"w\":%d}", h, cpu, m, r, tt, pp, rx * 8 / 1e6, tx * 8 / 1e6, w
 		}'
 }
-# виджеты работают только в личном чате и если включены в настройках
+# widgets work only in a private chat and only when enabled in settings
 widgets_on() { [ "$(cfg TG_WIDGETS)" = 1 ] && case "$CHAT" in -*) false ;; *) true ;; esac; }
-# send_widget ФАЙЛ ПОДПИСЬ ДАННЫЕ КНОПКИ: 0, если виджет отправлен (тогда нажатое сообщение с кнопкой убираем: виджет в него правкой не вписать)
-# причина последнего отказа лежит в $DIR/bot.widget.err (время и ответ Telegram): её показывает команда /widget
+# send_widget FILE CAPTION DATA BUTTONS: 0 if the widget was sent (then the pressed message with the button is removed: a widget cannot be put into it by editing)
+# the reason for the last failure is in $DIR/bot.widget.err (time and Telegram response): shown by the /widget command
 widget_err() { printf '%s %s\n' "$(date +%s)" "$(printf '%s' "$1" | head -c 300 | tr -d '\n')" > "$DIR/bot.widget.err"; }
 send_widget() {
-	[ -r "$1" ] || { widget_err "нет файла шаблона $1"; return 1; }
-	r=$("$NOTIFY" widget "$1" "$2" "$3" "$4" 2>/dev/null) || { widget_err "${r:-нет ответа от Telegram (сеть, прокси или VPN)}"; return 1; }
+	[ -r "$1" ] || { widget_err "template file missing: $1"; return 1; }
+	r=$("$NOTIFY" widget "$1" "$2" "$3" "$4" 2>/dev/null) || { widget_err "${r:-no response from Telegram (network, proxy or VPN)}"; return 1; }
 	LASTID=$(printf '%s' "$r" | sed -n 's/.*"message_id":\([0-9][0-9]*\).*/\1/p' | head -n 1)
-	[ -n "$LASTID" ] || { widget_err "ответ без message_id: $r"; return 1; }
+	[ -n "$LASTID" ] || { widget_err "response without message_id: $r"; return 1; }
 	rm -f "$DIR/bot.widget.err"
 	track "$LASTID"; echo "$LASTID" >> "$DIR/bot.widgets"; tail -n 30 "$DIR/bot.widgets" > "$DIR/bot.widgets.t" && mv "$DIR/bot.widgets.t" "$DIR/bot.widgets"
 	[ -z "$MID" ] || purge "$MID"
@@ -144,75 +144,75 @@ cmd_status() {
 	reply "$STXT"
 }
 
-cmd_widget() {   # /widget: почему виджет приходит или не приходит
-	if [ "$(cfg TG_WIDGETS)" = 1 ]; then w="включены"; else w="выключены (Монитор → История → Настройки → «Живые виджеты в боте»)"; fi
-	case "$CHAT" in -*) c="группа: виджеты работают только в личном чате" ;; *) c="личный чат" ;; esac
-	if [ -r "$WDIR/status.html" ]; then f="на месте"; else f="НЕ НАЙДЕН ($WDIR/status.html), переустановите Nightfall"; fi
+cmd_widget() {   # /widget: why the widget does or does not arrive
+	if [ "$(cfg TG_WIDGETS)" = 1 ]; then w="on"; else w="off (Monitor → History → Settings → \"Live widgets in the bot\")"; fi
+	case "$CHAT" in -*) c="group: widgets work only in a private chat" ;; *) c="private chat" ;; esac
+	if [ -r "$WDIR/status.html" ]; then f="present"; else f="NOT FOUND ($WDIR/status.html), reinstall Nightfall"; fi
 	if [ -r "$DIR/bot.widget.err" ]; then
 		read -r wt wm < "$DIR/bot.widget.err"
-		e="последняя ошибка $(dur "$(( $(date +%s) - ${wt:-0} ))") назад: $wm"
-	else e="ошибок не было"; wm=""; fi
+		e="last error $(dur "$(( $(date +%s) - ${wt:-0} ))") ago: $wm"
+	else e="no errors"; wm=""; fi
 	case "$wm" in
-	*WIDGET_NOT_ALLOWED*) h="Telegram сам отказывает: виджеты включаются постепенно и пока доступны не всем ботам и чатам (или временно отключены). Ничего не сломано: статус приходит обычным текстом. Бот пробует виджет при каждом запросе статуса и начнёт присылать его, как только Telegram разрешит." ;;
-	*WIDGET_TOO_LARGE*|*WIDGET_HTML_INVALID*|*WIDGET_DATA_*) h="Telegram отклонил сам шаблон виджета. Сообщите об этом в Issues, приложив эту строку." ;;
-	*RATE_LIMITED*|*"Too Many Requests"*) h="Слишком частые запросы: подождите минуту." ;;
-	*) h="Если ошибок нет, а виджета нет, обновите Telegram: интерактивные сообщения (Bot API 10.4) есть не во всех версиях." ;;
+	*WIDGET_NOT_ALLOWED*) h="Telegram itself refuses: widgets are being rolled out gradually and are not yet available to all bots and chats (or are temporarily disabled). Nothing is broken: the status arrives as plain text. The bot tries the widget on every status request and will start sending it as soon as Telegram allows." ;;
+	*WIDGET_TOO_LARGE*|*WIDGET_HTML_INVALID*|*WIDGET_DATA_*) h="Telegram rejected the widget template itself. Please report this in Issues and include this line." ;;
+	*RATE_LIMITED*|*"Too Many Requests"*) h="Too many requests: wait a minute." ;;
+	*) h="If there are no errors but no widget either, update Telegram: interactive messages (Bot API 10.4) are not available in all versions." ;;
 	esac
-	reply "🧩 Живые виджеты
-Настройка: $w
-Чат: $c
-Шаблон: $f
-Отправка: $e
+	reply "🧩 Live widgets
+Setting: $w
+Chat: $c
+Template: $f
+Sending: $e
 $h"
 }
 
 cmd_clients() {
-	[ -r "$PROC/net/arp" ] || { reply "Таблица ARP недоступна."; return; }
+	[ -r "$PROC/net/arp" ] || { reply "ARP table is unavailable."; return; }
 	wan=$(sed -n 's/^wan_dev=//p' "$DIR/info" 2>/dev/null | head -n 1)
 	out=$( { names; echo ---; awk -v wan="$wan" 'NR > 1 && $3 == "0x2" { print $1, $4, $6 }' "$PROC/net/arp"; } | awk -v wan="$wan" '
 		/^---$/ { f = 1; next }
 		!f { nm[$1] = $2; next }
-		$3 == wan && !($1 in nm) { next }   # на WAN-интерфейсе только клиенты из аренд DHCP (схема «на одной ноге»)
-		{ n++; printf "• %s: %s (%s)\n", ($1 in nm && nm[$1] != "" ? nm[$1] : "без имени"), $1, $2 }
-		END { if (!n) print "Устройств не видно." }' | head -n 40)
-	reply "🖥 В сети сейчас:
+		$3 == wan && !($1 in nm) { next }   # on the WAN interface only clients from DHCP leases ("router on a stick" setup)
+		{ n++; printf "• %s: %s (%s)\n", ($1 in nm && nm[$1] != "" ? nm[$1] : "unnamed"), $1, $2 }
+		END { if (!n) print "No devices visible." }' | head -n 40)
+	reply "🖥 Online now:
 $out"
 }
 
 cmd_traffic() {
-	[ -s "$DIR/dev.day" ] || { reply "Данных о трафике за сегодня пока нет."; return; }
+	[ -s "$DIR/dev.day" ] || { reply "No traffic data for today yet."; return; }
 	out=$( { names; echo ---; cat "$DIR/dev.day"; } | awk "$BYTES"'
 		/^---$/ { f = 1; next }
 		!f { nm[$1] = $2; next }
 		NF >= 3 { n++; if (n > 8) next; printf "• %s: ↓ %s, ↑ %s\n", ($1 in nm && nm[$1] != "" ? nm[$1] : $1), fb($2), fb($3) }')
-	reply "📈 Трафик устройств за сегодня:
+	reply "📈 Device traffic for today:
 $out"
 }
 
 cmd_apps() {
-	[ "$(cfg APPS)" = 1 ] || { reply "Учёт по приложениям выключен. Включите его в карточке «Трафик по приложениям» на странице «Обзор»."; return; }
-	[ -s "$DIR/apps.day" ] || { reply "Данных по приложениям пока нет."; return; }
+	[ "$(cfg APPS)" = 1 ] || { reply "Per-app accounting is off. Turn it on in the \"Traffic by app\" card on the \"Overview\" page."; return; }
+	[ -s "$DIR/apps.day" ] || { reply "No app data yet."; return; }
 	out=$(awk -F'|' "$BYTES"'
-		NF >= 5 { a = $2; if (a ~ /^Прочее/) a = "Прочее"; r = ($3 == "VPN" ? "VPN" : ($3 == "Direct" ? "напрямую" : "неизвестно")); k = a " · " r; d[k] += $4; u[k] += $5 }
-		NF == 4 { a = $2; if (a ~ /^Прочее/) a = "Прочее"; k = a " · неизвестно"; d[k] += $3; u[k] += $4 }
+		NF >= 5 { a = $2; if (a ~ /^(Other|Прочее)/) a = "Other"; r = ($3 == "VPN" ? "VPN" : ($3 == "Direct" ? "direct" : "unknown")); k = a " · " r; d[k] += $4; u[k] += $5 }
+		NF == 4 { a = $2; if (a ~ /^(Other|Прочее)/) a = "Other"; k = a " · unknown"; d[k] += $3; u[k] += $4 }
 		END { for (a in d) printf "%d|%s|%s\n", d[a] + u[a], a, fb(d[a] + u[a]) }' "$DIR/apps.day" | sort -t'|' -k1,1nr | head -n 10 | awk -F'|' '{ printf "• %s: %s\n", $2, $3 }')
-	reply "📱 Трафик по приложениям за сегодня:
+	reply "📱 Traffic by app for today:
 $out"
 }
 
 cmd_speed() {
 	l=$(tail -n 1 "$DIR/speed.log" 2>/dev/null)
-	[ -n "$l" ] || { reply "⚡ Замеров скорости пока нет. Нажмите «Замерить сейчас»." "$KB_SPEED"; return; }
+	[ -n "$l" ] || { reply "⚡ No speed tests yet. Press \"Test now\"." "$KB_SPEED"; return; }
 	set -- $l
 	when=$(date -d "@$1" '+%d.%m %H:%M' 2>/dev/null || echo "$1")
-	if [ "$6" = fail ]; then reply "⚡ Замер от $when не удался: нет связи или скорость слишком низкая. Попробуйте ещё раз." "$KB_SPEED"; return; fi
-	reply "⚡ Последний замер скорости ($when): $(awk -v m="$2" 'BEGIN { printf "%.0f Мбит/с", m }')" "$KB_SPEED"
+	if [ "$6" = fail ]; then reply "⚡ The speed test at $when failed: no connection or the speed is too low. Try again." "$KB_SPEED"; return; fi
+	reply "⚡ Last speed test ($when): $(awk -v m="$2" 'BEGIN { printf "%.0f Mbit/s", m }')" "$KB_SPEED"
 }
-# замер по кнопке: роутер качает тестовый файл около 12 секунд; когда закончит, это же сообщение покажет результат
+# test on button press: the router downloads a test file for about 12 seconds; when done, the same message shows the result
 cmd_speedrun() {
 	"$SPEEDBIN" start >/dev/null 2>&1
-	reply "⏳ Замеряю скорость…
-Роутер качает тестовый файл, это займёт секунд 15." ""
+	reply "⏳ Testing speed…
+The router is downloading a test file, this takes about 15 seconds." ""
 	[ -n "$MID" ] || MID=$LASTID
 	( i=0
 	  while [ "$i" -lt 45 ]; do
@@ -222,26 +222,26 @@ cmd_speedrun() {
 	  cmd_speed ) >/dev/null 2>&1 &
 }
 
-# ---- гостевой Wi-Fi по таймеру ----
-cmd_guest() {  # cmd_guest [ПРИПИСКА]
+# ---- guest Wi-Fi on a timer ----
+cmd_guest() {  # cmd_guest [NOTE]
 	l=$("$GUEST" cands 2>/dev/null)
 	if [ -z "$l" ]; then
 		reply "${1:+$1
 
-}📶 Гостевая сеть по таймеру: подходящих сетей не найдено.
-Создайте отдельную сеть Wi-Fi (например, guest) в «Сеть → Беспроводная сеть», и здесь появятся кнопки включения." "$KB_BACK"; return
+}📶 Guest network on a timer: no suitable networks found.
+Create a separate Wi-Fi network (for example, guest) in \"Network → Wireless\", and buttons to turn it on will appear here." "$KB_BACK"; return
 	fi
 	txt=""; rows=""; n=0
 	while IFS='|' read -r id ssid en until; do
 		[ -n "$id" ] || continue
 		n=$((n + 1)); [ "$n" -le 5 ] || break
 		if [ "$en" = 1 ]; then
-			if [ -n "$until" ]; then st="включена до $(date -d "@$until" +%H:%M 2>/dev/null)"; else st="включена, без таймера"; fi
-			rows="$rows[{\"text\":\"⏹ Выключить $ssid\",\"callback_data\":\"gs:off:$id\"}],"
+			if [ -n "$until" ]; then st="on until $(date -d "@$until" +%H:%M 2>/dev/null)"; else st="on, no timer"; fi
+			rows="$rows[{\"text\":\"⏹ Turn off $ssid\",\"callback_data\":\"gs:off:$id\"}],"
 			ic="🟢"
 		else
-			st="выключена"; ic="⚪"
-			rows="$rows[{\"text\":\"📶 $ssid · 1 ч\",\"callback_data\":\"gs:on:$id:60\"},{\"text\":\"4 ч\",\"callback_data\":\"gs:on:$id:240\"},{\"text\":\"Сутки\",\"callback_data\":\"gs:on:$id:1440\"}],"
+			st="off"; ic="⚪"
+			rows="$rows[{\"text\":\"📶 $ssid · 1 h\",\"callback_data\":\"gs:on:$id:60\"},{\"text\":\"4 h\",\"callback_data\":\"gs:on:$id:240\"},{\"text\":\"24 h\",\"callback_data\":\"gs:on:$id:1440\"}],"
 		fi
 		txt="$txt$ic $ssid: $st
 "
@@ -250,36 +250,36 @@ $l
 EOF
 	reply "${1:+$1
 
-}📶 Гостевой Wi-Fi
+}📶 Guest Wi-Fi
 $txt
-Включённая сеть выключится сама по таймеру." "{\"inline_keyboard\":[${rows}[{\"text\":\"⬅️ Меню\",\"callback_data\":\"menu\"}]]}"
+A network that is on turns itself off when the timer runs out." "{\"inline_keyboard\":[${rows}[{\"text\":\"⬅️ Menu\",\"callback_data\":\"menu\"}]]}"
 }
-cb_guest() {  # cb_guest on|off ID [МИНУТЫ]
+cb_guest() {  # cb_guest on|off ID [MINUTES]
 	case "$1" in
-	on) case "$3" in ''|*[!0-9]*) cmd_guest "Неверное время."; return ;; esac
-		r=$("$GUEST" on "$2" "$3" 2>/dev/null); ok="✅ Гостевая сеть включается, появится через несколько секунд." ;;
-	off) r=$("$GUEST" off "$2" 2>/dev/null); ok="✅ Гостевая сеть выключается." ;;
+	on) case "$3" in ''|*[!0-9]*) cmd_guest "Invalid time."; return ;; esac
+		r=$("$GUEST" on "$2" "$3" 2>/dev/null); ok="✅ Guest network is turning on, it will appear in a few seconds." ;;
+	off) r=$("$GUEST" off "$2" 2>/dev/null); ok="✅ Guest network is turning off." ;;
 	*) cmd_guest; return ;;
 	esac
 	case "$r" in
 		*'"ok":true'*) cmd_guest "$ok" ;;
-		*) cmd_guest "⚠️ Не получилось: $(printf '%s' "$r" | sed -n 's/.*"error":"\([^"]*\)".*/\1/p')" ;;
+		*) cmd_guest "⚠️ Failed: $(printf '%s' "$r" | sed -n 's/.*"error":"\([^"]*\)".*/\1/p')" ;;
 	esac
 }
 
-# ---- перезапуск служб (с подтверждением, одноразовым и на минуту) ----
-svc_name() { case "$1" in wifi) echo "Wi-Fi" ;; dns) echo "DHCP и DNS" ;; fw) echo "брандмауэр" ;; net) echo "сеть" ;; esac; }
-cmd_services() { reply "🔁 Перезапуск служб. Что перезапустить?" "$KB_SVC"; }
+# ---- service restart (with a one-time confirmation valid for a minute) ----
+svc_name() { case "$1" in wifi) echo "Wi-Fi" ;; dns) echo "DHCP and DNS" ;; fw) echo "firewall" ;; net) echo "network" ;; esac; }
+cmd_services() { reply "🔁 Restart services. What should be restarted?" "$KB_SVC"; }
 cb_restart_ask() {  # cb_restart_ask wifi|dns|fw|net
 	nm=$(svc_name "$1"); [ -n "$nm" ] || { cmd_services; return; }
 	echo "$1 $(date +%s)" > "$DIR/restart.ask"
-	extra=""; case "$1" in net) extra=" Связь с роутером пропадёт примерно на 30 секунд." ;; wifi) extra=" Wi-Fi устройства отключатся на несколько секунд." ;; esac
-	reply "🔁 Перезапустить: $nm?$extra Подтвердите в течение минуты." "{\"inline_keyboard\":[[{\"text\":\"✅ Да, перезапустить\",\"callback_data\":\"rs:y:$1\"},{\"text\":\"Отмена\",\"callback_data\":\"svc\"}]]}"
+	extra=""; case "$1" in net) extra=" The connection to the router will drop for about 30 seconds." ;; wifi) extra=" Wi-Fi devices will disconnect for a few seconds." ;; esac
+	reply "🔁 Restart: $nm?$extra Confirm within a minute." "{\"inline_keyboard\":[[{\"text\":\"✅ Yes, restart\",\"callback_data\":\"rs:y:$1\"},{\"text\":\"Cancel\",\"callback_data\":\"svc\"}]]}"
 }
 cb_restart_do() {  # cb_restart_do wifi|dns|fw|net
-	set -- "$1" $(cat "$DIR/restart.ask" 2>/dev/null); rm -f "$DIR/restart.ask"   # подтверждение одноразовое
-	case "$3" in ''|*[!0-9]*) reply "⌛ Подтверждение устарело. Запросите перезапуск заново." "$KB_SVC"; return ;; esac
-	[ "$2" = "$1" ] && [ $(( $(date +%s) - $3 )) -le 60 ] || { reply "⌛ Подтверждение устарело. Запросите перезапуск заново." "$KB_SVC"; return; }
+	set -- "$1" $(cat "$DIR/restart.ask" 2>/dev/null); rm -f "$DIR/restart.ask"   # the confirmation is one-time
+	case "$3" in ''|*[!0-9]*) reply "⌛ The confirmation has expired. Request the restart again." "$KB_SVC"; return ;; esac
+	[ "$2" = "$1" ] && [ $(( $(date +%s) - $3 )) -le 60 ] || { reply "⌛ The confirmation has expired. Request the restart again." "$KB_SVC"; return; }
 	case "$1" in
 		wifi) c="$WIFI reload" ;;
 		dns) c="$INITD/dnsmasq restart" ;;
@@ -287,25 +287,25 @@ cb_restart_do() {  # cb_restart_do wifi|dns|fw|net
 		net) c="$INITD/network restart" ;;
 		*) cmd_services; return ;;
 	esac
-	reply "🔁 Перезапускаю: $(svc_name "$1")…" "$KB_BACK"
+	reply "🔁 Restarting: $(svc_name "$1")…" "$KB_BACK"
 	( sleep 2; $c ) >/dev/null 2>&1 &
 }
 
-# ---- очистка чата ----
+# ---- chat cleanup ----
 cmd_clear() {
 	old="$(cat "$MSGS" 2>/dev/null) $MID $UMID"; : > "$MSGS"
-	MID=""; reply "🧹 Чат очищен. Меню $HOST:"
+	MID=""; reply "🧹 Chat cleared. $HOST menu:"
 	purge $old
 }
 
-cmd_menu() { reply "Меню $HOST. Выберите действие:"; }
+cmd_menu() { reply "$HOST menu. Choose an action:"; }
 
-# список устройств с кнопками: нажатие отключает или возвращает интернет устройству
-cmd_block() {  # cmd_block [ПРЕФИКС]
+# device list with buttons: a press cuts off or restores a device's internet
+cmd_block() {  # cmd_block [PREFIX]
 	j=$("$BLOCK" list 2>/dev/null)
 	rows=$(printf '%s' "$j" | sed 's/},{"mac"/}\n{"mac"/g' | awk '
 		function g(k,   s) { if (match($0, "\"" k "\":\"[^\"]*\"")) return substr($0, RSTART + length(k) + 4, RLENGTH - length(k) - 5); return "" }
-		function slab(d, r,   t) { t = (d == "12345" ? " будни" : (d == "67" ? " выходные" : (d != "" ? " по дням" : ""))); if (r != "") t = t "+"; return t }
+		function slab(d, r,   t) { t = (d == "12345" ? " weekdays" : (d == "67" ? " weekends" : (d != "" ? " by day" : ""))); if (r != "") t = t "+"; return t }
 		/"mac":"/ {
 			m = g("mac"); nm = g("name"); ip = g("ip"); on = ($0 ~ /"online":true/); bl = ($0 ~ /"active":true/); sc = (g("from") != ""); qt = ($0 !~ /"quota":0,/); sl = slab(g("days"), g("rules"))
 			if (nm == "") nm = ip; if (nm == "") nm = m
@@ -315,69 +315,69 @@ cmd_block() {  # cmd_block [ПРЕФИКС]
 		}' | sort -t'|' -k1,1n | head -n 14 | cut -d'|' -f2- | paste -sd, -)
 	if [ -z "$rows" ]; then reply "${1:+$1
 
-}Устройств не видно."; return; fi
+}No devices visible."; return; fi
 	reply "${1:+$1
 
-}🚫 Нажмите на устройство, чтобы отключить или вернуть ему интернет.
-🟢 в сети   🔴 отключено   ⏰ расписание   📉 лимит (расписание и лимиты задаются в теме на странице «Обзор»)" "{\"inline_keyboard\":[$rows,[{\"text\":\"👥 Группы\",\"callback_data\":\"gr\"},{\"text\":\"📜 Журнал\",\"callback_data\":\"bl\"}],[{\"text\":\"« Меню\",\"callback_data\":\"menu\"}]]}"
+}🚫 Tap a device to cut off or restore its internet.
+🟢 online   🔴 blocked   ⏰ schedule   📉 limit (schedules and limits are set in the theme on the \"Overview\" page)" "{\"inline_keyboard\":[$rows,[{\"text\":\"👥 Groups\",\"callback_data\":\"gr\"},{\"text\":\"📜 Log\",\"callback_data\":\"bl\"}],[{\"text\":\"« Menu\",\"callback_data\":\"menu\"}]]}"
 }
 
-# группы устройств (создаются в теме: Состояние → Устройства): одна кнопка отключает или возвращает интернет всей группе
-cmd_groups() {  # cmd_groups [СООБЩЕНИЕ]
+# device groups (created in the theme: Status → Devices): one button cuts off or restores internet for the whole group
+cmd_groups() {  # cmd_groups [MESSAGE]
 	rows=$("$BLOCK" groups 2>/dev/null | sed 's/},{"name"/}\n{"name"/g' | awk '
 		function g(k,   s) { if (match($0, "\"" k "\":\"[^\"]*\"")) return substr($0, RSTART + length(k) + 4, RLENGTH - length(k) - 5); return "" }
-		function slab(d, r,   t) { t = (d == "12345" ? " будни" : (d == "67" ? " выходные" : (d != "" ? " по дням" : ""))); if (r != "") t = t "+"; return t }
+		function slab(d, r,   t) { t = (d == "12345" ? " weekdays" : (d == "67" ? " weekends" : (d != "" ? " by day" : ""))); if (r != "") t = t "+"; return t }
 				/"name":"/ {
 			nm = g("name"); man = ($0 ~ /"manual":true/); sc = (g("from") != ""); qt = ($0 !~ /"quota":0,/); sl = slab(g("days"), g("rules"))
 			printf "[{\"text\":\"%s%s%s\",\"callback_data\":\"gt:%d\"}]\n", (man ? "🔴 " : "🟢 "), nm, (sc ? " ⏰" sl : "") (qt ? " 📉" : ""), n++
 		}' | head -n 12 | paste -sd, -)
 	if [ -z "$rows" ]; then reply "${1:+$1
 
-}Групп пока нет. Создайте их в теме: Состояние → Устройства (например «Дети»), и тут появятся кнопки." '{"inline_keyboard":[[{"text":"« Блокировка","callback_data":"block"},{"text":"« Меню","callback_data":"menu"}]]}'; return; fi
+}No groups yet. Create them in the theme: Status → Devices (for example \"Kids\"), and buttons will appear here." '{"inline_keyboard":[[{"text":"« Blocking","callback_data":"block"},{"text":"« Menu","callback_data":"menu"}]]}'; return; fi
 	reply "${1:+$1
 
-}👥 Нажмите на группу, чтобы отключить или вернуть интернет всем её устройствам.
-🟢 работает   🔴 отключена   ⏰ расписание   📉 лимит" "{\"inline_keyboard\":[$rows,[{\"text\":\"« Блокировка\",\"callback_data\":\"block\"},{\"text\":\"« Меню\",\"callback_data\":\"menu\"}]]}"
+}👥 Tap a group to cut off or restore internet for all its devices.
+🟢 active   🔴 blocked   ⏰ schedule   📉 limit" "{\"inline_keyboard\":[$rows,[{\"text\":\"« Blocking\",\"callback_data\":\"block\"},{\"text\":\"« Menu\",\"callback_data\":\"menu\"}]]}"
 }
 
-cb_gtoggle() {  # cb_gtoggle НОМЕР_ГРУППЫ
-	case "$1" in ''|*[!0-9]*) cmd_groups "Неверная группа."; return ;; esac
+cb_gtoggle() {  # cb_gtoggle GROUP_NUMBER
+	case "$1" in ''|*[!0-9]*) cmd_groups "Invalid group."; return ;; esac
 	obj=$("$BLOCK" groups 2>/dev/null | sed 's/},{"name"/}\n{"name"/g' | grep '"name":"' | sed -n "$(($1 + 1))p")
 	nm=$(printf '%s' "$obj" | sed -n 's/.*"name":"\([^"]*\)".*/\1/p')
-	[ -n "$nm" ] || { cmd_groups "Такой группы уже нет."; return; }
+	[ -n "$nm" ] || { cmd_groups "This group no longer exists."; return; }
 	case "$obj" in
-	*'"manual":true'*) r=$(NF_BY=бот "$BLOCK" gunblock "$nm" 2>/dev/null); msg="✅ Группа «$nm»: интернет возвращён" ;;
-	*) r=$(NF_BY=бот "$BLOCK" gblock "$nm" 2>/dev/null); msg="🔴 Группа «$nm»: интернет отключён" ;;
+	*'"manual":true'*) r=$(NF_BY=bot "$BLOCK" gunblock "$nm" 2>/dev/null); msg="✅ Group \"$nm\": internet restored" ;;
+	*) r=$(NF_BY=bot "$BLOCK" gblock "$nm" 2>/dev/null); msg="🔴 Group \"$nm\": internet cut off" ;;
 	esac
-	case "$r" in *'"ok":true'*) cmd_groups "$msg" ;; *) cmd_groups "Не получилось: $(printf '%s' "$r" | sed -n 's/.*"error":"\([^"]*\)".*/\1/p')" ;; esac
+	case "$r" in *'"ok":true'*) cmd_groups "$msg" ;; *) cmd_groups "Failed: $(printf '%s' "$r" | sed -n 's/.*"error":"\([^"]*\)".*/\1/p')" ;; esac
 }
 
-cb_toggle() {  # cb_toggle MAC без двоеточий
+cb_toggle() {  # cb_toggle MAC without colons
 	mac=$(printf '%s' "$1" | sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\)\(..\)$/\1:\2:\3:\4:\5:\6/')
-	printf '%s' "$mac" | grep -qE '^([0-9a-f]{2}:){5}[0-9a-f]{2}$' || { cmd_block "Неверный адрес устройства."; return; }
+	printf '%s' "$mac" | grep -qE '^([0-9a-f]{2}:){5}[0-9a-f]{2}$' || { cmd_block "Invalid device address."; return; }
 	obj=$("$BLOCK" list 2>/dev/null | sed 's/},{"mac"/}\n{"mac"/g' | grep "\"mac\":\"$mac\"" | head -n 1)
 	nm=$(printf '%s' "$obj" | sed -n 's/.*"name":"\([^"]*\)".*/\1/p'); [ -n "$nm" ] || nm=$(printf '%s' "$obj" | sed -n 's/.*"ip":"\([^"]*\)".*/\1/p'); [ -n "$nm" ] || nm=$mac
 	case "$obj" in
-	*'"active":true'*) r=$(NF_BY=бот "$BLOCK" unblock "$mac" 2>/dev/null); msg="✅ $nm: интернет возвращён" ;;
-	*) r=$(NF_BY=бот "$BLOCK" block "$mac" "$nm" 2>/dev/null); msg="🔴 $nm: интернет отключён" ;;
+	*'"active":true'*) r=$(NF_BY=bot "$BLOCK" unblock "$mac" 2>/dev/null); msg="✅ $nm: internet restored" ;;
+	*) r=$(NF_BY=bot "$BLOCK" block "$mac" "$nm" 2>/dev/null); msg="🔴 $nm: internet cut off" ;;
 	esac
-	case "$r" in *'"ok":true'*) cmd_block "$msg" ;; *) cmd_block "Не получилось: $(printf '%s' "$r" | sed -n 's/.*"error":"\([^"]*\)".*/\1/p')" ;; esac
+	case "$r" in *'"ok":true'*) cmd_block "$msg" ;; *) cmd_block "Failed: $(printf '%s' "$r" | sed -n 's/.*"error":"\([^"]*\)".*/\1/p')" ;; esac
 }
 
-# кнопки под сообщением о новом устройстве
-cb_newdev() {  # cb_newdev ok|bk|ub MAC_без_двоеточий
+# buttons under the new-device message
+cb_newdev() {  # cb_newdev ok|bk|ub MAC_without_colons
 	mac=$(printf '%s' "$2" | sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\)\(..\)$/\1:\2:\3:\4:\5:\6/')
-	printf '%s' "$mac" | grep -qE '^([0-9a-f]{2}:){5}[0-9a-f]{2}$' || { reply "Неверный адрес устройства."; return; }
-	kbu="{\"inline_keyboard\":[[{\"text\":\"↩️ Вернуть интернет\",\"callback_data\":\"ub:$2\"}]]}"
+	printf '%s' "$mac" | grep -qE '^([0-9a-f]{2}:){5}[0-9a-f]{2}$' || { reply "Invalid device address."; return; }
+	kbu="{\"inline_keyboard\":[[{\"text\":\"↩️ Restore internet\",\"callback_data\":\"ub:$2\"}]]}"
 	case "$1" in
-	ok) reply "👍 Устройство $mac отмечено как своё." "" ;;
-	bk) r=$(NF_BY=бот "$BLOCK" block "$mac" 2>/dev/null); case "$r" in *'"ok":true'*) reply "🔴 Устройству $mac отключён интернет." "$kbu" ;; *) reply "Не получилось: $(printf '%s' "$r" | sed -n 's/.*"error":"\([^"]*\)".*/\1/p')" "" ;; esac ;;
-	ub) r=$(NF_BY=бот "$BLOCK" unblock "$mac" 2>/dev/null); case "$r" in *'"ok":true'*) reply "✅ Устройству $mac интернет возвращён." "" ;; *) reply "Не получилось вернуть интернет." "" ;; esac ;;
+	ok) reply "👍 Device $mac marked as known." "" ;;
+	bk) r=$(NF_BY=bot "$BLOCK" block "$mac" 2>/dev/null); case "$r" in *'"ok":true'*) reply "🔴 Internet cut off for device $mac." "$kbu" ;; *) reply "Failed: $(printf '%s' "$r" | sed -n 's/.*"error":"\([^"]*\)".*/\1/p')" "" ;; esac ;;
+	ub) r=$(NF_BY=bot "$BLOCK" unblock "$mac" 2>/dev/null); case "$r" in *'"ok":true'*) reply "✅ Internet restored for device $mac." "" ;; *) reply "Failed to restore internet." "" ;; esac ;;
 	esac
 }
 
-# Wake-on-LAN: выключенные устройства с кнопками, нажатие отправляет сигнал на включение
-cmd_wake() {  # cmd_wake [СООБЩЕНИЕ]
+# Wake-on-LAN: offline devices with buttons, a press sends the wake signal
+cmd_wake() {  # cmd_wake [MESSAGE]
 	rows=$("$BLOCK" list 2>/dev/null | sed 's/},{"mac"/}\n{"mac"/g' | awk '
 		function g(k) { if (match($0, "\"" k "\":\"[^\"]*\"")) return substr($0, RSTART + length(k) + 4, RLENGTH - length(k) - 5); return "" }
 		/"mac":"/ {
@@ -387,80 +387,80 @@ cmd_wake() {  # cmd_wake [СООБЩЕНИЕ]
 		}' | head -n 12 | paste -sd, -)
 	if [ -z "$rows" ]; then reply "${1:+$1
 
-}Сейчас все известные устройства в сети, включать нечего." '{"inline_keyboard":[[{"text":"« Меню","callback_data":"menu"}]]}'; return; fi
+}All known devices are online right now, nothing to wake." '{"inline_keyboard":[[{"text":"« Menu","callback_data":"menu"}]]}'; return; fi
 	reply "${1:+$1
 
-}⏻ Нажмите на устройство, чтобы включить его по сети (Wake-on-LAN). Функция должна быть включена в самом устройстве: в BIOS и в настройках сетевой карты." "{\"inline_keyboard\":[$rows,[{\"text\":\"« Меню\",\"callback_data\":\"menu\"}]]}"
+}⏻ Tap a device to wake it over the network (Wake-on-LAN). The feature must be enabled on the device itself: in the BIOS and in the network card settings." "{\"inline_keyboard\":[$rows,[{\"text\":\"« Menu\",\"callback_data\":\"menu\"}]]}"
 }
 
-cb_wake() {  # cb_wake MAC без двоеточий
+cb_wake() {  # cb_wake MAC without colons
 	mac=$(printf '%s' "$1" | sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\)\(..\)$/\1:\2:\3:\4:\5:\6/')
-	printf '%s' "$mac" | grep -qE '^([0-9a-f]{2}:){5}[0-9a-f]{2}$' || { cmd_wake "Неверный адрес устройства."; return; }
+	printf '%s' "$mac" | grep -qE '^([0-9a-f]{2}:){5}[0-9a-f]{2}$' || { cmd_wake "Invalid device address."; return; }
 	r=$("$WOL" send "$mac" 2>/dev/null)
 	case "$r" in
-	*'"ok":true'*) cmd_wake "✅ Сигнал на включение отправлен ($mac). Компьютеру нужно 10–30 секунд." ;;
-	*) cmd_wake "Не получилось: $(printf '%s' "$r" | sed -n 's/.*"error":"\([^"]*\)".*/\1/p')" ;;
+	*'"ok":true'*) cmd_wake "✅ Wake signal sent ($mac). A computer needs 10–30 seconds." ;;
+	*) cmd_wake "Failed: $(printf '%s' "$r" | sed -n 's/.*"error":"\([^"]*\)".*/\1/p')" ;;
 	esac
 }
 
 cmd_blocklog() {
 	out=$("$BLOCK" log plain 2>/dev/null | while IFS='|' read -r ts nm ev why; do
-		[ "$ev" = on ] && ev="🔴 отключён" || ev="🟢 возвращён"
+		[ "$ev" = on ] && ev="🔴 blocked" || ev="🟢 restored"
 		printf '• %s %s: %s (%s)\n' "$(date -d "@$ts" '+%d.%m %H:%M' 2>/dev/null)" "$nm" "$ev" "$why"
 	done)
-	reply "📜 Журнал блокировок:
-${out:-Записей пока нет.}" '{"inline_keyboard":[[{"text":"« Блокировка","callback_data":"block"},{"text":"« Меню","callback_data":"menu"}]]}'
+	reply "📜 Block log:
+${out:-No entries yet.}" '{"inline_keyboard":[[{"text":"« Blocking","callback_data":"block"},{"text":"« Menu","callback_data":"menu"}]]}'
 }
 
 cmd_backup() {
-	reply "💾 Готовлю резервную копию настроек…" ""
+	reply "💾 Preparing a settings backup…" ""
 	r=$("$NOTIFY" backup 2>/dev/null)
-	case "$r" in *'"ok":true'*) reply "💾 Резервная копия отправлена отдельным сообщением. Под файлом есть кнопка «Проверить и восстановить»." ;; *) reply "Не получилось отправить копию: $(printf '%s' "$r" | sed -n 's/.*"error":"\([^"]*\)".*/\1/p')" ;; esac
+	case "$r" in *'"ok":true'*) reply "💾 The backup was sent as a separate message. Under the file there is a \"Check and restore\" button." ;; *) reply "Failed to send the backup: $(printf '%s' "$r" | sed -n 's/.*"error":"\([^"]*\)".*/\1/p')" ;; esac
 }
 
 cb_backup_check() { # cb_backup_check ID: validate the local archive and request explicit confirmation
 	id=$1
-	case "$id" in ''|*[!0-9]*) reply "⚠️ Некорректный идентификатор резервной копии."; return ;; esac
+	case "$id" in ''|*[!0-9]*) reply "⚠️ Invalid backup identifier."; return ;; esac
 	state="$DIR/backup.$id"
-	[ -f "$state" ] && [ ! -L "$state" ] || { reply "⌛ Ссылка на архив устарела. Создайте резервную копию заново."; return; }
+	[ -f "$state" ] && [ ! -L "$state" ] || { reply "⌛ The archive link has expired. Create the backup again."; return; }
 	archive=$(cat "$state" 2>/dev/null)
-	case "$archive" in */nightfall-backup-*.tar.gz) ;; *) reply "⚠️ Недопустимый путь к архиву."; return ;; esac
-	[ -f "$archive" ] && [ ! -L "$archive" ] || { reply "⚠️ Файл резервной копии не найден. Возможно, накопитель отключён или архив удалён."; return; }
+	case "$archive" in */nightfall-backup-*.tar.gz) ;; *) reply "⚠️ Invalid archive path."; return ;; esac
+	[ -f "$archive" ] && [ ! -L "$archive" ] || { reply "⚠️ Backup file not found. The storage may be disconnected or the archive deleted."; return; }
 	preview=$("$BACKUP_TOOL" list "$archive" 2>&1); rc=$?
-	[ "$rc" = 0 ] || { reply "❌ Проверка архива не пройдена. Восстановление запрещено.
+	[ "$rc" = 0 ] || { reply "❌ The archive failed verification. Restore is not allowed.
 
 $preview" "$KB_BACK"; return; }
-	printf '%s\n' "$(date +%s)" > "$DIR/restore.ask.$id" || { reply "Не удалось сохранить подтверждение восстановления."; return; }
+	printf '%s\n' "$(date +%s)" > "$DIR/restore.ask.$id" || { reply "Failed to save the restore confirmation."; return; }
 	kb=$(printf '%s' "$KB_RESTORE_CONFIRM" | sed "s/ID/$id/g")
-	reply "🔍 Архив прошёл проверку.
+	reply "🔍 The archive passed verification.
 
 $preview
 
-Если готовы заменить текущие настройки Nightfall, подтвердите восстановление. Подтверждение действует 5 минут." "$kb"
+If you are ready to replace the current Nightfall settings, confirm the restore. The confirmation is valid for 5 minutes." "$kb"
 }
 
 cb_backup_apply() { # cb_backup_apply ID: one-time, time-limited confirmation
 	id=$1
-	case "$id" in ''|*[!0-9]*) reply "⚠️ Некорректный идентификатор восстановления."; return ;; esac
+	case "$id" in ''|*[!0-9]*) reply "⚠️ Invalid restore identifier."; return ;; esac
 	state="$DIR/backup.$id"; askfile="$DIR/restore.ask.$id"
-	[ -f "$state" ] && [ ! -L "$state" ] && [ -f "$askfile" ] && [ ! -L "$askfile" ] || { reply "⌛ Подтверждение отсутствует или устарело. Проверьте архив заново."; return; }
+	[ -f "$state" ] && [ ! -L "$state" ] && [ -f "$askfile" ] && [ ! -L "$askfile" ] || { reply "⌛ The confirmation is missing or expired. Check the archive again."; return; }
 	asked=$(cat "$askfile" 2>/dev/null)
-	case "$asked" in ''|*[!0-9]*) rm -f "$askfile"; reply "⌛ Подтверждение повреждено. Проверьте архив заново."; return ;; esac
+	case "$asked" in ''|*[!0-9]*) rm -f "$askfile"; reply "⌛ The confirmation is corrupted. Check the archive again."; return ;; esac
 	age=$(( $(date +%s) - asked ))
-	[ "$age" -ge 0 ] && [ "$age" -le 300 ] || { rm -f "$askfile"; reply "⌛ Время подтверждения истекло. Проверьте архив заново."; return; }
+	[ "$age" -ge 0 ] && [ "$age" -le 300 ] || { rm -f "$askfile"; reply "⌛ The confirmation time has run out. Check the archive again."; return; }
 	archive=$(cat "$state" 2>/dev/null)
-	case "$archive" in */nightfall-backup-*.tar.gz) ;; *) rm -f "$askfile"; reply "⚠️ Недопустимый путь к архиву."; return ;; esac
-	[ -f "$archive" ] && [ ! -L "$archive" ] || { rm -f "$askfile"; reply "⚠️ Архив не найден."; return; }
+	case "$archive" in */nightfall-backup-*.tar.gz) ;; *) rm -f "$askfile"; reply "⚠️ Invalid archive path."; return ;; esac
+	[ -f "$archive" ] && [ ! -L "$archive" ] || { rm -f "$askfile"; reply "⚠️ Archive not found."; return; }
 	rm -f "$askfile"
 	result=$("$BACKUP_TOOL" restore "$archive" apply 2>&1); rc=$?
 	if [ "$rc" = 0 ]; then
 		rm -f "$state"
-		reply "✅ Настройки Nightfall восстановлены.
+		reply "✅ Nightfall settings restored.
 
-Сетевые настройки OpenWrt не менялись. TG_TOKEN и TG_PROXY сохранены из текущей конфигурации. Перезапускаю сборщик и Telegram-бота…" "$KB_MAIN"
+OpenWrt network settings were not changed. TG_TOKEN and TG_PROXY were kept from the current configuration. Restarting the collector and the Telegram bot…" "$KB_MAIN"
 		( sleep 2; "$INITD/nightfall-collector" restart ) >/dev/null 2>&1 &
 	else
-		reply "❌ Восстановление не выполнено. Текущие настройки не должны быть заменены; проверьте сообщение об ошибке:
+		reply "❌ Restore failed. The current settings should not have been replaced; check the error message:
 
 $result" "$KB_BACK"
 	fi
@@ -469,22 +469,22 @@ $result" "$KB_BACK"
 cb_backup_cancel() {
 	id=$1
 	case "$id" in ''|*[!0-9]*) ;; *) rm -f "$DIR/restore.ask.$id" ;; esac
-	reply "↩️ Восстановление отменено. Текущие настройки не изменены." "$KB_BACK"
+	reply "↩️ Restore cancelled. The current settings were not changed." "$KB_BACK"
 }
 
-cmd_reboot() { date +%s > "$DIR/reboot.ask"; reply "🔄 Перезагрузить $HOST? Интернет пропадёт примерно на 1–2 минуты. Подтвердите в течение минуты." "$KB_REBOOT"; }
+cmd_reboot() { date +%s > "$DIR/reboot.ask"; reply "🔄 Reboot $HOST? The internet will be down for about 1–2 minutes. Confirm within a minute." "$KB_REBOOT"; }
 do_reboot() {
-	ask=$(cat "$DIR/reboot.ask" 2>/dev/null); rm -f "$DIR/reboot.ask"   # подтверждение одноразовое и живёт минуту
-	case "$ask" in ''|*[!0-9]*) reply "⌛ Подтверждение устарело. Запросите перезагрузку заново."; return ;; esac
-	[ $(( $(date +%s) - ask )) -le 60 ] || { reply "⌛ Подтверждение устарело. Запросите перезагрузку заново."; return; }
-	reply "🔄 Перезагружаю. Вернусь через пару минут." ""; ( sleep 2; $REBOOT ) >/dev/null 2>&1 &
+	ask=$(cat "$DIR/reboot.ask" 2>/dev/null); rm -f "$DIR/reboot.ask"   # the confirmation is one-time and lives for a minute
+	case "$ask" in ''|*[!0-9]*) reply "⌛ The confirmation has expired. Request the reboot again."; return ;; esac
+	[ $(( $(date +%s) - ask )) -le 60 ] || { reply "⌛ The confirmation has expired. Request the reboot again."; return; }
+	reply "🔄 Rebooting. Back in a couple of minutes." ""; ( sleep 2; $REBOOT ) >/dev/null 2>&1 &
 }
 
-# ежедневный отчёт: nightfall-bot report печатает текст (отправляет его сборщик в заданное время)
+# daily report: nightfall-bot report prints the text (the collector sends it at the configured time)
 cmd_report() {
 	now=$(date +%s); since=$((now - 86400))
 	tt=$(awk "$BYTES"'{ d += $2; u += $3 } END { printf "↓ %s, ↑ %s", fb(d), fb(u) }' "$DIR/dev.day" 2>/dev/null)
-	[ -s "$DIR/dev.day" ] || tt="нет данных"
+	[ -s "$DIR/dev.day" ] || tt="no data"
 	devs=$( { names; echo ---; cat "$DIR/dev.day" 2>/dev/null; } | awk "$BYTES"'
 		/^---$/ { f = 1; next }
 		!f { nm[$1] = $2; next }
@@ -492,7 +492,7 @@ cmd_report() {
 	apps=""
 	if [ "$(cfg APPS)" = 1 ] && [ -s "$DIR/apps.day" ]; then
 		apps=$(awk -F'|' "$BYTES"'
-			NF >= 4 { a = $2; if (a ~ /^Прочее/) a = "Прочее"; t[a] += $3 + $4 }
+			NF >= 4 { a = $2; if (a ~ /^(Other|Прочее)/) a = "Other"; t[a] += $3 + $4 }
 			END { for (a in t) printf "%d|%s|%s\n", t[a], a, fb(t[a]) }' "$DIR/apps.day" | sort -t'|' -k1,1nr | head -n 5 | awk -F'|' '{ printf "• %s: %s\n", $2, $3 }')
 	fi
 	ev=$(awk -F'|' -v s="$since" '$1 >= s && ($2 == "warn" || $2 == "bad") { print $1 "|" $3 }' "$DIR/events.log" 2>/dev/null)
@@ -501,52 +501,52 @@ cmd_report() {
 	if [ "$evn" -gt 0 ]; then
 		evt=$(printf '%s\n' "$ev" | tail -n 5 | while IFS='|' read -r ts tx; do printf '• %s %s\n' "$(date -d "@$ts" '+%H:%M' 2>/dev/null)" "$tx"; done)
 	fi
-	tmax=$(awk -v s="$since" '$1 >= s && $4 >= 0 { if ($4 > m) m = $4; f = 1 } END { if (f) printf "%d °C", m; else print "н/д" }' "$DIR/hist.coarse" 2>/dev/null)
+	tmax=$(awk -v s="$since" '$1 >= s && $4 >= 0 { if ($4 > m) m = $4; f = 1 } END { if (f) printf "%d °C", m; else print "n/a" }' "$DIR/hist.coarse" 2>/dev/null)
 	cl=$(awk -v w="$(sed -n 's/^wan_dev=//p' "$DIR/info" 2>/dev/null | head -n 1)" 'FILENAME == ARGV[1] { l[$3] = 1; next } FNR > 1 && $3 == "0x2" && ($6 != w || ($1 in l)) { n++ } END { print n + 0 }' "${LEASES:-/tmp/dhcp.leases}" "$PROC/net/arp" 2>/dev/null)
 	up=$(awk '{ print int($1) }' "$PROC/uptime" 2>/dev/null)
-	reply "🗓 Отчёт за сутки · $HOST
-Трафик сегодня: $tt
+	reply "🗓 Daily report · $HOST
+Traffic today: $tt
 ${devs:+
-Устройства:
+Devices:
 $devs
 }${apps:+
-Приложения:
+Apps:
 $apps
 }
-$([ "$evn" -gt 0 ] && printf 'Предупреждений за сутки: %s\n%s' "$evn" "$evt" || echo 'Предупреждений за сутки не было ✅')
-Температура (максимум): ${tmax:-н/д}
-Устройств в сети: $cl
-Работает без перезагрузки: $(dur "${up:-0}")"
+$([ "$evn" -gt 0 ] && printf 'Warnings in the last 24 h: %s\n%s' "$evn" "$evt" || echo 'No warnings in the last 24 h ✅')
+Temperature (max): ${tmax:-n/a}
+Devices online: $cl
+Up without reboot: $(dur "${up:-0}")"
 }
 
 cmd_help() {
-	reply "Бот $HOST. Всё управляется кнопками под сообщениями: /menu открывает меню.
-Команды тоже работают: /status /clients /traffic /apps /speed /block /guest /wake /restart /clear /update /widget /reboot /report"
+	reply "$HOST bot. Everything is controlled with buttons under messages: /menu opens the menu.
+Commands work too: /status /clients /traffic /apps /speed /block /guest /wake /restart /clear /update /widget /reboot /report"
 }
 
-# управлять ботом может владелец. В личном чате это сам TG_CHAT, в группе (id начинается с «-») только люди из TG_USERS:
-# в группе чат один на всех, и без этой проверки перезагрузить роутер мог бы любой её участник
-is_admin() {  # is_admin ID_ОТПРАВИТЕЛЯ
+# only the owner can control the bot. In a private chat that is TG_CHAT itself, in a group (id starts with "-") only people from TG_USERS:
+# a group chat is shared by everyone, and without this check any member could reboot the router
+is_admin() {  # is_admin SENDER_ID
 	case "$CHAT" in -*) ;; *) [ "$1" = "$CHAT" ]; return ;; esac
 	case ",$USERS," in *",$1,"*) return 0 ;; esac
 	return 1
 }
 
-# ---- обновления темы ----
+# ---- theme updates ----
 upd_json() { "$UPDBIN" check 2>/dev/null; }   # {"installed":"X","latest":"Y","new":0|1}
 upd_field() { printf '%s' "$1" | sed -n "s/.*\"$2\":\"\{0,1\}\([^\",}]*\).*/\1/p" | head -n 1; }
-cmd_update() {  # проверка по кнопке: сообщает и о том, что обновлений нет
+cmd_update() {  # check on button press: also reports when there are no updates
 	j=$(upd_json); i=$(upd_field "$j" installed); l=$(upd_field "$j" latest); n=$(upd_field "$j" new)
-	if [ -z "$l" ]; then reply "⬆️ Не удалось проверить обновления (нет связи с GitHub). Установлена версия ${i:-?}." "$KB_BACK"
-	elif [ "$n" = 1 ]; then reply "⬆️ Доступна новая версия Nightfall: $l (у вас $i).
-Подробности: https://github.com/Nikolai752/nightfall-openwrt/releases/tag/v$l
-Установка проверяет контрольную сумму и подпись, при ошибке возвращает прежнюю версию." "$KB_UPD"
-	else reply "✅ Установлена последняя версия Nightfall: ${i:-?}." "$KB_BACK"; fi
+	if [ -z "$l" ]; then reply "⬆️ Could not check for updates (no connection to GitHub). Installed version: ${i:-?}." "$KB_BACK"
+	elif [ "$n" = 1 ]; then reply "⬆️ A new Nightfall version is available: $l (you have $i).
+Details: https://github.com/jigarvarma2k20/nightfall-openwrt/releases/tag/v$l
+Installation verifies the checksum and signature and restores the previous version on error." "$KB_UPD"
+	else reply "✅ The latest Nightfall version is installed: ${i:-?}." "$KB_BACK"; fi
 }
-cmd_update_go() {  # кнопка «Установить»: запускает обновление и следит за ним
+cmd_update_go() {  # "Install" button: starts the update and watches it
 	r=$("$UPDBIN" start 2>/dev/null)
-	reply "⏳ Устанавливаю обновление…
-Это займёт около минуты, бот перезапустится сам." "$KB_BACK"
+	reply "⏳ Installing the update…
+This takes about a minute, the bot will restart by itself." "$KB_BACK"
 	m=${MID:-$LASTID}; [ -n "$m" ] && echo "$m" > "$DIR/bot.updmsg"
 	(
 		n=0
@@ -554,12 +554,12 @@ cmd_update_go() {  # кнопка «Установить»: запускает �
 			sleep 5; n=$((n + 1))
 			st=$("$UPDBIN" status 2>/dev/null)
 			case "$st" in
-			*'"state":"done"'*) exit 0 ;;   # дальше сообщит заново запущенный бот
+			*'"state":"done"'*) exit 0 ;;   # the restarted bot reports the rest
 			*'"state":"error"'*|*'"state":"rolledback"'*)
 				rm -f "$DIR/bot.updmsg"
 				msg=$(upd_field "$st" msg)
-				if [ -n "$m" ]; then "$NOTIFY" edit "$m" "❌ Обновление не удалось: ${msg:-ошибка}" "$KB_BACK" >/dev/null 2>&1
-				else "$NOTIFY" reply "❌ Обновление не удалось: ${msg:-ошибка}" "$KB_BACK" >/dev/null 2>&1; fi
+				if [ -n "$m" ]; then "$NOTIFY" edit "$m" "❌ Update failed: ${msg:-error}" "$KB_BACK" >/dev/null 2>&1
+				else "$NOTIFY" reply "❌ Update failed: ${msg:-error}" "$KB_BACK" >/dev/null 2>&1; fi
 				exit 0 ;;
 			esac
 		done
@@ -568,9 +568,9 @@ cmd_update_go() {  # кнопка «Установить»: запускает �
 cmd_update_skip() {
 	j=$(upd_json); l=$(upd_field "$j" latest)
 	[ -z "$l" ] || echo "$l" > "$DIR/bot.updskip"
-	reply "Хорошо, версию ${l:-} пропускаю. О следующей сообщу." "$KB_BACK"
+	reply "OK, skipping version ${l:-}. I will let you know about the next one." "$KB_BACK"
 }
-# раз в 6 часов: если вышла новая версия, которую ещё не предлагали и не пропустили, присылаем уведомление с кнопкой
+# every 6 hours: if a new version is out that was not offered or skipped yet, send a notification with a button
 upd_auto() {
 	[ "$(cfg TG_UPDATES)" = 0 ] && return 0
 	now=$(date +%s); last=$(cat "$DIR/bot.updchk" 2>/dev/null)
@@ -582,21 +582,21 @@ upd_auto() {
 	[ "$(cat "$DIR/bot.updseen" 2>/dev/null)" = "$l" ] && return 0
 	echo "$l" > "$DIR/bot.updseen"
 	MID=""
-	reply "⬆️ Вышла новая версия Nightfall: $l (у вас $i).
-Подробности: https://github.com/Nikolai752/nightfall-openwrt/releases/tag/v$l" "$KB_UPD"
+	reply "⬆️ A new Nightfall version is out: $l (you have $i).
+Details: https://github.com/jigarvarma2k20/nightfall-openwrt/releases/tag/v$l" "$KB_UPD"
 }
-# после установки бот запускается заново: сообщаем итог в то же сообщение
+# after installation the bot starts again: report the result in the same message
 upd_done() {
 	m=$(cat "$DIR/bot.updmsg" 2>/dev/null); [ -n "$m" ] || return 0
 	rm -f "$DIR/bot.updmsg"
 	j=$(upd_json); i=$(upd_field "$j" installed)
-	"$NOTIFY" edit "$m" "✅ Nightfall обновлён до версии ${i:-?}." "$KB_MAIN" >/dev/null 2>&1
+	"$NOTIFY" edit "$m" "✅ Nightfall updated to version ${i:-?}." "$KB_MAIN" >/dev/null 2>&1
 }
 
-run() {  # run КОМАНДА (из текста «/status» или из кнопки «status»)
+run() {  # run COMMAND (from the text "/status" or from the "status" button)
 	case "$1" in
 	block|wk|wake|wk:*|gr|gt:*|bk|backup|bk:*|ok:*|ub:*|tb:*|rb|reboot|rb:yes|sp:run|up:go|up:skip|gs|guest|gs:*|svc|restart|rs:*|cl|clear)
-		[ "$ADM" = 1 ] || { reply "🔒 Управление доступно только администраторам. Ваш id: ${FROM:-неизвестен}. Владелец может добавить его в настройку TG_USERS (Монитор → История → Настройки)." ""; return; } ;;
+		[ "$ADM" = 1 ] || { reply "🔒 Control is available to administrators only. Your id: ${FROM:-unknown}. The owner can add it to the TG_USERS setting (Monitor → History → Settings)." ""; return; } ;;
 	esac
 	case "$1" in
 		start|menu|help) if [ "$1" = help ]; then cmd_help; else cmd_menu; fi ;;
@@ -632,11 +632,11 @@ run() {  # run КОМАНДА (из текста «/status» или из кно�
 		rb:yes) do_reboot ;;
 		report) cmd_report ;;
 		tb:*) cb_toggle "${1#tb:}" ;;
-		*) reply "Не знаю такой команды. Откройте /menu." ;;
+		*) reply "Unknown command. Open /menu." ;;
 	esac
 }
 
-handle() {  # handle ТЕКСТ
+handle() {  # handle TEXT
 	c=$(printf '%s' "$1" | awk '{ print $1 }' | sed 's/@.*//' | tr 'A-Z' 'a-z')
 	case "$c" in
 		/*) run "${c#/}" ;;
@@ -644,13 +644,13 @@ handle() {  # handle ТЕКСТ
 	esac
 }
 
-# разбор ответа getUpdates: строки «update_id|chat_id|id_отправителя|id_нажатия|данные_кнопки|id_сообщения|id_запроса_виджета|текст»
+# parsing the getUpdates response: lines "update_id|chat_id|sender_id|callback_id|button_data|message_id|widget_query_id|text"
 parse() {
 	tr '\n' ' ' | sed 's/{"update_id":/\n&/g' | awk '
 		/^\{"update_id":/ {
 			id = $0; sub(/^\{"update_id":/, "", id); sub(/[^0-9].*/, "", id)
 			chat = ""; if (match($0, /"chat":\{"id":-?[0-9]+/)) chat = substr($0, RSTART + 13, RLENGTH - 13)
-			frm = ""; if (match($0, /"from":\{"id":[0-9]+/)) frm = substr($0, RSTART + 13, RLENGTH - 13)   # первый «from» в обновлении это человек, а не бот
+			frm = ""; if (match($0, /"from":\{"id":[0-9]+/)) frm = substr($0, RSTART + 13, RLENGTH - 13)   # the first "from" in an update is the person, not the bot
 			cb = ""; dt = ""; mid = ""
 			if (match($0, /"callback_query":\{"id":"[^"]*"/)) {
 				cb = substr($0, RSTART + 24, RLENGTH - 25)
@@ -658,7 +658,7 @@ parse() {
 			}
 			if (match($0, /"message":\{"message_id":[0-9]+/)) mid = substr($0, RSTART + 24, RLENGTH - 24)
 			wq = ""
-			if (match($0, /"widget_query":\{"id":"[^"]*"/)) {   # запрос из виджета: id, данные и сообщение
+			if (match($0, /"widget_query":\{"id":"[^"]*"/)) {   # widget query: id, data and message
 				wq = substr($0, RSTART + 22, RLENGTH - 23)
 				if (match($0, /"data":"[^"]*"/)) dt = substr($0, RSTART + 8, RLENGTH - 9)
 				if (match($0, /"message_id":[0-9]+/)) mid = substr($0, RSTART + 13, RLENGTH - 13)
@@ -671,14 +671,14 @@ parse() {
 
 if [ "$1" = report ]; then reply() { printf '%s\n' "$1"; }; cmd_report; exit 0; fi
 
-[ -n "$CHAT" ] || { echo "TG_CHAT не задан" >&2; exit 1; }
+[ -n "$CHAT" ] || { echo "TG_CHAT is not set" >&2; exit 1; }
 
-# меню команд в Telegram (кнопка «Меню» у бота)
-"$NOTIFY" raw setMyCommands -d 'commands=[{"command":"menu","description":"Меню с кнопками"},{"command":"status","description":"Состояние роутера"},{"command":"clients","description":"Кто в сети"},{"command":"traffic","description":"Трафик устройств"},{"command":"apps","description":"Трафик по приложениям"},{"command":"block","description":"Блокировка устройств"},{"command":"guest","description":"Гостевой Wi-Fi"},{"command":"clear","description":"Очистить чат"},{"command":"report","description":"Отчёт за сутки"},{"command":"reboot","description":"Перезагрузить роутер"}]' >/dev/null 2>&1
+# command menu in Telegram (the bot's "Menu" button)
+"$NOTIFY" raw setMyCommands -d 'commands=[{"command":"menu","description":"Menu with buttons"},{"command":"status","description":"Router status"},{"command":"clients","description":"Who is online"},{"command":"traffic","description":"Device traffic"},{"command":"apps","description":"Traffic by app"},{"command":"block","description":"Device blocking"},{"command":"guest","description":"Guest Wi-Fi"},{"command":"clear","description":"Clear chat"},{"command":"report","description":"Daily report"},{"command":"reboot","description":"Reboot router"}]' >/dev/null 2>&1
 
 date +%s > "$DIR/bot.start"; rm -f "$DIR/bot.err"
 upd_done
-# накопившиеся за время простоя команды пропускаем
+# skip commands that piled up while the bot was down
 off=0
 r=$("$NOTIFY" raw getUpdates -d offset=-1 2>/dev/null)
 last=$(printf '%s' "$r" | parse | tail -n 1 | cut -d'|' -f1)
@@ -695,35 +695,35 @@ while :; do
 		while IFS='|' read -r id chat frm cb dt mid wq txt; do
 			[ -n "$id" ] || continue
 			off=$((id + 1))
-			[ "$chat" = "$CHAT" ] || continue          # чужим не отвечаем
+			[ "$chat" = "$CHAT" ] || continue          # do not answer strangers
 			FROM=$frm; ADM=0; is_admin "$frm" && ADM=1
-			if [ -n "$wq" ]; then   # запрос из виджета: ответить надо в течение 15 секунд, состояние хранит бот
+			if [ -n "$wq" ]; then   # widget query: must be answered within 15 seconds, the bot keeps the state
 				case "$dt" in s) ans=$(status_json) ;; *) ans="" ;; esac
 				"$NOTIFY" raw answerWidgetQuery -d "widget_query_id=$wq" --data-urlencode "data=$ans" >/dev/null 2>&1
 				continue
 			fi
-			# «убирать за собой»: в личном чате в чате остаётся один свежий ответ внизу (в группе чужие сообщения не трогаем)
+			# "clean up after itself": in a private chat only one fresh reply stays at the bottom (in a group other people's messages are left alone)
 			CLEAN=1; [ "$(cfg TG_CLEAN)" = 0 ] && CLEAN=0; case "$CHAT" in -*) CLEAN=0 ;; esac
 			OLD=""
 			if [ -n "$cb" ]; then
-				"$NOTIFY" raw answerCallbackQuery -d "callback_query_id=$cb" >/dev/null 2>&1 &   # подтверждение нажатия в фоне, чтобы не задерживать ответ
+				"$NOTIFY" raw answerCallbackQuery -d "callback_query_id=$cb" >/dev/null 2>&1 &   # acknowledge the press in the background so the reply is not delayed
 				MID=$mid; UMID=""
 				# Keep the document message visible; restore steps are posted as separate messages.
 				case "$dt" in bk:check:*) MID="" ;; esac
-				# кнопку нажали на старом ответе, который уже не внизу: присылаем новый, старый удаляем
-				if grep -qx "$mid" "$DIR/bot.widgets" 2>/dev/null; then OLD="$mid"; MID=""   # кнопка под виджетом: его правкой не заменить, присылаем новое сообщение
+				# the button was pressed on an old reply that is no longer at the bottom: send a new one, delete the old one
+				if grep -qx "$mid" "$DIR/bot.widgets" 2>/dev/null; then OLD="$mid"; MID=""   # button under a widget: it cannot be replaced by editing, send a new message
 				elif [ "$CLEAN" = 1 ] && grep -qx "$mid" "$MSGS" 2>/dev/null && [ "$(tail -n 1 "$MSGS")" != "$mid" ]; then OLD=$(cat "$MSGS"); : > "$MSGS"; MID=""; fi
 				run "$dt"; MID=""
 			else
 				UMID=$mid; [ -z "$UMID" ] || track "$UMID"
-				if [ "$CLEAN" = 1 ]; then OLD="$(cat "$MSGS") $(cat "$DIR/bot.panel" 2>/dev/null)"; : > "$MSGS"; fi   # и прежняя панель, даже если её нет в списке
+				if [ "$CLEAN" = 1 ]; then OLD="$(cat "$MSGS") $(cat "$DIR/bot.panel" 2>/dev/null)"; : > "$MSGS"; fi   # and the previous panel, even if it is not in the list
 				handle "$txt"; UMID=""
 			fi
 			[ -z "$OLD" ] || purge $OLD
 		done < "$DIR/bot.upd" ;;
 	*)
 		fails=$((fails + 1)); d=$((fails * 10)); [ "$d" -le 120 ] || d=120
-		printf '%s %s\n' "$(date +%s)" "$(printf '%s' "$r" | head -c 300 | tr -d '\n')" > "$DIR/bot.err"   # последняя ошибка: смотреть командой cat /tmp/nightfall/bot.err
+		printf '%s %s\n' "$(date +%s)" "$(printf '%s' "$r" | head -c 300 | tr -d '\n')" > "$DIR/bot.err"   # last error: view with cat /tmp/nightfall/bot.err
 		[ -n "$NF_NOSLEEP" ] || sleep "$d" ;;
 	esac
 	[ -n "$NF_ONCE" ] && break

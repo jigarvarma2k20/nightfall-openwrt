@@ -1,6 +1,6 @@
 {
 	"admin/system/nightfall-gallery": {
-		"title": "Nightfall: все элементы",
+		"title": "Nightfall: all elements",
 		"order": 99,
 		"action": {
 			"type": "view",

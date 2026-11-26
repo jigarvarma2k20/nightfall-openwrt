@@ -19,15 +19,15 @@ body{margin:0;padding:12px 12px 10px;font:14px/1.3 system-ui,sans-serif;color:va
 <div id=a>
 <div class=h><span class=d id=d></span><b id=hn>…</b><span class=s id=pg></span></div>
 <div class=r>
-<div class=k><svg viewBox="0 0 72 72"><circle cx=36 cy=36 r=30 fill=none stroke="rgba(127,127,127,.25)" stroke-width=7 /><circle id=c cx=36 cy=36 r=30 fill=none stroke-width=7 stroke-linecap=round stroke-dasharray="0 189" transform="rotate(-90 36 36)" /><text id=cv x=36 y=42 text-anchor=middle font-size=18 font-weight=700 fill="currentColor">–</text></svg><i>Процессор</i></div>
-<div class=k><svg viewBox="0 0 72 72"><circle cx=36 cy=36 r=30 fill=none stroke="rgba(127,127,127,.25)" stroke-width=7 /><circle id=m cx=36 cy=36 r=30 fill=none stroke-width=7 stroke-linecap=round stroke-dasharray="0 189" transform="rotate(-90 36 36)" /><text id=mv x=36 y=42 text-anchor=middle font-size=18 font-weight=700 fill="currentColor">–</text></svg><i>Память</i></div>
-<div class=k><svg viewBox="0 0 72 72"><circle cx=36 cy=36 r=30 fill=none stroke="rgba(127,127,127,.25)" stroke-width=7 /><circle id=r cx=36 cy=36 r=30 fill=none stroke-width=7 stroke-linecap=round stroke-dasharray="0 189" transform="rotate(-90 36 36)" /><text id=rv x=36 y=42 text-anchor=middle font-size=18 font-weight=700 fill="currentColor">–</text></svg><i>ПЗУ</i></div>
+<div class=k><svg viewBox="0 0 72 72"><circle cx=36 cy=36 r=30 fill=none stroke="rgba(127,127,127,.25)" stroke-width=7 /><circle id=c cx=36 cy=36 r=30 fill=none stroke-width=7 stroke-linecap=round stroke-dasharray="0 189" transform="rotate(-90 36 36)" /><text id=cv x=36 y=42 text-anchor=middle font-size=18 font-weight=700 fill="currentColor">–</text></svg><i>CPU</i></div>
+<div class=k><svg viewBox="0 0 72 72"><circle cx=36 cy=36 r=30 fill=none stroke="rgba(127,127,127,.25)" stroke-width=7 /><circle id=m cx=36 cy=36 r=30 fill=none stroke-width=7 stroke-linecap=round stroke-dasharray="0 189" transform="rotate(-90 36 36)" /><text id=mv x=36 y=42 text-anchor=middle font-size=18 font-weight=700 fill="currentColor">–</text></svg><i>Memory</i></div>
+<div class=k><svg viewBox="0 0 72 72"><circle cx=36 cy=36 r=30 fill=none stroke="rgba(127,127,127,.25)" stroke-width=7 /><circle id=r cx=36 cy=36 r=30 fill=none stroke-width=7 stroke-linecap=round stroke-dasharray="0 189" transform="rotate(-90 36 36)" /><text id=rv x=36 y=42 text-anchor=middle font-size=18 font-weight=700 fill="currentColor">–</text></svg><i>Storage</i></div>
 </div>
 <div class=g>
-<div class=t><i>Температура</i><b id=t>–</b></div>
-<div class=t><i>Пинг</i><b id=p>–</b></div>
-<div class=t><i>Загрузка ↓</i><b id=dn>–</b></div>
-<div class=t><i>Отдача ↑</i><b id=u>–</b></div>
+<div class=t><i>Temperature</i><b id=t>–</b></div>
+<div class=t><i>Ping</i><b id=p>–</b></div>
+<div class=t><i>Download ↓</i><b id=dn>–</b></div>
+<div class=t><i>Upload ↑</i><b id=u>–</b></div>
 </div>
 <div class="f s" id=f>&nbsp;</div>
 </div>
@@ -36,19 +36,19 @@ var T=window.TelegramWidget,C=188.5,$=function(i){return document.getElementById
 function col(v){return v<70?'#34c759':v<90?'#ff9f0a':'#ff453a'}
 function ring(i,v){v=Math.max(0,Math.min(100,+v||0));var e=$(i);e.setAttribute('stroke-dasharray',(v*C/100)+' '+C);e.setAttribute('stroke',col(v));$(i+'v').textContent=Math.round(v)+'%'}
 function z(n){return n<10?'0'+n:''+n}
-function up(s){var d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return d?d+' д '+h+' ч':h?h+' ч '+m+' мин':m+' мин'}
+function up(s){var d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return d?d+' d '+h+' h':h?h+' h '+m+' min':m+' min'}
 function draw(d){
 if(!d)return;
 $('hn').textContent=d.h;
 ring('c',d.c);ring('m',d.m);ring('r',d.r);
-$('t').textContent=d.t<0?'н/д':Math.round(d.t)+' °C';
+$('t').textContent=d.t<0?'n/a':Math.round(d.t)+' °C';
 $('t').style.color=d.t>=85?'#ff453a':d.t>=75?'#ff9f0a':'';
-$('p').textContent=d.p<0?'нет':Math.round(d.p)+' мс';
+$('p').textContent=d.p<0?'none':Math.round(d.p)+' ms';
 $('d').className='d '+(d.p<0?'x':'o');
-$('dn').textContent=d.d.toFixed(1)+' Мбит/с';
-$('u').textContent=d.u.toFixed(1)+' Мбит/с';
+$('dn').textContent=d.d.toFixed(1)+' Mbit/s';
+$('u').textContent=d.u.toFixed(1)+' Mbit/s';
 var n=new Date();
-$('f').textContent='Работает '+up(d.w)+' · '+z(n.getHours())+':'+z(n.getMinutes());
+$('f').textContent='Up '+up(d.w)+' · '+z(n.getHours())+':'+z(n.getMinutes());
 $('a').className=''}
 var busy=false;
 function go(){

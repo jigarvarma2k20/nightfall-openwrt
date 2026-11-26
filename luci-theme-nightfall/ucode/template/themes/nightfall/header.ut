@@ -34,7 +34,7 @@
 		<meta name="mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-		<meta name="apple-mobile-web-app-title" content="Роутер">
+		<meta name="apple-mobile-web-app-title" content="Router">
 		<link rel="apple-touch-startup-image" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait) and (prefers-color-scheme: light)" href="{{ media }}/splash/1320x2868-l.png">
 		<link rel="apple-touch-startup-image" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait) and (prefers-color-scheme: dark)" href="{{ media }}/splash/1320x2868-d.png">
 		<link rel="apple-touch-startup-image" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait) and (prefers-color-scheme: light)" href="{{ media }}/splash/1206x2622-l.png">
@@ -69,10 +69,10 @@
 		{% if (!blank_page): %}
 		<header>
 			<a class="brand" href="/">{{ striptags(boardinfo.hostname ?? '?') }}</a>
-			<label class="nf-find"><input type="search" id="nf-find" placeholder="Найти страницу" autocomplete="off" aria-label="Найти страницу"></label>
+			<label class="nf-find"><input type="search" id="nf-find" placeholder="Find a page" autocomplete="off" aria-label="Find a page"></label>
 			<ul class="nav" id="topmenu" style="display:none"></ul>
 			<div id="indicators" class="pull-right"></div>
-			<button type="button" class="nf-pers" aria-expanded="false"><span>Персонализация</span></button>
+			<button type="button" class="nf-pers" aria-expanded="false"><span>Personalization</span></button>
 			<button type="button" class="nf-burger" aria-label="Menu" aria-expanded="false"
 				onclick="var o = document.body.classList.toggle('nf-nav-open'); this.setAttribute('aria-expanded', o);"></button>
 		</header>

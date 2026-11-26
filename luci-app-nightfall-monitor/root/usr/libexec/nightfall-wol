@@ -1,8 +1,8 @@
 #!/bin/sh
-# Nightfall: Wake-on-LAN. Отправляет «магический пакет», чтобы включить компьютер, NAS или приставку по MAC-адресу.
-#   nightfall-wol send MAC   — разбудить устройство (JSON: {"ok":true,"method":"…"})
-#   nightfall-wol check      — какой способ отправки доступен на этом роутере
-# Способы по порядку: etherwake, ether-wake (BusyBox), wol, nc (UDP), ucode.
+# Nightfall: Wake-on-LAN. Sends a "magic packet" to turn on a computer, NAS or set-top box by MAC address.
+#   nightfall-wol send MAC   — wake a device (JSON: {"ok":true,"method":"…"})
+#   nightfall-wol check      — which sending method is available on this router
+# Methods in order: etherwake, ether-wake (BusyBox), wol, nc (UDP), ucode.
 UCI=${NF_UCI:-uci}
 
 fail() { printf '{"ok":false,"error":"%s"}\n' "$1"; exit 1; }
@@ -19,7 +19,7 @@ methods() {
 	have ucode && echo ucode
 }
 
-send_nc() {   # пакет: 6 байт 0xFF и 16 раз MAC; байты пишем восьмеричными кодами, чтобы пережить нулевые байты
+send_nc() {   # packet: 6 bytes of 0xFF and the MAC 16 times; bytes are written as octal codes to survive zero bytes
 	esc=$(echo "$1" | awk -F: '{ for (i = 1; i <= 6; i++) { v = 0; h = tolower($i); for (j = 1; j <= 2; j++) { c = index("0123456789abcdef", substr(h, j, 1)) - 1; v = v * 16 + c }
 		printf "\\%d%d%d", int(v / 64), int(v / 8) % 8, v % 8 } }')
 	{
@@ -37,14 +37,14 @@ check)
 	m=$(methods | tr '\n' ' ')
 	printf '{"ok":true,"methods":[%s]}\n' "$(for x in $m; do printf '"%s",' "$x"; done | sed 's/,$//')" ;;
 send)
-	valid_mac "$2" || fail "неверный MAC-адрес"
+	valid_mac "$2" || fail "invalid MAC address"
 	mac=$2; i=$(lan_if)
 	have etherwake && etherwake -i "$i" "$mac" >/dev/null 2>&1 && ok etherwake
 	have ether-wake && ether-wake -b -i "$i" "$mac" >/dev/null 2>&1 && ok ether-wake
 	have wol && wol -i 255.255.255.255 "$mac" >/dev/null 2>&1 && ok wol
 	have nc && send_nc "$mac" && ok nc
 	have ucode && send_ucode "$mac" && ok ucode
-	fail "нет способа отправить пакет: установите пакет etherwake (opkg install etherwake или apk add etherwake)" ;;
+	fail "no way to send the packet: install the etherwake package (opkg install etherwake or apk add etherwake)" ;;
 *)
 	echo "usage: nightfall-wol send MAC | check" >&2; exit 1 ;;
 esac

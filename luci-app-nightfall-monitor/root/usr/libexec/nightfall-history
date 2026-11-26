@@ -1,11 +1,11 @@
 #!/bin/sh
-# Nightfall history: отдаёт данные сборщика (nightfall-collector) одним JSON-объектом.
-#   nightfall-history series fine|coarse|long — графики + события + предупреждения (long — до 90 суток, шаг 30 мин)
-#   nightfall-history temps fine|coarse    — температуры всех датчиков: час (шаг 15 с) или 7 суток (шаг 5 мин)
-#   nightfall-history wifi-hr / devhr      — почасовой сигнал клиентов Wi-Fi / трафик по устройствам
-#   nightfall-history devices              — трафик по устройствам
-#   nightfall-history alerts               — активные предупреждения и последняя точка
-#   nightfall-history apps                 — трафик по приложениям: сегодня и за прошлые сутки
+# Nightfall history: returns the collector (nightfall-collector) data as one JSON object.
+#   nightfall-history series fine|coarse|long — charts + events + warnings (long — up to 90 days, 30 min step)
+#   nightfall-history temps fine|coarse    — temperatures of all sensors: an hour (15 s step) or 7 days (5 min step)
+#   nightfall-history wifi-hr / devhr      — hourly Wi-Fi client signal / per-device traffic
+#   nightfall-history devices              — per-device traffic
+#   nightfall-history alerts               — active warnings and the last point
+#   nightfall-history apps                 — traffic by app: today and previous days
 DIR=${NF_DIR:-/tmp/nightfall}
 
 info_json() {
@@ -33,13 +33,13 @@ active_json() {
 	printf ']'
 }
 
-router_ips() {   # адреса самого роутера через пробел: сохранённые сборщиком (в том числе прежние внешние) и текущие
+router_ips() {   # the router's own addresses separated by spaces: saved by the collector (including previous external ones) and current
 	{ sed -n 's/^router_ips=//p' "$DIR/info" 2>/dev/null | head -n 1
 	  ${NF_IP:-ip} -4 addr show 2>/dev/null | awk '/inet / { split($2, a, "/"); print a[1] }'; } | tr ' ' '\n' | awk 'NF && !s[$1]++ { printf "%s ", $1 }'
 }
 
 router_nets() { sed -n 's/^router_nets=//p' "$DIR/info" 2>/dev/null | head -n 1; }
-# общие функции awk: mine(ip) — адрес принадлежит самому роутеру (его адреса, в том числе прежние внешние, или внешняя подсеть)
+# shared awk functions: mine(ip) — the address belongs to the router itself (its addresses, including previous external ones, or the external subnet)
 AWKR='function n_(ip,   a) { split(ip, a, "."); return ((a[1] * 256 + a[2]) * 256 + a[3]) * 256 + a[4] }
 function mine(ip,   i, x) {
 	if (index(rips, " " ip " ")) return 1
@@ -56,7 +56,7 @@ devs_json() {   # devs_json FILE [skip-first-line]
 	printf ']'
 }
 
-neigh_json() {  # соседи по сети: «адрес → MAC» (IPv4 и IPv6), чтобы привязывать трафик к устройству, а не к адресу
+neigh_json() {  # network neighbors: "address → MAC" (IPv4 and IPv6), to bind traffic to a device rather than an address
 	printf '['
 	{ if [ -n "$NF_NEIGH" ]; then cat "$NF_NEIGH"; else ip neigh show 2>/dev/null; fi; } | awk '
 		/lladdr/ && $1 !~ /^fe80:/ { m = ""; st = $NF; for (i = 1; i < NF; i++) if ($i == "lladdr") m = tolower($(i + 1)); if (m ~ /^[0-9a-f][0-9a-f](:[0-9a-f][0-9a-f])+$/) printf "%s[\"%s\",\"%s\",\"%s\"]", (n++ ? "," : ""), $1, m, st }'
@@ -100,7 +100,7 @@ journal_json() {
 	printf ']'
 }
 
-pairs_json() {  # pairs_json FILE NCOLS_AFTER_TS: строки «ip proto port down up» -> массивы
+pairs_json() {  # pairs_json FILE NCOLS_AFTER_TS: lines "ip proto port down up" -> arrays
 	printf '['
 	[ -r "$1" ] && awk -v skip=1 'NR == 1 { next } NF >= 4 { printf "%s[", (n++ ? "," : ""); for (i = 1; i <= NF; i++) printf "%s\"%s\"", (i > 1 ? "," : ""), $i; printf "]" }' "$1"
 	printf ']'
@@ -116,10 +116,10 @@ series)
 	printf ',"active":'; active_json
 	printf ',"info":'; info_json
 	printf '}\n' ;;
-mode)   # режим сборщика: full (мощный) или lite, и его шаг опроса
+mode)   # collector mode: full or lite, and its polling step
 	printf '{"mode":"%s","step":%s}\n' "$(sed -n 's/^mode=//p' "$DIR/info" 2>/dev/null | head -n 1)" "$(sed -n 's/^step=//p' "$DIR/info" 2>/dev/null | head -n 1 | grep -E '^[0-9]+$' || echo 0)" ;;
 temps)
-	# температуры всех датчиков: {"names":[…],"rows":[[время, °C по датчикам в порядке names (-1 — нет замера)],…]}
+	# temperatures of all sensors: {"names":[…],"rows":[[time, °C per sensor in names order (-1 — no sample)],…]}
 	case "$2" in coarse) f=temps.coarse; lim=2016 ;; *) f=temps.fine; lim=400 ;; esac
 	printf '{"mode":"%s","now":%s,"range":"%s","step":%s,"names":' "$(sed -n 's/^mode=//p' "$DIR/info" 2>/dev/null | head -n 1)" "$now" "${2:-fine}" "$([ "$f" = temps.coarse ] && echo 300 || echo "$(sed -n 's/^step=//p' "$DIR/info" 2>/dev/null | head -n 1)")"
 	if [ -r "$DIR/$f" ]; then
@@ -150,7 +150,7 @@ apps)
 	en=$(sed -n 's/^APPS=\([01]\).*/\1/p' "${NF_CONF:-/etc/nightfall-monitor.conf}" 2>/dev/null | head -n 1)
 	dm=0; [ -r "$DIR/dns.map" ] && dm=$(wc -l < "$DIR/dns.map" | tr -d ' ')
 	printf '{"now":%s,"enabled":%s,"dnsmap":%s,"today":"%s","day":[' "$now" "${en:-0}" "${dm:-0}" "$(cat "$DIR/day.date" 2>/dev/null)"
-	rips=" $(router_ips) "; rnets=$(router_nets)   # трафик самого роутера (VPN, прокси) повторяет трафик устройств, в приложениях его не считаем
+	rips=" $(router_ips) "; rnets=$(router_nets)   # the router's own traffic (VPN, proxy) repeats device traffic, so it is not counted in apps
 	[ -r "$DIR/apps.day" ] && awk -F'|' -v rips="$rips" -v nets="$rnets" "$AWKR"'NF >= 5 && !mine($1) { gsub(/["\\]/, "", $2); gsub(/["\\]/, "", $3); printf "%s[\"%s\",\"%s\",\"%s\",%d,%d]", (n++ ? "," : ""), $1, $2, $3, $4, $5 }' "$DIR/apps.day"
 	printf '],"hist":['
 	[ -r "$DIR/apps.hist" ] && awk -F'|' -v rips="$rips" -v nets="$rnets" "$AWKR"'NF >= 6 && !mine($2) { gsub(/["\\]/, "", $3); gsub(/["\\]/, "", $4); printf "%s[\"%s\",\"%s\",\"%s\",\"%s\",%d,%d]", (n++ ? "," : ""), $1, $2, $3, $4, $5, $6 }' "$DIR/apps.hist"
@@ -169,7 +169,7 @@ speed)
 	printf '}\n' ;;
 wifi)
 	printf '{"now":%s,"rows":' "$now"
-	# сырые точки только за последний час, всё старше усредняется по 5 минутам: ответ остаётся небольшим даже при 8000 записях
+	# raw points only for the last hour, anything older is averaged over 5 minutes: the response stays small even with 8000 entries
 	if [ -r "$DIR/wifi.fine" ]; then
 		awk -v mac="$2" -v lim=$((now - 3600)) '
 			function flush(   k, a) { for (k in sm) { split(k, a, SUBSEP); printf "%s[%d,\"%s\",%d,\"%s\"]", (n++ ? "," : ""), mt[k], a[1], sm[k] / ct[k], dv[k] } delete sm; delete ct; delete mt; delete dv }
@@ -185,7 +185,7 @@ wifi)
 	printf ',"info":'; info_json
 	printf '}\n' ;;
 wifi-check)
-	# самопроверка «Качества Wi-Fi»: те же шаги, что у сборщика, но с подсчётом на каждом этапе
+	# "Wi-Fi quality" self-check: the same steps as the collector, but with counts at each stage
 	run=0
 	if [ -x /etc/init.d/nightfall-collector ] && /etc/init.d/nightfall-collector running >/dev/null 2>&1; then run=1
 	elif ps w 2>/dev/null | grep '[n]ightfall-collector' >/dev/null 2>&1; then run=1; fi
@@ -216,7 +216,7 @@ devhr)
 	[ -r "$DIR/dev.hr" ] && awk -v lim=$((now - 93600)) 'NF >= 4 && $1 >= lim { printf "%s[%s,\"%s\",%d,%d]", (n++ ? "," : ""), $1, $2, $3, $4 }' "$DIR/dev.hr"
 	printf ']}\n' ;;
 airscan)
-	# эфир вокруг роутера: собственные радиоинтерфейсы и соседние сети (для «Загруженности каналов»)
+	# the air around the router: own radio interfaces and neighboring networks (for "Channel utilization")
 	IW=${NF_IWINFO:-iwinfo}
 	if [ -n "$NF_IWDEVS" ]; then devs=$NF_IWDEVS
 	else devs=$(ubus call iwinfo devices 2>/dev/null | awk -F'"' 'NF >= 3 && $2 != "devices" { print $2 }'); fi
@@ -252,10 +252,10 @@ airscan)
 	printf ']}\n' ;;
 traffic)
 	printf '{"now":%s,"persist":%s,"rows":[' "$now" "$([ -n "$(sed -n 's/^PERSIST_DIR=\(.\)/\1/p' /etc/nightfall-monitor.conf 2>/dev/null | head -n 1)" ] && echo 1 || echo 0)"
-	# Итог за сутки берётся по счётчикам порта WAN. При аппаратном ускорении пакетов (MediaTek, Qualcomm и др.) порт не видит
-	# часть трафика, и итог оказывается в десятки раз меньше реального. Поэтому, если сумма по устройствам (без самого роутера,
-	# чей трафик повторяет трафик устройств через VPN или прокси) заметно больше, берём её. Источник суммы по устройствам:
-	# архив суток, затем итоги вчерашнего и сегодняшнего дня, затем почасовые итоги. Четвёртое число строки: 1 — итог по устройствам.
+	# The daily total is taken from the WAN port counters. With hardware packet acceleration (MediaTek, Qualcomm, etc.) the port does not see
+	# part of the traffic, and the total ends up tens of times smaller than the real one. So if the per-device sum (without the router itself,
+	# whose traffic repeats device traffic through VPN or proxy) is noticeably larger, use it. Source of the per-device sum:
+	# the daily archive, then yesterday's and today's totals, then hourly totals. The fourth number in a line: 1 — the per-device total.
 	if [ -r "$DIR/traffic.daily" ]; then
 		dday=$(cat "$DIR/day.date" 2>/dev/null); today=$(date +%Y%m%d); yest=$(date -d "@$((now - 86400))" +%Y%m%d 2>/dev/null)
 		[ "$dday" = "$today" ] || yest=""
@@ -265,7 +265,7 @@ traffic)
 		  [ -r "$DIR/dev.hr" ] && sed 's/^/H /' "$DIR/dev.hr"
 		  sed 's/^/W /' "$DIR/traffic.daily"; } 2>/dev/null |
 		awk -v rips=" $(router_ips) " -v nets="$(router_nets)" -v tzs="$(date +%z 2>/dev/null)" -v dday="$dday" -v yest="$yest" "$AWKR"'
-			function ymd(ts,   z, era, doe, yoe, y, doy, mp, d, m) {   # местная дата по метке времени (часовой пояс как сейчас)
+			function ymd(ts,   z, era, doe, yoe, y, doy, mp, d, m) {   # local date from a timestamp (time zone as of now)
 				z = int((ts + tz) / 86400) + 719468; era = int(z / 146097); doe = z - era * 146097
 				yoe = int((doe - int(doe / 1460) + int(doe / 36524) - int(doe / 146096)) / 365)
 				y = yoe + era * 400; doy = doe - (365 * yoe + int(yoe / 4) - int(yoe / 100))
@@ -289,19 +289,19 @@ traffic)
 			}'
 	fi
 	printf ']}\n' ;;
-devdaily)   # итоги по устройствам за прошлые сутки: [день, ip, принято, отправлено, mac]
+devdaily)   # per-device totals for previous days: [day, ip, received, sent, mac]
 	printf '{"now":%s,"rows":[' "$now"
 	[ -r "$DIR/dev.daily" ] && awk 'NF >= 4 && $1 ~ /^[0-9]{8}$/ { printf "%s[\"%s\",\"%s\",%.0f,%.0f,\"%s\"]", (n++ ? "," : ""), $1, $2, $3, $4, ($5 == "" ? "-" : $5) }' "$DIR/dev.daily"
 	printf ']}\n' ;;
-known)   # когда сборщик впервые увидел устройства: [mac, имя, время]
+known)   # when the collector first saw devices: [mac, name, time]
 	printf '{"now":%s,"rows":[' "$now"
 	[ -r "${NF_KNOWN:-/etc/nightfall-known.list}" ] && awk -F'|' 'NF >= 3 && $1 != "" { gsub(/["\\]/, "", $2); printf "%s[\"%s\",\"%s\",%d]", (n++ ? "," : ""), toupper($1), $2, $3 + 0 }' "${NF_KNOWN:-/etc/nightfall-known.list}"
 	printf ']}\n' ;;
-extip)   # смены адреса WAN: [время, адрес, признак «за NAT провайдера»]
+extip)   # WAN address changes: [time, address, "behind ISP NAT" flag]
 	printf '{"now":%s,"rows":[' "$now"
 	[ -r "$DIR/extip.log" ] && tail -n 30 "$DIR/extip.log" | awk 'NF >= 2 { split($2, a, "."); nat = (a[1] == 10 || (a[1] == 100 && a[2] >= 64 && a[2] <= 127) || (a[1] == 172 && a[2] >= 16 && a[2] <= 31) || (a[1] == 192 && a[2] == 168)) ? 1 : 0; printf "%s[%d,\"%s\",%d]", (n++ ? "," : ""), $1, $2, nat }'
 	printf ']}\n' ;;
-procmem)   # память по программам: [время, [[имя, КБ], ...]] за последние N часов (по умолчанию 24)
+procmem)   # memory per program: [time, [[name, KB], ...]] for the last N hours (24 by default)
 	h=${2:-24}; case "$h" in ''|*[!0-9]*) h=24 ;; esac
 	printf '{"now":%s,"rows":[' "$now"
 	[ -r "$DIR/procmem.log" ] && awk -v lim=$((now - h * 3600)) '$1 >= lim { printf "%s[%d,[", (n++ ? "," : ""), $1; for (i = 2; i <= NF; i++) { j = index($i, ":"); nm = substr($i, 1, j - 1); gsub(/["\\]/, "", nm); printf "%s[\"%s\",%d]", (i > 2 ? "," : ""), nm, substr($i, j + 1) } printf "]]" }' "$DIR/procmem.log"
@@ -313,6 +313,6 @@ alerts)
 	printf ',"info":'; info_json
 	printf '}\n' ;;
 *)
-	echo "usage: nightfall-history series fine|coarse|long | temps fine|coarse | devices | apps | channel | journal | speed | wifi [MAC] | wifi-hr [MAC] | devhr | devdaily | known | extip | procmem [ЧАСОВ] | wifi-check | airscan | traffic | alerts" >&2
+	echo "usage: nightfall-history series fine|coarse|long | temps fine|coarse | devices | apps | channel | journal | speed | wifi [MAC] | wifi-hr [MAC] | devhr | devdaily | known | extip | procmem [HOURS] | wifi-check | airscan | traffic | alerts" >&2
 	exit 1 ;;
 esac

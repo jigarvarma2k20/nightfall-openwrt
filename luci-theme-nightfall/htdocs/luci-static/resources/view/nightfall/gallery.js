@@ -3,18 +3,18 @@
 'require ui';
 
 /*
- * Nightfall: страница со всеми элементами интерфейса (Система → «Nightfall: все элементы»).
- * Нужна, чтобы быстро проверить тему на телефоне и компьютере в светлом и тёмном режиме после любой правки:
- * вкладки, кнопки, формы, таблицы (в том числе список Wi-Fi клиентов), уведомления, окна.
- * Внизу есть имитация опроса LuCI: блок пересоздаётся раз в 5 секунд, как на страницах «Статус» и «Wi-Fi»,
- * и сразу видно, дёргается ли страница.
+ * Nightfall: a page with every UI element (System → "Nightfall: all elements").
+ * Used to quickly check the theme on a phone and a computer in light and dark mode after any change:
+ * tabs, buttons, forms, tables (including the Wi-Fi client list), notifications, dialogs.
+ * At the bottom there is a simulated LuCI poll: the block is recreated every 5 seconds, like on the "Status" and "Wi-Fi" pages,
+ * so you can see right away whether the page jumps.
  */
 
 const nf = new Intl.NumberFormat('ru-RU');
 const CLIENTS = [
-	[ 'Точка доступа "2.4 GHz" (phy0-ap0)', '60:3D:61:C4:8A:A4', 'Yandex-Station3.lan (192.168.1.132, fd61:bde8:2d8d::805)', -71, '72.2 Мбит/с, 20 МГц, MCS 7, Короткий GI' ],
-	[ 'Точка доступа "2.4 GHz" (phy0-ap0)', '3A:09:E7:7F:81:FE', '192.168.1.174', -73, '65 Мбит/с, 20 МГц, MCS 7' ],
-	[ 'Точка доступа "5 GHz" (phy1-ap0)', '24:55:9A:72:CB:07', 'BULAT.lan (192.168.1.113, fe80::c2:a4b2:8ad0:6c64)', -44, '1200.9 Мбит/с, 80 МГц, HE-MCS 11, HE-NSS 2' ]
+	[ 'Access point "2.4 GHz" (phy0-ap0)', '60:3D:61:C4:8A:A4', 'Yandex-Station3.lan (192.168.1.132, fd61:bde8:2d8d::805)', -71, '72.2 Mbit/s, 20 MHz, MCS 7, Short GI' ],
+	[ 'Access point "2.4 GHz" (phy0-ap0)', '3A:09:E7:7F:81:FE', '192.168.1.174', -73, '65 Mbit/s, 20 MHz, MCS 7' ],
+	[ 'Access point "5 GHz" (phy1-ap0)', '24:55:9A:72:CB:07', 'BULAT.lan (192.168.1.113, fe80::c2:a4b2:8ad0:6c64)', -44, '1200.9 Mbit/s, 80 MHz, HE-MCS 11, HE-NSS 2' ]
 ];
 
 function section(title, nodes) {
@@ -36,12 +36,12 @@ function table(cols, rows, cls) {
 }
 
 function clientsTable(jitter) {
-	return table([ 'Сеть', 'MAC-адрес', 'Хост', 'Сигнал / Шум', 'Скорость приёма / Скорость передачи', '' ],
+	return table([ 'Network', 'MAC address', 'Host', 'Signal / Noise', 'RX rate / TX rate', '' ],
 		CLIENTS.map(c => [
 			E('span', { 'class': 'ifacebadge' }, c[0]), c[1], c[2],
-			E('span', { 'class': 'ifacebadge' }, (c[3] + (jitter ? Math.round(Math.random() * 6 - 3) : 0)) + ' / -92 дБм'),
+			E('span', { 'class': 'ifacebadge' }, (c[3] + (jitter ? Math.round(Math.random() * 6 - 3) : 0)) + ' / -92 dBm'),
 			c[4],
-			E('button', { 'class': 'cbi-button cbi-button-remove' }, 'Отключить')
+			E('button', { 'class': 'cbi-button cbi-button-remove' }, 'Disconnect')
 		]), 'assoclist');
 }
 
@@ -52,24 +52,24 @@ return view.extend({
 
 		const simTick = () => {
 			simTicks++;
-			simInfo.textContent = 'Обновлений: ' + simTicks + '. Если страница дёргается, значит, что-то перерисовывается заметно.';
-			/* как у LuCI: каждый раз новые узлы, включая класс fade-in и заголовки таблицы */
-			simBox.replaceChildren(E('div', { 'class': 'cbi-section fade-in' }, [ E('h3', {}, 'Подключённые клиенты (имитация опроса)'), clientsTable(true) ]));
+			simInfo.textContent = 'Updates: ' + simTicks + '. If the page jumps, something is visibly being redrawn.';
+			/* like LuCI: new nodes every time, including the fade-in class and table headers */
+			simBox.replaceChildren(E('div', { 'class': 'cbi-section fade-in' }, [ E('h3', {}, 'Connected clients (simulated poll)'), clientsTable(true) ]));
 		};
 		const simToggle = on => {
 			window.clearInterval(simTimer); simTimer = null;
 			if (on) { simTick(); simTimer = window.setInterval(simTick, 5000); }
-			else { simBox.replaceChildren(); simInfo.textContent = 'Выключено.'; }
+			else { simBox.replaceChildren(); simInfo.textContent = 'Off.'; }
 		};
 		const simCb = E('input', { type: 'checkbox', change: ev => simToggle(ev.target.checked) });
 
 		const tabs = E('ul', { 'class': 'cbi-tabmenu' }, [
-			E('li', { 'class': 'cbi-tab' }, E('a', { href: '#' }, 'Активная')),
-			E('li', { 'class': 'cbi-tab-disabled' }, E('a', { href: '#' }, 'Вторая')),
-			E('li', { 'class': 'cbi-tab-disabled' }, E('a', { href: '#' }, 'Блокировка рекламы')),
+			E('li', { 'class': 'cbi-tab' }, E('a', { href: '#' }, 'Active')),
+			E('li', { 'class': 'cbi-tab-disabled' }, E('a', { href: '#' }, 'Second')),
+			E('li', { 'class': 'cbi-tab-disabled' }, E('a', { href: '#' }, 'Ad blocking')),
 			E('li', { 'class': 'cbi-tab-disabled' }, E('a', { href: '#' }, 'DNS over HTTPS')),
-			E('li', { 'class': 'cbi-tab-disabled' }, E('a', { href: '#' }, 'Удалённый доступ')),
-			E('li', { 'class': 'cbi-tab-disabled' }, E('a', { href: '#' }, 'Монитор ресурсов'))
+			E('li', { 'class': 'cbi-tab-disabled' }, E('a', { href: '#' }, 'Remote access')),
+			E('li', { 'class': 'cbi-tab-disabled' }, E('a', { href: '#' }, 'Resource Monitor'))
 		]);
 		tabs.addEventListener('click', ev => {
 			const li = ev.target.closest && ev.target.closest('li');
@@ -78,59 +78,59 @@ return view.extend({
 			tabs.querySelectorAll('li').forEach(x => { x.className = x === li ? 'cbi-tab' : 'cbi-tab-disabled'; });
 		});
 
-		const dd = new ui.Dropdown('b', { a: 'Первый вариант', b: 'Второй вариант', c: 'Третий вариант, подлиннее' }, {});
-		const sel = new ui.Select('b', { a: 'Автоматически', b: '2.4 ГГц', c: '5 ГГц' }, {});
+		const dd = new ui.Dropdown('b', { a: 'First option', b: 'Second option', c: 'Third option, a bit longer' }, {});
+		const sel = new ui.Select('b', { a: 'Automatic', b: '2.4 GHz', c: '5 GHz' }, {});
 
 		return E('div', {}, [
-			E('h2', { name: 'content' }, 'Nightfall: все элементы интерфейса'),
-			E('div', { 'class': 'cbi-map-descr' }, 'Откройте эту страницу на телефоне и на компьютере, в светлой и тёмной теме, и прокрутите до конца. Всё должно быть читаемо, без обрезанных и налезающих элементов.'),
+			E('h2', { name: 'content' }, 'Nightfall: all UI elements'),
+			E('div', { 'class': 'cbi-map-descr' }, 'Open this page on a phone and on a computer, in light and dark theme, and scroll to the end. Everything should be readable, with no clipped or overlapping elements.'),
 
-			section('Вкладки', [ tabs, E('p', {}, 'Нажмите на вкладку: активная подсвечивается акцентным цветом.') ]),
+			section('Tabs', [ tabs, E('p', {}, 'Click a tab: the active one is highlighted with the accent color.') ]),
 
-			section('Уведомления', [
-				E('div', { 'class': 'alert-message info' }, [ E('h4', {}, 'Информация'), E('p', {}, 'Обычное сообщение для пользователя.') ]),
-				E('div', { 'class': 'alert-message warning' }, [ E('h4', {}, 'Предупреждение'), E('p', {}, 'Что-то требует внимания, но не критично.') ]),
-				E('div', { 'class': 'alert-message danger' }, [ E('h4', {}, 'Ошибка'), E('p', {}, 'Действие не удалось выполнить.') ]),
+			section('Notifications', [
+				E('div', { 'class': 'alert-message info' }, [ E('h4', {}, 'Information'), E('p', {}, 'A regular message for the user.') ]),
+				E('div', { 'class': 'alert-message warning' }, [ E('h4', {}, 'Warning'), E('p', {}, 'Something needs attention, but it is not critical.') ]),
+				E('div', { 'class': 'alert-message danger' }, [ E('h4', {}, 'Error'), E('p', {}, 'The action could not be completed.') ]),
 				E('div', {}, [
-					E('button', { 'class': 'cbi-button', click: () => ui.addNotification(null, E('p', {}, 'Тестовое уведомление'), 'info') }, 'Показать уведомление'),
+					E('button', { 'class': 'cbi-button', click: () => ui.addNotification(null, E('p', {}, 'Test notification'), 'info') }, 'Show notification'),
 					' ',
-					E('button', { 'class': 'cbi-button', click: () => ui.showModal('Тестовое окно', [ E('p', {}, 'Так выглядят модальные окна.'), E('div', { 'class': 'right' }, E('button', { 'class': 'btn', click: ui.hideModal }, 'Закрыть')) ]) }, 'Показать окно')
+					E('button', { 'class': 'cbi-button', click: () => ui.showModal('Test dialog', [ E('p', {}, 'This is what modal dialogs look like.'), E('div', { 'class': 'right' }, E('button', { 'class': 'btn', click: ui.hideModal }, 'Close')) ]) }, 'Show dialog')
 				])
 			]),
 
-			section('Кнопки', [
+			section('Buttons', [
 				E('div', {}, [
-					E('button', { 'class': 'cbi-button' }, 'Обычная'), ' ',
-					E('button', { 'class': 'cbi-button cbi-button-action important' }, 'Главная'), ' ',
-					E('button', { 'class': 'cbi-button cbi-button-positive' }, 'Сохранить'), ' ',
-					E('button', { 'class': 'cbi-button cbi-button-negative' }, 'Удалить'), ' ',
-					E('button', { 'class': 'cbi-button', disabled: true }, 'Недоступна')
+					E('button', { 'class': 'cbi-button' }, 'Default'), ' ',
+					E('button', { 'class': 'cbi-button cbi-button-action important' }, 'Primary'), ' ',
+					E('button', { 'class': 'cbi-button cbi-button-positive' }, 'Save'), ' ',
+					E('button', { 'class': 'cbi-button cbi-button-negative' }, 'Delete'), ' ',
+					E('button', { 'class': 'cbi-button', disabled: true }, 'Disabled')
 				])
 			]),
 
-			section('Форма', [
-				row('Текстовое поле', new ui.Textfield('значение', { placeholder: 'Введите текст' }).render(), 'Подпись под полем.'),
-				row('Пароль', new ui.Textfield('secret', { password: true }).render()),
-				row('Список (select)', sel.render()),
-				row('Выпадающий список', dd.render()),
-				row('Переключатель', new ui.Checkbox(true, { value_enabled: '1', value_disabled: '0' }).render()),
-				row('Выбор одного', E('label', {}, [ E('input', { type: 'radio', name: 'g', checked: true }), ' Один  ', E('input', { type: 'radio', name: 'g' }), ' Два' ])),
-				row('Многострочное поле', new ui.Textarea('строка 1\nстрока 2', { rows: 3 }).render()),
-				row('Полоса', E('div', { 'class': 'cbi-progressbar', title: '42%' }, E('div', { style: 'width:42%' })))
+			section('Form', [
+				row('Text field', new ui.Textfield('value', { placeholder: 'Enter text' }).render(), 'Caption under the field.'),
+				row('Password', new ui.Textfield('secret', { password: true }).render()),
+				row('List (select)', sel.render()),
+				row('Dropdown', dd.render()),
+				row('Toggle', new ui.Checkbox(true, { value_enabled: '1', value_disabled: '0' }).render()),
+				row('Single choice', E('label', {}, [ E('input', { type: 'radio', name: 'g', checked: true }), ' One  ', E('input', { type: 'radio', name: 'g' }), ' Two' ])),
+				row('Multiline field', new ui.Textarea('line 1\nline 2', { rows: 3 }).render()),
+				row('Progress bar', E('div', { 'class': 'cbi-progressbar', title: '42%' }, E('div', { style: 'width:42%' })))
 			]),
 
-			section('Таблица', [
-				table([ 'Имя', 'Адрес', 'Состояние' ], [
-					[ 'lan', '192.168.1.1/24', 'работает' ],
-					[ 'wan', 'очень-длинное-имя-устройства-без-пробелов.example.org', 'нет связи' ],
-					[ 'wg0', 'fd61:bde8:2d8d:0:2d8:4d03:f7b:da35', 'работает' ]
+			section('Table', [
+				table([ 'Name', 'Address', 'Status' ], [
+					[ 'lan', '192.168.1.1/24', 'up' ],
+					[ 'wan', 'very-long-device-name-without-spaces.example.org', 'no link' ],
+					[ 'wg0', 'fd61:bde8:2d8d:0:2d8:4d03:f7b:da35', 'up' ]
 				])
 			]),
 
-			section('Подключённые клиенты (как на странице Wi-Fi)', [ clientsTable(false) ]),
+			section('Connected clients (as on the Wi-Fi page)', [ clientsTable(false) ]),
 
-			section('Имитация опроса (проверка дёргания)', [
-				row('Обновлять каждые 5 секунд', simCb, 'Включите и наблюдайте 20–30 секунд: страница не должна мигать и подпрыгивать.'),
+			section('Simulated poll (jitter check)', [
+				row('Refresh every 5 seconds', simCb, 'Turn it on and watch for 20–30 seconds: the page should not flicker or jump.'),
 				simInfo, simBox
 			])
 		]);

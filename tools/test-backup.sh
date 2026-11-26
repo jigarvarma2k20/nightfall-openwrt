@@ -82,7 +82,7 @@ echo "Base64 fallback recovery tests: ok"
 if "$TOOL" download "$NAME" "$SIZE" 100 > "$TMP/empty-chunk.out" 2>&1; then
   echo "download unexpectedly returned an empty block at EOF" >&2; exit 1
 fi
-grep -q 'запрошен пустой блок' "$TMP/empty-chunk.out"
+grep -q 'requested an empty chunk' "$TMP/empty-chunk.out"
 
 
 echo "== don't overwrite an existing archive =="
@@ -102,7 +102,7 @@ while [ "$offset" -lt "$SIZE" ]; do
   offset=$((offset + bytes)); index=$((index + 1))
 done
 "$TOOL" upload-finish 0123abcd > "$TMP/upload-preview"
-grep -q 'Архив загружен:' "$TMP/upload-preview"
+grep -q 'Archive uploaded:' "$TMP/upload-preview"
 UPLOADED="$TMP/backups/nightfall-backup-upload-0123abcd.tar.gz"
 cmp "$ARCHIVE" "$UPLOADED"
 tar -xOzf "$ARCHIVE" etc/nightfall-monitor.conf | grep -q '^TG_TOKEN=$'
@@ -114,7 +114,7 @@ echo "== preview and restore =="
 echo '{"theme":"changed"}' > "$ROOT/etc/nightfall-prefs.json"
 sed -i 's/^TG_TOKEN=.*/TG_TOKEN=current-secret-token/' "$ROOT/etc/nightfall-monitor.conf"
 "$TOOL" restore "$ARCHIVE" > "$TMP/preview"
-grep -q 'Предварительный просмотр' "$TMP/preview"
+grep -q 'Preview complete' "$TMP/preview"
 grep -q 'changed' "$ROOT/etc/nightfall-prefs.json"
 "$TOOL" restore "$ARCHIVE" apply > "$TMP/restore"
 grep -q 'night' "$ROOT/etc/nightfall-prefs.json"
@@ -140,7 +140,7 @@ if PATH="$TMP/failbin:$PATH" FAIL_TARGET="$ROOT2/etc/nightfall-prefs.json" FAIL_
   echo "restore unexpectedly succeeded despite injected mv failure" >&2
   exit 1
 fi
-grep -q 'исходные настройки возвращены' "$TMP/rollback.out"
+grep -q 'the original settings were restored' "$TMP/rollback.out"
 grep -q '^TG_TOKEN=rollback-token$' "$ROOT2/etc/nightfall-monitor.conf"
 grep -q '"theme":"keep"' "$ROOT2/etc/nightfall-prefs.json"
 grep -q '"logo":"keep"' "$ROOT2/etc/nightfall-logo.json"
@@ -153,7 +153,7 @@ printf '/dev/root / ext4 rw 0 0\n/dev/sda1 %s exfat rw 0 0\n' "$TMP/usb" > "$TMP
 AUTO_OUT="$TMP/usb/nightfall-backups"
 if ! NF_ROOT="$ROOT" NF_TMP="$TMP" NF_BACKUP_DIR= NF_MOUNTS="$TMP/mounts" "$TOOL" create > "$TMP/auto1" 2>&1; then cat "$TMP/auto1"; exit 1; fi
 cat "$TMP/auto1"
-grep -q 'Хранилище: USB/SD' "$TMP/auto1"
+grep -q 'Storage: USB/SD' "$TMP/auto1"
 NF_ROOT="$ROOT" NF_TMP="$TMP" NF_BACKUP_DIR= NF_MOUNTS="$TMP/mounts" "$TOOL" create > "$TMP/auto2"
 NF_ROOT="$ROOT" NF_TMP="$TMP" NF_BACKUP_DIR= NF_MOUNTS="$TMP/mounts" "$TOOL" create > "$TMP/auto3"
 [ "$(find "$AUTO_OUT" -maxdepth 1 -type f -name 'nightfall-backup-*.tar.gz' | wc -l | tr -d ' ')" -eq 2 ]
@@ -162,7 +162,7 @@ echo "USB backup target and keep-last-2 rotation: ok"
 echo "== safe temporary fallback when USB is absent =="
 printf '/dev/root / ext4 rw 0 0\n' > "$TMP/mounts"
 NF_ROOT="$ROOT" NF_TMP="$TMP" NF_BACKUP_DIR= NF_MOUNTS="$TMP/mounts" "$TOOL" create > "$TMP/fallback"
-grep -q 'Хранилище: временное' "$TMP/fallback"
+grep -q 'Storage: temporary' "$TMP/fallback"
 [ -d "$TMP/nightfall-backups" ]
 echo "missing USB fallback: ok"
 

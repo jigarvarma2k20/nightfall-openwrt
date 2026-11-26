@@ -1,11 +1,11 @@
 #!/bin/sh
-# Nightfall: гостевая сеть Wi-Fi по таймеру. Включает выбранную беспроводную сеть на заданное время и сама выключает её.
-#   nightfall-guest status        — JSON: включённые по таймеру сети и когда они выключатся
-#   nightfall-guest cands         — список сетей для управления («ID|SSID|включена 1/0|выключится в»), для бота
-#   nightfall-guest on ID МИН     — включить сеть ID (раздел wifi-iface из /etc/config/wireless) на МИН минут (1…1440)
-#   nightfall-guest off ID        — выключить сейчас
-#   nightfall-guest tick          — выключить те, у кого время вышло (вызывает сборщик, переживает перезагрузку)
-# Время выключения хранится в /etc/nightfall-guest.list («ID|время выключения, секунды Unix»).
+# Nightfall: guest Wi-Fi network on a timer. Turns the chosen wireless network on for a set time and turns it off by itself.
+#   nightfall-guest status        — JSON: networks turned on by timer and when they turn off
+#   nightfall-guest cands         — list of manageable networks ("ID|SSID|enabled 1/0|turns off at"), for the bot
+#   nightfall-guest on ID MIN     — turn on network ID (a wifi-iface section from /etc/config/wireless) for MIN minutes (1…1440)
+#   nightfall-guest off ID        — turn off now
+#   nightfall-guest tick          — turn off the ones whose time is up (called by the collector, survives a reboot)
+# The turn-off time is stored in /etc/nightfall-guest.list ("ID|turn-off time, Unix seconds").
 LIST=${NF_GUESTF:-/etc/nightfall-guest.list}
 UCI=${NF_UCI:-uci}
 WIFI=${NF_WIFI:-wifi}
@@ -22,18 +22,18 @@ status)
 	[ -r "$LIST" ] && awk -F'|' 'NF >= 2 { printf "%s[\"%s\",%s]", (n++ ? "," : ""), $1, $2 }' "$LIST"
 	printf ']}\n' ;;
 on)
-	valid "$2" || fail "сеть не найдена"
-	m=$3; case "$m" in ''|*[!0-9]*) fail "неверное время" ;; esac
-	[ "$m" -ge 1 ] && [ "$m" -le 1440 ] || fail "время от 1 до 1440 минут"
-	$UCI set "wireless.$2.disabled=0" && $UCI commit wireless || fail "не удалось сохранить настройки"
+	valid "$2" || fail "network not found"
+	m=$3; case "$m" in ''|*[!0-9]*) fail "invalid time" ;; esac
+	[ "$m" -ge 1 ] && [ "$m" -le 1440 ] || fail "time must be 1 to 1440 minutes"
+	$UCI set "wireless.$2.disabled=0" && $UCI commit wireless || fail "failed to save the settings"
 	drop "$2"; printf '%s|%s\n' "$2" $((now + m * 60)) >> "$LIST"
 	reload; printf '{"ok":true,"until":%s}\n' $((now + m * 60)) ;;
 off)
-	valid "$2" || fail "сеть не найдена"
-	$UCI set "wireless.$2.disabled=1" && $UCI commit wireless || fail "не удалось сохранить настройки"
+	valid "$2" || fail "network not found"
+	$UCI set "wireless.$2.disabled=1" && $UCI commit wireless || fail "failed to save the settings"
 	drop "$2"; reload; printf '{"ok":true}\n' ;;
 cands)
-	# сети, которыми можно управлять по таймеру (те же, что в окне QR-кодов): «ID|SSID|включена 1/0|выключится в»
+	# networks that can be managed by timer (the same as in the QR code window): "ID|SSID|enabled 1/0|turns off at"; the regex also matches Russian SSIDs
 	$UCI -q show wireless 2>/dev/null | awk -v list="$LIST" '
 		BEGIN { while ((getline ln < list) > 0) { split(ln, a, "|"); if (a[1] != "") u[a[1]] = a[2] } }
 		{
@@ -65,5 +65,5 @@ tick)
 	done < "$LIST"
 	[ "$ch" = 1 ] && { $UCI commit wireless; reload; } ;;
 *)
-	echo "usage: nightfall-guest status|cands|on ID МИН|off ID|tick" >&2; exit 1 ;;
+	echo "usage: nightfall-guest status|cands|on ID MIN|off ID|tick" >&2; exit 1 ;;
 esac

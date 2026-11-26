@@ -1,184 +1,184 @@
-## v1.29.0 · Центр журнала роутера и интеллектуальная диагностика
-- [Добавлено] **Центр журнала роутера**: распознавание уровней syslog и встроенных маркеров сообщений (err, warn, notice, info, debug) с визуальным разделением ошибок, предупреждений и уведомлений.
-- [Добавлено] **Фильтры и инструменты журнала**: быстрые фильтры по уровню, поиск по службе и тексту, ручное обновление, автообновление, копирование записей и экспорт CSV.
-- [Добавлено] **Подробности событий**: раскрытие полной записи с приоритетом syslog, службой и исходным текстом сообщения.
-- [Добавлено] **Группировка повторов**: объединение одинаковых событий с числом повторов, временем каждого появления и границами первого/последнего события; группировку можно отключить.
-- [Исправлено] **Раскрытые группы**: открытое событие сохраняет состояние при периодическом обновлении журнала; позиция прокрутки не сбрасывается.
-- [Добавлено] **Интеллектуальная диагностика**: шаблонные подсказки по WAN/интернету, DNS, Wi-Fi, VPN/прокси, перезапускам служб и попыткам входа; выбор категории фильтрует соответствующие записи.
-- [Исправлено] **Классификация cron**: штатные строки crond о запуске задания (USER ... cmd ...) отображаются как NOTICE, а не как ошибка выполнения команды.
-- [Важно] Диагностика анализирует уже имеющийся logread и выдаёт подсказки по шаблонам, а не окончательный диагноз. Новые фоновые службы, постоянная запись журнала на flash и автоматические изменения сети, firewall или VPN не добавляются.
-- [Тесты] Добавлены проверки уровней syslog, диагностики WAN/DNS, группировки повторов, сохранения раскрытого состояния и адаптивного отображения журнала.
+## v1.29.0 · Router log center and smart diagnostics
+- [Added] **Router log center**: recognizes syslog levels and inline message markers (err, warn, notice, info, debug) and visually separates errors, warnings and notices.
+- [Added] **Log filters and tools**: quick level filters, search by service and text, manual refresh, auto-refresh, copying entries and CSV export.
+- [Added] **Event details**: expand the full entry with the syslog priority, service and original message text.
+- [Added] **Grouping repeats**: identical events are merged with a repeat count, the time of each occurrence and the first/last event bounds; grouping can be turned off.
+- [Fixed] **Expanded groups**: an open event keeps its state when the log refreshes periodically; the scroll position is not reset.
+- [Added] **Smart diagnostics**: pattern-based hints for WAN/internet, DNS, Wi-Fi, VPN/proxy, service restarts and login attempts; selecting a category filters the matching entries.
+- [Fixed] **cron classification**: normal crond job-start lines (USER ... cmd ...) are shown as NOTICE, not as a command execution error.
+- [Important] Diagnostics analyzes the existing logread output and gives pattern-based hints, not a final diagnosis. No new background services, no persistent log writes to flash and no automatic network, firewall or VPN changes are added.
+- [Tests] Added checks for syslog levels, WAN/DNS diagnostics, repeat grouping, preserving the expanded state and responsive log display.
 
-## v1.28.11 · Исправления интерфейса LuCI и резервных копий
-- [Исправлено] **Навигация LuCI**: при открытии другого раздела корректно закрывается предыдущее верхнее меню и обновляется `aria-expanded`.
-- [Исправлено] **Кнопка «Сохранить»**: улучшена видимость в macOS-оформлении для светлой и тёмной тем.
-- [Исправлено] **DHCP-таблицы**: стабилизирована ширина пустых таблиц DHCPv4/DHCPv6 при первом раскрытии карточки.
-- [Исправлено] **Подсказки портов**: устранено обрезание подсказок границами карточек сетевых интерфейсов.
-- [Исправлено] **Валидация форм**: повышена заметность полей с ошибками.
-- [Исправлено] **Резервные копии**: добавлен POSIX fallback на `od` и `awk`, если Base64-кодировщик отсутствует, завершается с ошибкой или выдаёт неполный блок; права файлов резервных копий не меняются.
-- [Тесты] Добавлены регрессионные проверки fallback-кодирования резервных копий.
+## v1.28.11 · LuCI interface and backup fixes
+- [Fixed] **LuCI navigation**: opening another section now correctly closes the previous top menu and updates `aria-expanded`.
+- [Fixed] **"Save" button**: improved visibility in the macOS style for the light and dark themes.
+- [Fixed] **DHCP tables**: stabilized the width of empty DHCPv4/DHCPv6 tables when the card is first expanded.
+- [Fixed] **Port tooltips**: tooltips are no longer clipped by the network interface card borders.
+- [Fixed] **Form validation**: fields with errors are more noticeable.
+- [Fixed] **Backups**: added a POSIX fallback to `od` and `awk` when the Base64 encoder is missing, fails or outputs an incomplete block; backup file permissions are not changed.
+- [Tests] Added regression checks for backup fallback encoding.
 
-## v1.28.10 · Исправление фильтра мостовых MAC
-- [Исправлено] **Список устройств**: несколько MAC ретранслятора теперь корректно передаются фильтру как список; мостовые станции с DHCP-подтверждением не показываются как отдельные устройства для блокировки.
+## v1.28.10 · Bridge MAC filter fix
+- [Fixed] **Device list**: multiple repeater MACs are now correctly passed to the filter as a list; bridge stations confirmed by DHCP are not shown as separate devices for blocking.
 
-## v1.28.9 · Точность отображения клиентов за ретранслятором
-- [Исправлено] **Список устройств**: MAC Wi-Fi моста больше не отображается как отдельное клиентское устройство с кнопкой отключения, если DHCP и таблица соседей подтверждают, что это промежуточный узел.
-- [Исправлено] **Wi-Fi клиенты**: для мостовых станций не подставляются IP конечных устройств из подсказок DHCP.
-- [Исправлено] **Качество Wi-Fi и тепловая карта**: история сигнала промежуточного моста исключена из оценок конечных клиентов; мост не учитывается как отдельный домочадец или источник рекомендации о слабом сигнале.
+## v1.28.9 · Accurate display of clients behind a repeater
+- [Fixed] **Device list**: the Wi-Fi bridge MAC is no longer shown as a separate client device with a block button when DHCP and the neighbor table confirm it is an intermediate node.
+- [Fixed] **Wi-Fi clients**: end-device IPs from DHCP hints are no longer assigned to bridge stations.
+- [Fixed] **Wi-Fi quality and heat map**: the intermediate bridge's signal history is excluded from end-client scores; the bridge is not counted as a separate household member or as a source of weak-signal recommendations.
 
-## v1.28.8 · Исправление списка устройств за ретранслятором
-- [Исправлено] **Доступ в интернет**: если `ip neigh` показывает MAC ретранслятора, список использует MAC конечного устройства из DHCP-аренды.
-- [Исправлено] **Дубликаты устройств**: общий MAC следующего узла больше не выдаётся за MAC нескольких клиентов, если DHCP не позволяет определить их отдельно.
+## v1.28.8 · Fix for the device list behind a repeater
+- [Fixed] **Internet access**: if `ip neigh` shows the repeater MAC, the list uses the end device's MAC from the DHCP lease.
+- [Fixed] **Duplicate devices**: a shared next-hop MAC is no longer presented as the MAC of several clients when DHCP can't tell them apart.
 
-## v1.28.7 · Идентификация устройств и исправления монитора
-- [Исправлено] **Устройства за ретранслятором**: DHCP-аренды используются как достоверное соответствие IP и MAC; клиенты за мостом не объединяются в радио MAC ретранслятора.
-- [Исправлено] **История трафика**: большие суточные счётчики сериализуются без усечения.
-- [Улучшено] **Настройки монитора**: устранены артефакты заголовков секций, переполнение длинных полей и лишняя рамка карточки при фокусе.
+## v1.28.7 · Device identification and monitor fixes
+- [Fixed] **Devices behind a repeater**: DHCP leases are used as the reliable IP-to-MAC mapping; clients behind a bridge are not merged into the repeater's radio MAC.
+- [Fixed] **Traffic history**: large daily counters are serialized without truncation.
+- [Improved] **Monitor settings**: fixed section header artifacts, overflow of long fields and an extra card border on focus.
 
-## v1.28.6 · Стабильный выпуск: точность трафика, история и резервные копии
-- [Исправлено] **Трафик устройств**: нормализация IPv4/IPv6, сопоставление истории по MAC с IP-fallback только для старых записей без MAC, агрегация всех адресов устройства.
-- [Исправлено] **Трафик приложений**: защита от некорректных значений, учёт нескольких адресов устройства и сохранение разделения VPN / напрямую / неизвестный маршрут.
-- [Исправлено] **Числовые значения**: форматтеры отклоняют `NaN`, бесконечности и отрицательные объёмы вместо вывода некорректных единиц.
-- [Исправлено] **Постоянная история**: безопасное восстановление после отключения и повторного подключения накопителя; запись во внутренний `/overlay` доступна только при явном разрешении и наличии резерва свободного места.
-- [Исправлено] **Резервные копии**: передача блоков проверяет чтение, размер и Base64; ошибки промежуточных команд больше не маскируются успешным конвейером.
-- [Исправлено] **Telegram-виджет**: исключены параллельные запросы при инициализации и первом взаимодействии.
-- [Тесты] Расширены регрессионные проверки трафика, USB/overlay-хранения, резервного копирования и браузерной компоновки истории.
-- [Проверка] Полный GitHub Actions CI и сборка релизного установочного архива прошли успешно.
-- [Проверка] На Cudy WR3000U-256MB с OpenWrt 25.12.6 проверены collector, Telegram-бот и уведомления, статистика устройств и приложений, USB-история, создание и восстановление резервной копии.
-- [Примечание] Аппаратные результаты относятся только к указанной конфигурации; совместимость с другими моделями подтверждается отдельными тестами сообщества.
+## v1.28.6 · Stable release: traffic accuracy, history and backups
+- [Fixed] **Device traffic**: IPv4/IPv6 normalization, history matching by MAC with an IP fallback only for old entries without a MAC, aggregation of all device addresses.
+- [Fixed] **App traffic**: protection against invalid values, accounting for multiple device addresses and keeping the VPN / direct / unknown route split.
+- [Fixed] **Numeric values**: formatters reject `NaN`, infinities and negative volumes instead of printing invalid units.
+- [Fixed] **Persistent history**: safe recovery after the drive is disconnected and reconnected; writing to the internal `/overlay` is allowed only with explicit permission and a free-space reserve.
+- [Fixed] **Backups**: block transfer checks the read, the size and the Base64; errors in intermediate commands are no longer masked by a successful pipeline.
+- [Fixed] **Telegram widget**: no more parallel requests during initialization and the first interaction.
+- [Tests] Extended regression checks for traffic, USB/overlay storage, backups and the browser layout of the history.
+- [Checks] Full GitHub Actions CI and the build of the release install archive passed.
+- [Checks] Tested on a Cudy WR3000U-256MB with OpenWrt 25.12.6: collector, Telegram bot and notifications, device and app statistics, USB history, creating and restoring a backup.
+- [Note] Hardware results apply only to the stated configuration; compatibility with other models is confirmed by separate community tests.
 
-## v1.28.5 · Исправление компоновки настроек
-- [Исправлено] **Карточки настроек предупреждений**: секции оформлены как сворачиваемые карточки с отдельными заголовками и индикаторами раскрытия.
-- [Исправлено] **Настройки Telegram**: карточки уведомлений, управления ботом и подключения больше не растягиваются по высоте соседних колонок; устранены большие пустые области.
-- [Адаптивность] Сетка настроек перестраивается в две колонки на планшетах и в одну колонку на узких экранах.
-- [Совместимость] Изменения ограничены интерфейсом `monitor.js`; конфигурация, UCI-параметры, backend, Telegram и сетевые настройки не меняются.
+## v1.28.5 · Settings layout fix
+- [Fixed] **Alert settings cards**: sections are now collapsible cards with their own headers and expand indicators.
+- [Fixed] **Telegram settings**: the notification, bot control and connection cards no longer stretch to the height of neighboring columns; large empty areas are gone.
+- [Responsive] The settings grid switches to two columns on tablets and one column on narrow screens.
+- [Compatibility] Changes are limited to the `monitor.js` interface; configuration, UCI options, backend, Telegram and network settings are unchanged.
 
-## v1.28.3 · Переработка настроек во вкладке «История»
-- [Улучшено] **Компоновка настроек**: основные параметры распределены по двум колонкам с высотой карточек по содержимому.
-- [Улучшено] **Настройки Telegram**: выделены отдельные подразделы уведомлений, управления ботом и подключения.
-- [Улучшено] **Переключатели**: параметры 0/1 отображаются как понятные переключатели, при сохранении сохраняется прежний формат конфигурации.
-- [Улучшено] **Действия и справка**: кнопки собраны в общую панель, технические пояснения свёрнуты.
-- [Адаптивность] На узких экранах блоки перестраиваются в одну колонку.
-- [Совместимость] Существующие UCI-параметры, backend, обработчики Telegram, диагностика и резервное копирование сохранены.
+## v1.28.3 · Reworked settings in the History tab
+- [Improved] **Settings layout**: main options are arranged in two columns, with card heights fitting their content.
+- [Improved] **Telegram settings**: separate subsections for notifications, bot control and connection.
+- [Improved] **Switches**: 0/1 options are shown as clear toggle switches; saving keeps the existing configuration format.
+- [Improved] **Actions and help**: buttons are gathered in a shared panel, technical notes are collapsed.
+- [Responsive] On narrow screens the blocks switch to a single column.
+- [Compatibility] Existing UCI options, backend, Telegram handlers, diagnostics and backups are preserved.
 
-## v1.28.2 · Исправление вкладки «Журнал»
-- [Исправлено] **Надпись `undefined`**: удалён лишний пустой элемент в разметке вкладки «Журнал» монитора ресурсов.
-- [Тесты] Полный CI успешно пройден на PR #159 и повторно на `main`.
+## v1.28.2 · Log tab fix
+- [Fixed] **`undefined` label**: removed an extra empty element in the markup of the Resource Monitor Log tab.
+- [Tests] Full CI passed on PR #159 and again on `main`.
 
-## v1.28.1 · Адаптивность и компоновка вкладки «Трафик»
-- [Исправлено] **Расположение диаграммы и легенды**: на настольных экранах они выровнены по верхнему краю; на мобильных экранах сохраняется вертикальная компоновка.
-- [Улучшено] **Адаптивная карточка распределения**: диаграмма и легенда корректно располагаются на широких и узких экранах, без смещения легенды из-за вертикального центрирования.
-- [Улучшено] **Категории трафика**: длинный список сворачивается в «Прочие» с корректным суммированием исходных категорий.
-- [Тесты] Проверки компоновки desktop/mobile используют геометрию элементов, а не только их вертикальные координаты; добавлены проверки расположения легенды справа и под диаграммой.
+## v1.28.1 · Responsive layout of the Traffic tab
+- [Fixed] **Chart and legend position**: on desktop screens they are aligned to the top; on mobile screens the vertical layout is kept.
+- [Improved] **Responsive distribution card**: the chart and legend are laid out correctly on wide and narrow screens, without the legend shifting due to vertical centering.
+- [Improved] **Traffic categories**: a long list collapses into "Other" with the source categories summed correctly.
+- [Tests] Desktop/mobile layout checks now use element geometry, not just vertical coordinates; added checks for the legend placed to the right of and below the chart.
 
-## v1.28.0 · Трафик приложений в мониторе ресурсов
-- [Добавлено] **Отдельная вкладка «Трафик»** в мониторе ресурсов: статистика по категориям, приложениям и доменам без изменения существующих вкладок.
-- [Добавлено] **Фильтры периода и устройства**: сегодня, 7 или 30 дней; сводка общего трафика и распределение VPN / напрямую / неизвестный маршрут.
-- [Улучшено] **Консервативная классификация**: социальные сети, мессенджеры, видео, магазины, игры, банки, облака, системные службы, реклама, CDN, DNS и сертификаты. Неоднозначные IP и домены остаются нераспознанными.
-- [Совместимость] Вкладка использует существующий сборщик и endpoint истории приложений; новые службы, DNS-настройки, маршруты, VPN и firewall не добавляются и не меняются.
-- [Улучшено] **Единое оформление**: карточки, цвета и элементы управления наследуют активную тему и настройки персонализации Nightfall.
-- [Тесты] Добавлены проверки подсчёта, фильтра устройств, маршрутов, классификации доменов и Playwright smoke для настольного и мобильного экранов.
+## v1.28.0 · App traffic in the Resource Monitor
+- [Added] **A separate Traffic tab** in the Resource Monitor: statistics by category, app and domain, without changing the existing tabs.
+- [Added] **Period and device filters**: today, 7 or 30 days; a total traffic summary and the VPN / direct / unknown route split.
+- [Improved] **Conservative classification**: social networks, messengers, video, shops, games, banks, clouds, system services, ads, CDN, DNS and certificates. Ambiguous IPs and domains stay unrecognized.
+- [Compatibility] The tab uses the existing collector and the app history endpoint; no new services, DNS settings, routes, VPN or firewall rules are added or changed.
+- [Improved] **Unified look**: cards, colors and controls inherit the active theme and Nightfall personalization settings.
+- [Tests] Added checks for counting, the device filter, routes, domain classification and a Playwright smoke test for desktop and mobile screens.
 
-## v1.27.12 · Точность распознавания приложений и DNS
-- [Исправлено] **Общие CDN VK**: `okcdn.ru` больше не приписывается целиком Одноклассникам; подтверждённые `calls.okcdn.ru` и `videowebrtc.okcdn.ru` выделены для MAX.
-- [Улучшено] **MAX-звонки и видео**: добавлены узкие шаблоны `videostun*.okcdn.ru` и `call*-*.vkuser.net`; общие родительские домены не классифицируются целиком.
-- [Добавлено] **Wibes**: отдельная категория для `wibes.ru` и `wibes.com`, чтобы не смешивать сервис с основным Wildberries.
-- [Улучшено] **Каталог VK**: добавлены домены VK CDN, пользовательских медиа и видео по публичным спискам доменов и наблюдаемым хостам.
-- [Исправлено] **IP без DNS-имени**: вместо безымянного «Прочее» показывается отдельная причина. Она не делает предположений, что устройство обязательно использует DoH/DoT.
-- [Исправлено] **Общие IP/CDN**: конфликт нескольких известных приложений явно маркируется и не присваивается последнему DNS-ответу.
-- [Улучшено] **Пояснения**: интерфейс объясняет отсутствие DNS-имени, общие CDN и неоднозначные домены.
-- [Тесты] Добавлены проверки MAX/OK на общих доменах, отсутствующего DNS-имени, конфликтов CDN, сохранения Unknown и разметки пояснений.
-- [Улучшено] **Каталог приложений**: добавлены подтверждённые домены VK, VK Видео, MAX, Wildberries, Apple, Mail.ru, Microsoft и Дзена; сомнительный `rtbcdn.ru` больше не приписывается RuTube.
-- [Исправлено] **Переклассификация DNS**: уже собранные домены «Прочее» повторно сверяются с обновлённым каталогом без ожидания нового DNS-запроса.
-- [Исправлено] **Срок жизни DNS-карты**: при сохранении записей не обновляется искусственно время наблюдения; шестичасовой срок теперь действительно истекает.
-- [Улучшено] **Карточка трафика**: подробности «Прочее» оформлены отдельной адаптивной панелью со столбцами домен, маршрут, объём и доля; неизвестный маршрут подписан явно.
-- [Тесты] Добавлены проверки повторной классификации старых DNS-записей, реального истечения TTL, подтверждённых доменов и новой разметки карточки.
-- [Улучшено] **Статистика приложений**: исправлено разделение доменов в расшифровке «Прочее», объёмы VPN/Direct/Unknown видны прямо в метках маршрутов.
-- [Исправлено] **DNS-карта приложений**: записи IP↔домен имеют ограниченный срок актуальности (6 часов), старые двухколоночные карты безопасно перестраиваются по новым DNS-ответам.
-- [Тесты] Добавлены регрессии DNS/CNAME, устаревших и конфликтующих IP-сопоставлений, фильтра устройства, маршрутов и UI-разбивки.
-- [Исправлено] **Постоянные DHCP-аренды**: длинные имена хостов и несколько MAC-адресов переносятся внутри таблицы, не выталкивая столбцы и кнопки за границы карточки.
-- [Проверка] На Cudy WR3000U-256MB с OpenWrt 25.12.6 проверены длинное имя, два MAC-адреса, кнопки действий и DHCP-таблица на широком и узком экране.
-- [Улучшено] **Статистика приложений**: исправлено разделение доменов в расшифровке «Прочее», объёмы VPN/Direct/Unknown видны прямо в метках маршрутов.
-- [Исправлено] **DNS-карта приложений**: записи IP↔домен имеют ограниченный срок актуальности (6 часов), старые двухколоночные карты безопасно перестраиваются по новым DNS-ответам.
-- [Тесты] Добавлены регрессии DNS/CNAME, устаревших и конфликтующих IP-сопоставлений, фильтра устройства, маршрутов и UI-разбивки.
-- [Исправлено] **Постоянные DHCP-аренды**: длинные имена хостов и несколько MAC-адресов переносятся внутри таблицы, не выталкивая столбцы и кнопки за границы карточки.
-- [Проверка] На Cudy WR3000U-256MB с OpenWrt 25.12.6 проверены длинное имя, два MAC-адреса, кнопки действий и DHCP-таблица на широком и узком экране.
+## v1.27.12 · Accurate app and DNS recognition
+- [Fixed] **Shared VK CDNs**: `okcdn.ru` is no longer attributed entirely to Odnoklassniki; the confirmed `calls.okcdn.ru` and `videowebrtc.okcdn.ru` are assigned to MAX.
+- [Improved] **MAX calls and video**: added narrow patterns `videostun*.okcdn.ru` and `call*-*.vkuser.net`; shared parent domains are not classified as a whole.
+- [Added] **Wibes**: a separate category for `wibes.ru` and `wibes.com`, so the service is not mixed with the main Wildberries.
+- [Improved] **VK catalog**: added VK CDN, user media and video domains based on public domain lists and observed hosts.
+- [Fixed] **IPs without a DNS name**: a specific reason is shown instead of an anonymous "Other". It does not assume the device necessarily uses DoH/DoT.
+- [Fixed] **Shared IPs/CDNs**: a conflict between several known apps is marked explicitly and not assigned to the last DNS answer.
+- [Improved] **Explanations**: the interface explains a missing DNS name, shared CDNs and ambiguous domains.
+- [Tests] Added checks for MAX/OK on shared domains, a missing DNS name, CDN conflicts, keeping Unknown and the explanation markup.
+- [Improved] **App catalog**: added confirmed domains for VK, VK Video, MAX, Wildberries, Apple, Mail.ru, Microsoft and Dzen; the dubious `rtbcdn.ru` is no longer attributed to RuTube.
+- [Fixed] **DNS reclassification**: domains already collected under "Other" are re-checked against the updated catalog without waiting for a new DNS query.
+- [Fixed] **DNS map lifetime**: saving entries no longer artificially refreshes the observation time; the six-hour lifetime now really expires.
+- [Improved] **Traffic card**: "Other" details are shown in a separate responsive panel with domain, route, volume and share columns; the unknown route is labeled explicitly.
+- [Tests] Added checks for reclassifying old DNS entries, real TTL expiry, confirmed domains and the new card markup.
+- [Improved] **App statistics**: fixed domain separation in the "Other" breakdown; VPN/Direct/Unknown volumes are visible directly in the route labels.
+- [Fixed] **App DNS map**: IP↔domain entries have a limited lifetime (6 hours); old two-column maps are safely rebuilt from new DNS answers.
+- [Tests] Added regressions for DNS/CNAME, stale and conflicting IP mappings, the device filter, routes and the UI breakdown.
+- [Fixed] **Static DHCP leases**: long host names and multiple MAC addresses wrap inside the table instead of pushing columns and buttons outside the card.
+- [Checks] Tested on a Cudy WR3000U-256MB with OpenWrt 25.12.6: a long name, two MAC addresses, action buttons and the DHCP table on wide and narrow screens.
+- [Improved] **App statistics**: fixed domain separation in the "Other" breakdown; VPN/Direct/Unknown volumes are visible directly in the route labels.
+- [Fixed] **App DNS map**: IP↔domain entries have a limited lifetime (6 hours); old two-column maps are safely rebuilt from new DNS answers.
+- [Tests] Added regressions for DNS/CNAME, stale and conflicting IP mappings, the device filter, routes and the UI breakdown.
+- [Fixed] **Static DHCP leases**: long host names and multiple MAC addresses wrap inside the table instead of pushing columns and buttons outside the card.
+- [Checks] Tested on a Cudy WR3000U-256MB with OpenWrt 25.12.6: a long name, two MAC addresses, action buttons and the DHCP table on wide and narrow screens.
 
-## v1.27.10 · История изменений и окно «Что нового»
-- [Добавлено] **Ручной просмотр истории**: в настройках темы, в разделе «О теме», доступна кнопка «Что нового». Полное окно истории можно открыть в любой момент, а не только сразу после обновления.
-- [Исправлено] **Повторное уведомление**: если CHANGELOG.md временно недоступен или в нём ещё нет раздела установленной версии, версия не отмечается просмотренной. Nightfall повторит попытку при следующем входе.
-- [Улучшено] **Единый формат релизов**: журнал изменений включается в архив автоматически и отображается в фирменном окне Nightfall с карточками изменений и кнопкой «Понятно».
-- [Проверка релиза] Публикация блокируется, если верхний раздел CHANGELOG.md не соответствует тегу релиза или не содержит описания изменений.
-- [Тесты] Добавлены проверки ручного открытия окна, повторной загрузки журнала и обязательного раздела CHANGELOG для каждого релиза.
+## v1.27.10 · Change history and the "What's new" dialog
+- [Added] **View history manually**: a "What's new" button is available in the theme settings, in the "About" section. The full history dialog can be opened at any time, not only right after an update.
+- [Fixed] **Repeated notification**: if CHANGELOG.md is temporarily unavailable or has no section for the installed version yet, the version is not marked as seen. Nightfall tries again at the next sign-in.
+- [Improved] **Unified release format**: the changelog is included in the archive automatically and shown in the Nightfall-styled dialog with change cards and a "Got it" button.
+- [Release check] Publishing is blocked if the top CHANGELOG.md section does not match the release tag or contains no description of changes.
+- [Tests] Added checks for opening the dialog manually, reloading the changelog and the mandatory CHANGELOG section for each release.
 
-## v1.27.9 · Надёжность обновления и резервного копирования
-- [Исправлено] **Проверка архивов обновления**: установщик принимает штатные символические ссылки Nightfall только по точному списку разрешённых путей и целей; посторонние ссылки, жёсткие ссылки и специальные типы файлов отклоняются.
-- [Исправлено] **Безопасный откат обновления**: перед заменой файлов проверяется возможность сохранить предыдущую версию. При ошибке установки выполняется возврат прежних файлов; критическая ошибка отката не маскируется под обычный сбой.
-- [Исправлено] **Резервное копирование и восстановление**: усилена проверка совместимости манифеста и состава архива, а операции восстановления выполняются с подготовкой данных до применения изменений.
-- [Исправлено] **Жизненный цикл служб**: проверки запуска, остановки и перезапуска сборщика и связанных компонентов стали устойчивее к повторным вызовам и неполным состояниям.
-- [Исправлено] **История и мониторинг**: укреплена работа сбора событий, температурной истории, расписания блокировок и учёта LAN-трафика.
+## v1.27.9 · Update and backup reliability
+- [Fixed] **Update archive checks**: the installer accepts the standard Nightfall symbolic links only from an exact list of allowed paths and targets; foreign links, hard links and special file types are rejected.
+- [Fixed] **Safe update rollback**: before replacing files, it checks that the previous version can be saved. If installation fails, the previous files are restored; a critical rollback error is not disguised as an ordinary failure.
+- [Fixed] **Backup and restore**: stricter checks of manifest compatibility and archive contents; restore operations prepare the data before applying changes.
+- [Fixed] **Service lifecycle**: start, stop and restart checks of the collector and related components are now more robust against repeated calls and incomplete states.
+- [Fixed] **History and monitoring**: hardened event collection, temperature history, block schedules and LAN traffic accounting.
 
-## v1.27.8 · Исправление окна «Что нового»
-- [Исправлено] **Переход с тестовой версии на стабильную**: сравнение версий учитывает prerelease-суффиксы. Стабильная `1.27.7` теперь корректно считается новее `1.27.7-alpha…`, поэтому окно с историей изменений не пропускается.
-- [Тесты] Добавлены проверки порядка стабильных и предварительных версий, включая переход `1.27.7-alpha.1-test5 → 1.27.7`.
-- [Документация] Обновлены русское и английское README, FAQ и инструкция резервного копирования: USB/SD-хранилище, временный fallback в `/tmp`, ротация архивов и безопасное восстановление.
+## v1.27.8 · "What's new" dialog fix
+- [Fixed] **Moving from a test version to a stable one**: version comparison now takes prerelease suffixes into account. The stable `1.27.7` is now correctly considered newer than `1.27.7-alpha…`, so the change history dialog is not skipped.
+- [Tests] Added checks for the order of stable and prerelease versions, including the `1.27.7-alpha.1-test5 → 1.27.7` transition.
+- [Docs] Updated the Russian and English README, the FAQ and the backup guide: USB/SD storage, the temporary fallback to `/tmp`, archive rotation and safe restore.
 
-## v1.27.7 · Надёжность постоянного хранения
-- [Исправлено] **Защита от отключения USB**: перед каждым сохранением проверяется фактическая точка монтирования, а не только доступность каталога.
-- [Исправлено] Если накопитель отключён, Nightfall не создаёт каталог и временные файлы в нижележащем `/overlay`; сбор истории продолжается в RAM.
-- [Добавлено] После повторного подключения USB сохранение автоматически возобновляется. История с накопителя объединяется с данными из RAM: временные точки дедуплицируются, дневные счётчики суммируются без повторного учёта уже синхронизированных данных.
-- [Безопасность] Запись выполняется изнутри смонтированной файловой системы; перед публикацией временного файла mount проверяется повторно.
-- [Тесты] Добавлены сценарии отсутствующего накопителя при старте, отключения во время работы, повторного подключения, восстановления истории и режима `PERSIST_ANY`.
-- [Добавлено] Резервные копии настроек по умолчанию сохраняются рядом с историей на подключённом USB/SD; если внешний накопитель недоступен, используется временный каталог `/tmp` с явным предупреждением.
-- [Добавлено] Автоматическая ротация: по умолчанию сохраняются последние 5 архивов (настраиваемый диапазон 1–20) через настройку LuCI.
-- [Добавлено] Ручное создание проверенной локальной резервной копии прямо из настроек монитора LuCI.
-- [Исправлено] Резервная копия из Telegram теперь создаётся тем же проверенным инструментом и остаётся сохранённой локально; токен и прокси Telegram исключаются из архива.
+## v1.27.7 · Persistent storage reliability
+- [Fixed] **Protection against USB disconnects**: the actual mount point is checked before every save, not just whether the directory is accessible.
+- [Fixed] If the drive is disconnected, Nightfall no longer creates the directory and temporary files in the underlying `/overlay`; history collection continues in RAM.
+- [Added] After the USB drive is reconnected, saving resumes automatically. History from the drive is merged with the data in RAM: time points are deduplicated, daily counters are summed without counting already synced data twice.
+- [Security] Writes are performed from inside the mounted file system; the mount is re-checked before a temporary file is published.
+- [Tests] Added scenarios for a missing drive at startup, disconnection while running, reconnection, history recovery and the `PERSIST_ANY` mode.
+- [Added] Settings backups are now saved by default next to the history on the attached USB/SD drive; if no external drive is available, the temporary `/tmp` directory is used with an explicit warning.
+- [Added] Automatic rotation: the last 5 archives are kept by default (configurable range 1–20) via a LuCI setting.
+- [Added] Manual creation of a verified local backup directly from the LuCI monitor settings.
+- [Fixed] A Telegram backup is now created by the same verified tool and stays saved locally; the Telegram token and proxy are excluded from the archive.
 
-## v1.27.6 · Определение проводных подключений
-- [Исправлено] **Отображение LAN-подключений**: список «Доступ в интернет» показывает физический порт (`LAN1`, `LAN2` и т. д.), когда его можно определить по FDB моста.
-- [Исправлено] Для определения порта используются `bridge fdb` или связка `brctl showmacs` / `brctl showstp`; если прошивка не предоставляет таблицу физических портов, остаётся нейтральный статус «в сети».
-- [Без изменений] Wi-Fi-клиенты по-прежнему определяются по активной ассоциации с точкой доступа и отображаются отдельно; проводные устройства не попадают в список «Wi-Fi сейчас».
-- [Тесты] Добавлена проверка передачи LAN-порта в JSON списка устройств.
+## v1.27.6 · Wired connection detection
+- [Fixed] **LAN connection display**: the "Internet access" list shows the physical port (`LAN1`, `LAN2`, etc.) when it can be determined from the bridge FDB.
+- [Fixed] The port is determined with `bridge fdb` or with `brctl showmacs` / `brctl showstp`; if the firmware doesn't provide a physical port table, the neutral "online" status remains.
+- [Unchanged] Wi-Fi clients are still detected by their active association with the access point and are shown separately; wired devices do not appear in the "Wi-Fi now" list.
+- [Tests] Added a check that the LAN port is passed in the device list JSON.
 
-## v1.27.5 · Точная идентификация клиентов сети
-- [Исправлено] **Неверные имена устройств при смене или рандомизации MAC**: активный MAC Wi-Fi-клиента теперь имеет приоритет над устаревшей DHCP-привязкой к тому же IP.
-- [Исправлено] Имена из DHCP/LuCI больше не выбираются по случайному порядку ключей: если одному IP соответствуют несколько MAC, неоднозначное имя не подставляется.
-- [Исправлено] В блоке «Топ клиентов» и таблице устройств активная Wi-Fi-станция больше не получает имя другого устройства только из-за повторно использованного IP.
-- [Важно] Старые исторические счётчики остаются привязаны к IP и не могут быть достоверно переатрибутированы задним числом. Новая идентификация применяется к текущим данным; при неоднозначности показывается IP, а не предположительное имя.
+## v1.27.5 · Accurate identification of network clients
+- [Fixed] **Wrong device names when a MAC changes or is randomized**: the active MAC of a Wi-Fi client now takes priority over a stale DHCP binding to the same IP.
+- [Fixed] Names from DHCP/LuCI are no longer picked by random key order: if several MACs map to one IP, the ambiguous name is not used.
+- [Fixed] In the "Top clients" block and the device table, an active Wi-Fi station no longer gets another device's name just because of a reused IP.
+- [Important] Old historical counters stay bound to IPs and cannot be reliably re-attributed retroactively. The new identification applies to current data; when ambiguous, the IP is shown instead of a guessed name.
 
-# История изменений Nightfall
+# Nightfall changelog
 
-## v1.27.4 · Исправление окна «Что нового»
-- [Исправлено] **Повторная попытка загрузки журнала изменений**: если \`CHANGELOG.md\` не удалось получить из-за сетевой или HTTP-ошибки, следующая загрузка LuCI повторяет запрос, а не считает версию уже просмотренной.
-- [Исправлено] **Подтверждение просмотра**: версия отмечается просмотренной только после успешной загрузки и разбора журнала и нажатия пользователем кнопки «Понятно».
-- [Исправлено] Для пользователей, у которых старый механизм успел отметить версию без показа окна, предусмотрено однократное восстановление уведомления с последними четырьмя разделами истории.
-- [Изменено] На чистой установке окно «Что нового» не появляется без необходимости.
-- [Тесты] Добавлены регрессионные проверки подтверждения, повторной загрузки после ошибки и восстановления пропущенного уведомления.
+## v1.27.4 · "What's new" dialog fix
+- [Fixed] **Retrying the changelog download**: if \`CHANGELOG.md\` could not be fetched due to a network or HTTP error, the next LuCI load retries the request instead of treating the version as already seen.
+- [Fixed] **Seen confirmation**: a version is marked as seen only after the changelog is successfully loaded and parsed and the user presses the "Got it" button.
+- [Fixed] Users whose version was marked by the old mechanism without the dialog being shown get a one-time restored notification with the last four history sections.
+- [Changed] On a fresh install the "What's new" dialog no longer appears unnecessarily.
+- [Tests] Added regression checks for confirmation, reloading after an error and restoring a missed notification.
 
-## v1.27.3 · Обнаружение устройств, безопасность и учёт трафика
-- [Исправлено] **Клиенты за Wi-Fi-ретрансляторами**: DHCP-устройства, чьи IP-адреса связаны с MAC-адресом реально подключённой станции, теперь могут отображаться отдельно. Несколько устройств за ретранслятором не объединяются в одну запись только из-за общего proxy MAC.
-- [Исправлено] Состояние таких клиентов определяется по NUD-состоянию соседей. Для них не выдумываются уровень сигнала и скорость Wi-Fi; неподтверждённые записи не выдаются за достоверно доступные.
-- [Исправлено] Проверка SSH учитывает оба параметра Dropbear: \`PasswordAuth\` и \`RootPasswordAuth\`. Раздельно оценивается парольный вход root и остальных пользователей.
-- [Добавлено] В стандартных карточках интерфейсов LuCI добавлена локальная пользовательская подпись порта. В текущей реализации она хранится в \`localStorage\` браузера и не меняет UCI, DSA, switch или системные имена портов.
-- [Добавлено] В интерфейсе поясняется влияние аппаратного Flow Offloading на расхождения между WAN-счётчиками и conntrack. Сам алгоритм учёта трафика этим изменением не подменяется.
-- [Исправлено] Классификация трафика устройств больше не полагается на признак «частный IP». Клиентские IPv4-подсети определяются по connected routes основной таблицы маршрутизации; WAN-подсеть включается только при наличии DHCP-клиента для схемы «на одной ноге».
-- [Исправлено] Исключаются текущие IPv4-адреса самого роутера, включая WAN и VPN /32; обращения LAN↔LAN и к самому роутеру не учитываются как интернет-трафик клиентских устройств.
-- [Изменено] Однократная миграция \`acct.v=3\` очищает прежние суточные итоги и базовые значения conntrack: старые данные могли включать WAN/VPN-адреса и не могут быть достоверно пересчитаны задним числом.
-- [Тесты] Добавлены регрессионные проверки определения LAN-подсетей, учёта клиентов за ретранслятором и вариантов настроек Dropbear.
+## v1.27.3 · Device detection, security and traffic accounting
+- [Fixed] **Clients behind Wi-Fi repeaters**: DHCP devices whose IP addresses are linked to the MAC address of an actually connected station can now be shown separately. Several devices behind a repeater are no longer merged into one entry just because of a shared proxy MAC.
+- [Fixed] The state of such clients is determined from the neighbor NUD state. No made-up signal level or Wi-Fi speed is shown for them; unconfirmed entries are not presented as reliably reachable.
+- [Fixed] The SSH check now considers both Dropbear options: \`PasswordAuth\` and \`RootPasswordAuth\`. Password login for root and for other users is assessed separately.
+- [Added] The standard LuCI interface cards now have a local custom port label. In the current implementation it is stored in the browser's \`localStorage\` and does not change UCI, DSA, switch or system port names.
+- [Added] The interface now explains how hardware Flow Offloading causes differences between WAN counters and conntrack. The traffic accounting algorithm itself is not replaced by this change.
+- [Fixed] Device traffic classification no longer relies on the "private IP" flag. Client IPv4 subnets are determined from the connected routes of the main routing table; the WAN subnet is included only when a DHCP client exists, for the "router on a stick" setup.
+- [Fixed] The router's own current IPv4 addresses, including WAN and VPN /32, are excluded; LAN↔LAN traffic and traffic to the router itself are no longer counted as client internet traffic.
+- [Changed] A one-time \`acct.v=3\` migration clears the previous daily totals and conntrack baselines: the old data could include WAN/VPN addresses and cannot be reliably recalculated retroactively.
+- [Tests] Added regression checks for LAN subnet detection, accounting for clients behind a repeater and Dropbear setting variants.
 
-## v1.27.2 · Надёжность резервного копирования и обновления
-- [Исправлено] **Передача резервных копий на минимальных сборках OpenWrt**: \`base64\` теперь объявлена зависимостью пакета; установщик проверяет наличие команды и при необходимости устанавливает \`coreutils-base64\` через \`apk\`/\`opkg\`. Утилита резервного копирования выдаёт понятную ошибку, если кодировщик недоступен, вместо пустого блока. Версия инструмента в манифесте исправлена с \`1.27.0\` на \`1.27.2\`.
-- [Исправлено] **Пустой архив при скачивании из LuCI**: браузер больше не принимает пустой ответ за конец передачи. Перед скачиванием получает ожидаемый размер и SHA-256, затем проверяет каждый блок, итоговый размер и заголовок gzip; SHA-256 сверяется при доступности Web Crypto, а в поддерживаемых браузерах дополнительно проверяется gzip CRC и длина распакованного потока.
-- [Исправлено] Создание резервной копии проверяет gzip и tar до публикации файла. Повторное создание в ту же секунду не перезаписывает предыдущий архив.
-- [Безопасность] Восстановление стало транзакционным: все файлы и rollback-копии готовятся до изменения /etc; при ошибке применения выполняется возврат исходных файлов. Символические ссылки и специальные типы текущих целевых файлов отклоняются.
-- [Исправлено] Обновление прекращается, если не удалось сохранить прежние файлы для отката. Ошибка автоматического возврата после неудачной распаковки теперь явно обозначается как критическая.
-- [Тесты] Добавлены проверки многоблочной загрузки/выгрузки архива, размера и SHA-256, повторного создания с одинаковым именем, отката прерванного восстановления и отказа обновления без rollback-копии.
-- [Документация] Обновлена инструкция по резервному копированию и восстановлению.
-- [Релиз] Предварительные теги вида \`v1.27.2-rc.1\` публикуются как Pre-release и не меняют \`latest.json\`, поэтому не попадают в канал автоматических обновлений стабильной версии.
-- [Тесты] Дымовой тест монитора переведён на детерминированные фикстуры без фонового LuCI-поллинга: устранена гонка, из-за которой периодический rerender заменял DOM вкладок во время кликов Playwright.
-- [Тесты] Временные метки фикстур монитора и журнала безопасности формируются относительно текущего запуска, чтобы проверки последних 24 часов не зависели от даты запуска CI.
-- [Тесты] Исправлена заглушка UCI для DNS-статистики: аргумент \`logqueries\` проверяется в фактической позиции команды \`uci -q get\`.
-- [Тесты] Исправлены границы heredoc в фикстурах безопасности: syslog, /proc, UCI и DNS-заглушки теперь создаются как отдельные файлы и выполняются, а не попадают внутрь одного тестового журнала.
-- [Тесты] Дымовой тест монитора запускает один управляемый цикл обновления после каждого переключения вкладки: данные подгружаются без фоновой гонки и без отключения логики обновления.
-- [Тесты] Время обнаружения тестовых устройств задаётся относительно запуска CI, чтобы карточки новых устройств не исчезали из-за устаревших дат.
-- [Тесты] Проверка порядка новых устройств больше не сравнивает абсолютную дату из старой фикстуры: она проверяет MAC, подпись и фактический порядок временных меток.
+## v1.27.2 · Backup and update reliability
+- [Fixed] **Backup transfer on minimal OpenWrt builds**: \`base64\` is now declared a package dependency; the installer checks for the command and installs \`coreutils-base64\` via \`apk\`/\`opkg\` if needed. The backup utility now gives a clear error if the encoder is unavailable, instead of an empty block. The tool version in the manifest was fixed from \`1.27.0\` to \`1.27.2\`.
+- [Fixed] **Empty archive when downloading from LuCI**: the browser no longer treats an empty response as the end of the transfer. Before downloading it gets the expected size and SHA-256, then checks each block, the final size and the gzip header; SHA-256 is verified when Web Crypto is available, and supported browsers also check the gzip CRC and the length of the decompressed stream.
+- [Fixed] Creating a backup now checks gzip and tar before publishing the file. Creating another backup in the same second no longer overwrites the previous archive.
+- [Security] Restore is now transactional: all files and rollback copies are prepared before /etc is changed; if applying fails, the original files are restored. Symbolic links and special types of current target files are rejected.
+- [Fixed] The update now stops if the previous files could not be saved for rollback. A failure of the automatic restore after a failed extraction is now explicitly reported as critical.
+- [Tests] Added checks for multi-block archive upload/download, size and SHA-256, repeated creation with the same name, rollback of an interrupted restore and refusing an update without a rollback copy.
+- [Docs] Updated the backup and restore guide.
+- [Release] Prerelease tags like \`v1.27.2-rc.1\` are published as a Pre-release and do not change \`latest.json\`, so they don't reach the automatic update channel of the stable version.
+- [Tests] The monitor smoke test now uses deterministic fixtures without background LuCI polling: fixed a race where a periodic rerender replaced the tab DOM during Playwright clicks.
+- [Tests] Monitor and security log fixture timestamps are generated relative to the current run, so the last-24-hours checks don't depend on the CI run date.
+- [Tests] Fixed the UCI stub for DNS statistics: the \`logqueries\` argument is checked at its actual position in the \`uci -q get\` command.
+- [Tests] Fixed heredoc boundaries in the security fixtures: syslog, /proc, UCI and DNS stubs are now created as separate files and executed, instead of ending up inside one test log.
+- [Tests] The monitor smoke test runs one controlled refresh cycle after each tab switch: data loads without a background race and without disabling the refresh logic.
+- [Tests] Test device discovery times are set relative to the CI run, so new-device cards don't disappear because of outdated dates.
+- [Tests] The new-device order check no longer compares an absolute date from an old fixture: it checks the MAC, the label and the actual order of timestamps.

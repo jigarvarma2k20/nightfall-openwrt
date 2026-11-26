@@ -1,12 +1,12 @@
 #!/bin/sh
-# Nightfall: локальная резервная копия и безопасное восстановление настроек.
-#   nightfall-backup create [FILE]       создать архив (USB/SD рядом с историей; иначе /tmp/nightfall-backups/)
-# По умолчанию на внешнем накопителе хранятся последние 5 копий (NF_BACKUP_KEEP=1..20).
-#   nightfall-backup list FILE           проверить архив и показать состав
-#   nightfall-backup restore FILE        только предварительный просмотр
-#   nightfall-backup restore FILE apply  восстановить после проверки архива
+# Nightfall: local backup and safe restore of settings.
+#   nightfall-backup create [FILE]       create an archive (USB/SD next to the history; otherwise /tmp/nightfall-backups/)
+# By default the last 5 backups are kept on the external drive (NF_BACKUP_KEEP=1..20).
+#   nightfall-backup list FILE           verify the archive and show its contents
+#   nightfall-backup restore FILE        preview only
+#   nightfall-backup restore FILE apply  restore after verifying the archive
 #
-# Для тестов: NF_ROOT, NF_TMP, NF_BACKUP_DIR.
+# For tests: NF_ROOT, NF_TMP, NF_BACKUP_DIR.
 set -u
 
 ROOT=${NF_ROOT:-}
@@ -64,7 +64,7 @@ nightfall-journal.log
 nightfall-release.pub
 "
 
-fail() { echo "Ошибка: $*" >&2; exit 1; }
+fail() { echo "Error: $*" >&2; exit 1; }
 
 prune_backups() {
  host=$1
@@ -160,19 +160,19 @@ create_backup() {
  if [ -z "$dest" ] && [ "$BACKUP_STORAGE" = external ]; then
   # Pin the process working directory to the mounted filesystem. Relative writes
   # cannot fall through to the underlying overlay if USB is detached mid-backup.
-  cd "$BACKUP_MOUNT" 2>/dev/null || fail "внешний накопитель отключился до создания копии"
-  [ "$(backup_mount_dir 2>/dev/null || true)" = "$BACKUP_MOUNT/nightfall-backups" ] || fail "точка монтирования изменилась; резервная копия не создана"
+  cd "$BACKUP_MOUNT" 2>/dev/null || fail "the external drive was disconnected before the backup was created"
+  [ "$(backup_mount_dir 2>/dev/null || true)" = "$BACKUP_MOUNT/nightfall-backups" ] || fail "the mount point changed; the backup was not created"
   OUTDIR=nightfall-backups
   pinned=1
  fi
- [ ! -L "$OUTDIR" ] || fail "каталог резервных копий не может быть символической ссылкой"
- mkdir -p "$OUTDIR" 2>/dev/null || fail "не удалось создать каталог $OUTDIR"
- [ -d "$OUTDIR" ] && [ ! -L "$OUTDIR" ] || fail "небезопасный каталог резервных копий"
+ [ ! -L "$OUTDIR" ] || fail "the backup directory cannot be a symbolic link"
+ mkdir -p "$OUTDIR" 2>/dev/null || fail "failed to create directory $OUTDIR"
+ [ -d "$OUTDIR" ] && [ ! -L "$OUTDIR" ] || fail "unsafe backup directory"
  host=$(cat "${ROOT}/proc/sys/kernel/hostname" 2>/dev/null || echo router)
  host=$(printf '%s' "$host" | tr -cd 'A-Za-z0-9_.-')
  [ -n "$host" ] || host=router
  [ -n "$dest" ] || dest="$OUTDIR/nightfall-backup-$host-$(date +%Y%m%d-%H%M%S).tar.gz"
- case "$dest" in *.tar.gz) ;; *) fail "имя архива должно оканчиваться на .tar.gz" ;; esac
+ case "$dest" in *.tar.gz) ;; *) fail "the archive name must end with .tar.gz" ;; esac
  if [ "$pinned" = 1 ]; then display_dest="$BACKUP_MOUNT/$dest"; else display_dest=$dest; fi
  if [ -e "$dest" ] || [ -L "$dest" ]; then
   base=${dest%.tar.gz}; n=1
@@ -181,18 +181,18 @@ create_backup() {
   if [ "$pinned" = 1 ]; then display_dest="$BACKUP_MOUNT/$dest"; else display_dest=$dest; fi
  fi
  parent=${dest%/*}; [ "$parent" = "$dest" ] && parent=.
- mkdir -p "$parent" 2>/dev/null || fail "не удалось создать каталог назначения"
- WORK=$(mktemp -d "$TMP/nightfall-backup.XXXXXX" 2>/dev/null) || fail "не удалось создать временный каталог"
- mkdir -p "$WORK/etc" || fail "не удалось подготовить архив"
+ mkdir -p "$parent" 2>/dev/null || fail "failed to create the destination directory"
+ WORK=$(mktemp -d "$TMP/nightfall-backup.XXXXXX" 2>/dev/null) || fail "failed to create a temporary directory"
+ mkdir -p "$WORK/etc" || fail "failed to prepare the archive"
  count=0
  for f in $FILES; do
   [ -f "$ETC/$f" ] && [ ! -L "$ETC/$f" ] || continue
-  cp -p "$ETC/$f" "$WORK/etc/$f" || fail "не удалось скопировать $f"
+  cp -p "$ETC/$f" "$WORK/etc/$f" || fail "failed to copy $f"
   count=$((count + 1))
  done
- [ "$count" -gt 0 ] || fail "на роутере не найдены файлы настроек Nightfall"
+ [ "$count" -gt 0 ] || fail "no Nightfall settings files found on the router"
  if [ -f "$WORK/etc/nightfall-monitor.conf" ]; then
-  sed -i 's/^TG_TOKEN=.*/TG_TOKEN=/; s/^TG_PROXY=.*/TG_PROXY=/' "$WORK/etc/nightfall-monitor.conf" || fail "не удалось удалить секреты из копии"
+  sed -i 's/^TG_TOKEN=.*/TG_TOKEN=/; s/^TG_PROXY=.*/TG_PROXY=/' "$WORK/etc/nightfall-monitor.conf" || fail "failed to remove secrets from the backup"
  fi
  {
   echo "Nightfall backup"
@@ -203,33 +203,33 @@ create_backup() {
   echo "secrets=TG_TOKEN,TG_PROXY excluded"
   echo "network_config=not included"
  } > "$WORK/MANIFEST.txt"
- (cd "$WORK" && sha256sum etc/nightfall-* > MANIFEST.sha256) || fail "не удалось посчитать контрольные суммы"
+ (cd "$WORK" && sha256sum etc/nightfall-* > MANIFEST.sha256) || fail "failed to compute checksums"
  { for f in $FILES; do [ -f "$WORK/etc/$f" ] && echo "etc/$f"; done; echo MANIFEST.txt; echo MANIFEST.sha256; } > "$WORK/archive.list"
  DEST_TMP="$dest.tmp"
- tar -czf "$DEST_TMP" -C "$WORK" -T "$WORK/archive.list" || fail "не удалось собрать архив"
- gzip -t "$DEST_TMP" 2>/dev/null || fail "созданный gzip-архив не прошёл проверку целостности"
- tar -tzf "$DEST_TMP" >/dev/null 2>&1 || fail "созданный tar-архив не прошёл проверку состава"
- [ "$(wc -c < "$DEST_TMP" | tr -d ' ')" -gt 0 ] || fail "создан пустой архив"
- mv "$DEST_TMP" "$dest" || fail "не удалось сохранить архив"
+ tar -czf "$DEST_TMP" -C "$WORK" -T "$WORK/archive.list" || fail "failed to build the archive"
+ gzip -t "$DEST_TMP" 2>/dev/null || fail "the created gzip archive failed the integrity check"
+ tar -tzf "$DEST_TMP" >/dev/null 2>&1 || fail "the created tar archive failed the contents check"
+ [ "$(wc -c < "$DEST_TMP" | tr -d ' ')" -gt 0 ] || fail "an empty archive was created"
+ mv "$DEST_TMP" "$dest" || fail "failed to save the archive"
  DEST_TMP=
  chmod 600 "$dest" 2>/dev/null
  prune_backups "$host"
- say "Резервная копия создана: $display_dest"
- say "Файлов: $count"
+ say "Backup created: $display_dest"
+ say "Files: $count"
  if [ "$BACKUP_STORAGE" = external ]; then
-  say "Хранилище: USB/SD ($BACKUP_MOUNT/nightfall-backups); оставляем последние $BACKUP_KEEP копий."
+  say "Storage: USB/SD ($BACKUP_MOUNT/nightfall-backups); keeping the last $BACKUP_KEEP backups."
  else
-  say "Хранилище: временное ($OUTDIR); постоянный USB/SD не обнаружен или PERSIST_DIR не настроен."
+  say "Storage: temporary ($OUTDIR); no persistent USB/SD found or PERSIST_DIR is not configured."
  fi
- say "TG_TOKEN и TG_PROXY не включены. Сетевые настройки OpenWrt не включены."
+ say "TG_TOKEN and TG_PROXY are not included. OpenWrt network settings are not included."
 }
 inspect_archive() {
  archive=$1
- [ -f "$archive" ] || fail "архив не найден: $archive"
- command -v tar >/dev/null 2>&1 || fail "не найден tar"
- command -v sha256sum >/dev/null 2>&1 || fail "не найден sha256sum"
+ [ -f "$archive" ] || fail "archive not found: $archive"
+ command -v tar >/dev/null 2>&1 || fail "tar not found"
+ command -v sha256sum >/dev/null 2>&1 || fail "sha256sum not found"
  listing="$TMP/nightfall-backup-list.$$"
- tar -tzf "$archive" > "$listing" 2>/dev/null || { rm -f "$listing"; fail "архив повреждён или не является gzip-архивом"; }
+ tar -tzf "$archive" > "$listing" 2>/dev/null || { rm -f "$listing"; fail "the archive is corrupted or is not a gzip archive"; }
  bad=0; count=0
  while IFS= read -r p; do
   case "$p" in
@@ -244,16 +244,16 @@ inspect_archive() {
   esac
  done < "$listing"
  rm -f "$listing"
- [ "$bad" = 0 ] || fail "архив содержит недопустимые пути или файлы"
- [ "$count" -gt 0 ] || fail "в архиве нет настроек Nightfall"
- # В архиве разрешены только обычные файлы; ссылки и специальные типы запрещены.
- tar -tvzf "$archive" 2>/dev/null | awk 'substr($1,1,1) != "-" { bad=1 } END { exit bad }' || fail "в архиве обнаружены ссылки или специальные файлы"
- WORK=$(mktemp -d "$TMP/nightfall-restore.XXXXXX" 2>/dev/null) || fail "не удалось создать временный каталог"
- tar -xzf "$archive" -C "$WORK" || fail "не удалось распаковать архив"
- [ -f "$WORK/MANIFEST.txt" ] && [ -f "$WORK/MANIFEST.sha256" ] || fail "в архиве отсутствует манифест"
- (cd "$WORK" && sha256sum -c MANIFEST.sha256 >/dev/null 2>&1) || fail "контрольные суммы не совпали; восстановление запрещено"
- find "$WORK" -type l -print | grep -q . && fail "в распакованной копии обнаружена символическая ссылка"
- say "Архив проверен. Состав:"
+ [ "$bad" = 0 ] || fail "the archive contains invalid paths or files"
+ [ "$count" -gt 0 ] || fail "the archive has no Nightfall settings"
+ # Only regular files are allowed in the archive; links and special types are denied.
+ tar -tvzf "$archive" 2>/dev/null | awk 'substr($1,1,1) != "-" { bad=1 } END { exit bad }' || fail "the archive contains links or special files"
+ WORK=$(mktemp -d "$TMP/nightfall-restore.XXXXXX" 2>/dev/null) || fail "failed to create a temporary directory"
+ tar -xzf "$archive" -C "$WORK" || fail "failed to extract the archive"
+ [ -f "$WORK/MANIFEST.txt" ] && [ -f "$WORK/MANIFEST.sha256" ] || fail "the archive is missing the manifest"
+ (cd "$WORK" && sha256sum -c MANIFEST.sha256 >/dev/null 2>&1) || fail "checksums do not match; restore is not allowed"
+ find "$WORK" -type l -print | grep -q . && fail "a symbolic link was found in the extracted backup"
+ say "Archive verified. Contents:"
  cat "$WORK/MANIFEST.txt"
  for f in $FILES; do
   if [ -f "$WORK/etc/$f" ]; then say "  /etc/$f"; fi
@@ -266,29 +266,29 @@ restore_backup() {
  mode=${2:-preview}
  inspect_archive "$archive"
  if [ "$mode" != apply ]; then
-  say "Предварительный просмотр завершён. Для восстановления выполните:"
+  say "Preview complete. To restore, run:"
   say "  /usr/libexec/nightfall-backup restore '$archive' apply"
   return 0
  fi
- [ "$mode" = apply ] || fail "неизвестный режим"
- mkdir -p "$ETC" || fail "не удалось открыть /etc"
- RESTORE_STAGE=$(mktemp -d "$ETC/.nightfall-restore.XXXXXX") || fail "не удалось подготовить транзакцию восстановления"
- mkdir -p "$RESTORE_STAGE/new" "$WORK/rollback" || fail "не удалось подготовить временные файлы"
+ [ "$mode" = apply ] || fail "unknown mode"
+ mkdir -p "$ETC" || fail "failed to open /etc"
+ RESTORE_STAGE=$(mktemp -d "$ETC/.nightfall-restore.XXXXXX") || fail "failed to prepare the restore transaction"
+ mkdir -p "$RESTORE_STAGE/new" "$WORK/rollback" || fail "failed to prepare temporary files"
  # Keep Telegram secrets in a private file, never in awk command-line arguments.
  SECRET_FILE="$RESTORE_STAGE/secrets"
- (umask 077; : > "$SECRET_FILE") || fail "не удалось подготовить защищённый файл секретов"
+ (umask 077; : > "$SECRET_FILE") || fail "failed to prepare the protected secrets file"
  chmod 600 "$SECRET_FILE" 2>/dev/null
  if [ -r "$ETC/nightfall-monitor.conf" ]; then
-  sed -n '/^TG_TOKEN=/ { p; q; }' "$ETC/nightfall-monitor.conf" >> "$SECRET_FILE" || fail "не удалось сохранить TG_TOKEN"
-  sed -n '/^TG_PROXY=/ { p; q; }' "$ETC/nightfall-monitor.conf" >> "$SECRET_FILE" || fail "не удалось сохранить TG_PROXY"
+  sed -n '/^TG_TOKEN=/ { p; q; }' "$ETC/nightfall-monitor.conf" >> "$SECRET_FILE" || fail "failed to keep TG_TOKEN"
+  sed -n '/^TG_PROXY=/ { p; q; }' "$ETC/nightfall-monitor.conf" >> "$SECRET_FILE" || fail "failed to keep TG_PROXY"
  fi
  : > "$WORK/apply.list"; : > "$WORK/existing.list"; : > "$WORK/missing.list"
  for f in $FILES; do
   [ -f "$WORK/etc/$f" ] || continue
   if [ -L "$ETC/$f" ] || { [ -e "$ETC/$f" ] && [ ! -f "$ETC/$f" ]; }; then
-   fail "небезопасный тип текущего файла /etc/$f; восстановление остановлено"
+   fail "unsafe type of the current file /etc/$f; restore stopped"
   fi
-  cp -p "$WORK/etc/$f" "$RESTORE_STAGE/new/$f" || fail "не удалось подготовить $f"
+  cp -p "$WORK/etc/$f" "$RESTORE_STAGE/new/$f" || fail "failed to prepare $f"
   if [ "$f" = nightfall-monitor.conf ]; then
    # Preserve current secrets exactly; remove duplicates from the archive and append missing keys.
    awk -v secret_file="$SECRET_FILE" '
@@ -307,11 +307,11 @@ restore_backup() {
      if (have_token && !token_done) print token_line
      if (have_proxy && !proxy_done) print proxy_line
     }
-   ' "$RESTORE_STAGE/new/$f" > "$RESTORE_STAGE/new/$f.tmp" || fail "не удалось сохранить текущие секреты"
-   mv "$RESTORE_STAGE/new/$f.tmp" "$RESTORE_STAGE/new/$f" || fail "не удалось подготовить конфигурацию"
+   ' "$RESTORE_STAGE/new/$f" > "$RESTORE_STAGE/new/$f.tmp" || fail "failed to keep the current secrets"
+   mv "$RESTORE_STAGE/new/$f.tmp" "$RESTORE_STAGE/new/$f" || fail "failed to prepare the configuration"
   fi
   if [ -f "$ETC/$f" ]; then
-   cp -p "$ETC/$f" "$WORK/rollback/$f" || fail "не удалось сохранить текущий файл /etc/$f"
+   cp -p "$ETC/$f" "$WORK/rollback/$f" || fail "failed to save the current file /etc/$f"
    echo "$f" >> "$WORK/existing.list"
   else
    echo "$f" >> "$WORK/missing.list"
@@ -321,112 +321,112 @@ restore_backup() {
  while IFS= read -r f; do
   [ -n "$f" ] || continue
   if ! mv "$RESTORE_STAGE/new/$f" "$ETC/$f"; then
-   say "Ошибка установки /etc/$f. Возвращаю исходные настройки…"
+   say "Error installing /etc/$f. Restoring the original settings…"
    rollback_error=0
    while IFS= read -r old; do
     [ -n "$old" ] || continue
-    # Освобождаем место от частично установленного файла перед возвратом старого.
+    # Remove the partially installed file before putting the old one back.
     if rm -f "$ETC/$old" && cp -p "$WORK/rollback/$old" "$ETC/$old.rollback.$" && mv "$ETC/$old.rollback.$" "$ETC/$old"; then :; else rollback_error=1; rm -f "$ETC/$old.rollback.$"; fi
    done < "$WORK/existing.list"
    while IFS= read -r new; do
     [ -n "$new" ] || continue
     rm -f "$ETC/$new" || rollback_error=1
    done < "$WORK/missing.list"
-   [ "$rollback_error" = 0 ] && fail "восстановление отменено; исходные настройки возвращены" || fail "КРИТИЧЕСКАЯ ОШИБКА: не удалось полностью вернуть исходные настройки. Проверьте /etc вручную"
+   [ "$rollback_error" = 0 ] && fail "restore cancelled; the original settings were restored" || fail "CRITICAL ERROR: failed to fully restore the original settings. Check /etc manually"
   fi
  done < "$WORK/apply.list"
  chmod 600 "$ETC/nightfall-monitor.conf" 2>/dev/null
  chmod 644 "$ETC/nightfall-prefs.json" "$ETC/nightfall-logo.json" "$ETC/nightfall-bg.json" 2>/dev/null
- say "Настройки Nightfall восстановлены."
- say "Сетевые настройки OpenWrt не менялись. TG_TOKEN сохранён из текущей конфигурации."
- say "Проверьте TG_PROXY и при необходимости задайте его заново."
- say "Перезапустите сборщик: /etc/init.d/nightfall-collector restart"
+ say "Nightfall settings restored."
+ say "OpenWrt network settings were not changed. TG_TOKEN was kept from the current configuration."
+ say "Check TG_PROXY and set it again if needed."
+ say "Restart the collector: /etc/init.d/nightfall-collector restart"
 }
 backup_name() {
- case "${1:-}" in nightfall-backup-*.tar.gz) printf '%s/%s' "$OUTDIR" "$1" ;; *) fail "недопустимое имя архива" ;; esac
+ case "${1:-}" in nightfall-backup-*.tar.gz) printf '%s/%s' "$OUTDIR" "$1" ;; *) fail "invalid archive name" ;; esac
 }
 download_info() {
  archive=$(backup_name "${2:-}")
- [ -f "$archive" ] && [ ! -L "$archive" ] || fail "архив не найден"
+ [ -f "$archive" ] && [ ! -L "$archive" ] || fail "archive not found"
  size=$(wc -c < "$archive" | tr -d ' ')
- [ "$size" -gt 0 ] || fail "архив пустой"
- hash=$(sha256sum "$archive" | awk '{ print $1 }') || fail "не удалось проверить архив"
+ [ "$size" -gt 0 ] || fail "the archive is empty"
+ hash=$(sha256sum "$archive" | awk '{ print $1 }') || fail "failed to verify the archive"
  printf "size=%s sha256=%s\n" "$size" "$hash"
 }
 download_chunk() {
  archive=$(backup_name "${2:-}")
  offset=${3:-}; length=${4:-24576}
- case "$offset:$length" in *[!0-9:]*|:*) fail "неверные параметры загрузки" ;; esac
- [ -f "$archive" ] && [ ! -L "$archive" ] && [ -r "$archive" ] || fail "архив не найден или недоступен для чтения"
- size=$(wc -c < "$archive" | tr -d ' ') || fail "не удалось определить размер архива"
- case "$size" in ''|*[!0-9]*) fail "не удалось определить размер архива" ;; esac
- [ "$offset" -le "$size" ] || fail "смещение за пределами архива"
- [ "$length" -gt 0 ] && [ "$length" -le 24576 ] || fail "неверный размер блока"
+ case "$offset:$length" in *[!0-9:]*|:*) fail "invalid download parameters" ;; esac
+ [ -f "$archive" ] && [ ! -L "$archive" ] && [ -r "$archive" ] || fail "archive not found or not readable"
+ size=$(wc -c < "$archive" | tr -d ' ') || fail "failed to determine the archive size"
+ case "$size" in ''|*[!0-9]*) fail "failed to determine the archive size" ;; esac
+ [ "$offset" -le "$size" ] || fail "offset is beyond the end of the archive"
+ [ "$length" -gt 0 ] && [ "$length" -le 24576 ] || fail "invalid chunk size"
  wanted=$((size - offset)); [ "$wanted" -gt "$length" ] && wanted=$length
- [ "$wanted" -gt 0 ] || fail "запрошен пустой блок за концом архива"
+ [ "$wanted" -gt 0 ] || fail "requested an empty chunk past the end of the archive"
 
- # Не использовать конвейер tail | head | base64: в POSIX shell код возврата
- # конвейера скрывает ошибки ранних команд. Проверяем каждый этап отдельно.
- DOWNLOAD_TMP=$(mktemp -d "$TMP/nightfall-download.XXXXXX") || fail "не удалось подготовить временный блок"
- tail -c "+$((offset + 1))" "$archive" > "$DOWNLOAD_TMP/tail" 2>/dev/null || fail "не удалось прочитать архив"
- tail_size=$(wc -c < "$DOWNLOAD_TMP/tail" | tr -d ' ') || fail "не удалось проверить прочитанный блок"
- [ "$tail_size" -ge "$wanted" ] || fail "архив изменился или прочитан не полностью"
- head -c "$wanted" "$DOWNLOAD_TMP/tail" > "$DOWNLOAD_TMP/chunk" 2>/dev/null || fail "не удалось выделить блок архива"
- actual=$(wc -c < "$DOWNLOAD_TMP/chunk" | tr -d ' ') || fail "не удалось проверить размер блока"
- [ "$actual" -eq "$wanted" ] || fail "неполный блок архива: $actual из $wanted байт"
- base64_encode "$DOWNLOAD_TMP/chunk" > "$DOWNLOAD_TMP/encoded" 2>/dev/null || fail "не удалось закодировать блок архива"
- encoded_size=$(tr -d '\n' < "$DOWNLOAD_TMP/encoded" | wc -c | tr -d ' ') || fail "не удалось проверить кодированный блок"
+ # Do not use a tail | head | base64 pipeline: in POSIX shell the exit status
+ # of a pipeline hides errors of earlier commands. Check each step separately.
+ DOWNLOAD_TMP=$(mktemp -d "$TMP/nightfall-download.XXXXXX") || fail "failed to prepare a temporary chunk"
+ tail -c "+$((offset + 1))" "$archive" > "$DOWNLOAD_TMP/tail" 2>/dev/null || fail "failed to read the archive"
+ tail_size=$(wc -c < "$DOWNLOAD_TMP/tail" | tr -d ' ') || fail "failed to check the chunk read"
+ [ "$tail_size" -ge "$wanted" ] || fail "the archive changed or was not read completely"
+ head -c "$wanted" "$DOWNLOAD_TMP/tail" > "$DOWNLOAD_TMP/chunk" 2>/dev/null || fail "failed to extract the archive chunk"
+ actual=$(wc -c < "$DOWNLOAD_TMP/chunk" | tr -d ' ') || fail "failed to check the chunk size"
+ [ "$actual" -eq "$wanted" ] || fail "incomplete archive chunk: $actual of $wanted bytes"
+ base64_encode "$DOWNLOAD_TMP/chunk" > "$DOWNLOAD_TMP/encoded" 2>/dev/null || fail "failed to encode the archive chunk"
+ encoded_size=$(tr -d '\n' < "$DOWNLOAD_TMP/encoded" | wc -c | tr -d ' ') || fail "failed to check the encoded chunk"
  expected_size=$(( (wanted + 2) / 3 * 4 ))
- [ "$encoded_size" -eq "$expected_size" ] || fail "неполный base64-блок: $encoded_size вместо $expected_size символов"
- tr -d '\n' < "$DOWNLOAD_TMP/encoded" || fail "не удалось передать кодированный блок"
+ [ "$encoded_size" -eq "$expected_size" ] || fail "incomplete base64 chunk: $encoded_size instead of $expected_size characters"
+ tr -d '\n' < "$DOWNLOAD_TMP/encoded" || fail "failed to send the encoded chunk"
  rm -rf "$DOWNLOAD_TMP"; DOWNLOAD_TMP=
 }
 upload_start() {
  id=${2:-}
- case "$id" in ????????) ;; *) fail "неверный идентификатор загрузки" ;; esac
- case "$id" in *[!a-f0-9]*) fail "неверный идентификатор загрузки" ;; esac
- mkdir -p "$OUTDIR" 2>/dev/null || fail "не удалось создать каталог резервных копий"
+ case "$id" in ????????) ;; *) fail "invalid upload identifier" ;; esac
+ case "$id" in *[!a-f0-9]*) fail "invalid upload identifier" ;; esac
+ mkdir -p "$OUTDIR" 2>/dev/null || fail "failed to create the backup directory"
  umask 077
  upload_file="$OUTDIR/.upload-$id.b64"
- [ ! -e "$upload_file" ] && [ ! -L "$upload_file" ] || fail "идентификатор загрузки уже используется"
- (set -C; : > "$upload_file") 2>/dev/null || fail "не удалось безопасно начать загрузку"
- say "Загрузка начата."
+ [ ! -e "$upload_file" ] && [ ! -L "$upload_file" ] || fail "the upload identifier is already in use"
+ (set -C; : > "$upload_file") 2>/dev/null || fail "failed to safely start the upload"
+ say "Upload started."
 }
 upload_chunk() {
  id=${2:-}; chunk=${3:-}
- case "$id" in ????????) ;; *) fail "неверный идентификатор загрузки" ;; esac
- case "$id" in *[!a-f0-9]*) fail "неверный идентификатор загрузки" ;; esac
- [ -n "$chunk" ] && [ "${#chunk}" -le 32768 ] || fail "неверный размер блока"
- case "$chunk" in *[!A-Za-z0-9+/=]*) fail "недопустимые символы блока" ;; esac
+ case "$id" in ????????) ;; *) fail "invalid upload identifier" ;; esac
+ case "$id" in *[!a-f0-9]*) fail "invalid upload identifier" ;; esac
+ [ -n "$chunk" ] && [ "${#chunk}" -le 32768 ] || fail "invalid chunk size"
+ case "$chunk" in *[!A-Za-z0-9+/=]*) fail "invalid chunk characters" ;; esac
  file="$OUTDIR/.upload-$id.b64"
- [ -f "$file" ] && [ ! -L "$file" ] || fail "загрузка не найдена"
- printf '%s' "$chunk" >> "$file" || fail "не удалось записать блок"
- say "Блок принят."
+ [ -f "$file" ] && [ ! -L "$file" ] || fail "upload not found"
+ printf '%s' "$chunk" >> "$file" || fail "failed to write the chunk"
+ say "Chunk accepted."
 }
 upload_abort() {
  id=${2:-}
- case "$id" in ????????) ;; *) fail "неверный идентификатор загрузки" ;; esac
- case "$id" in *[!a-f0-9]*) fail "неверный идентификатор загрузки" ;; esac
+ case "$id" in ????????) ;; *) fail "invalid upload identifier" ;; esac
+ case "$id" in *[!a-f0-9]*) fail "invalid upload identifier" ;; esac
  rm -f "$OUTDIR/.upload-$id.b64" "$OUTDIR/nightfall-backup-upload-$id.tar.gz"
- say "Временная загрузка удалена."
+ say "Temporary upload deleted."
 }
 upload_finish() {
- base64_available || fail "не найдена base64. Установите пакет coreutils-base64 (apk add coreutils-base64) или используйте сборку BusyBox с applet base64"
+ base64_available || fail "base64 not found. Install the coreutils-base64 package (apk add coreutils-base64) or use a BusyBox build with the base64 applet"
  id=${2:-}
- case "$id" in ????????) ;; *) fail "неверный идентификатор загрузки" ;; esac
- case "$id" in *[!a-f0-9]*) fail "неверный идентификатор загрузки" ;; esac
+ case "$id" in ????????) ;; *) fail "invalid upload identifier" ;; esac
+ case "$id" in *[!a-f0-9]*) fail "invalid upload identifier" ;; esac
  encoded="$OUTDIR/.upload-$id.b64"
  archive="$OUTDIR/nightfall-backup-upload-$id.tar.gz"
- [ -f "$encoded" ] && [ ! -L "$encoded" ] || fail "загрузка не найдена"
+ [ -f "$encoded" ] && [ ! -L "$encoded" ] || fail "upload not found"
  encoded_size=$(wc -c < "$encoded" | tr -d ' ')
- [ "$encoded_size" -gt 0 ] && [ "$encoded_size" -le 7000000 ] || fail "архив пустой или превышает 5 МБ"
+ [ "$encoded_size" -gt 0 ] && [ "$encoded_size" -le 7000000 ] || fail "the archive is empty or larger than 5 MB"
  [ ! -e "$archive.tmp" ] && [ ! -L "$archive.tmp" ] || rm -f "$archive.tmp"
- (set -C; base64_decode < "$encoded" > "$archive.tmp") 2>/dev/null || { rm -f "$archive.tmp"; fail "не удалось безопасно декодировать архив"; }
+ (set -C; base64_decode < "$encoded" > "$archive.tmp") 2>/dev/null || { rm -f "$archive.tmp"; fail "failed to safely decode the archive"; }
  rm -f "$encoded"
- mv "$archive.tmp" "$archive" || fail "не удалось сохранить архив"
+ mv "$archive.tmp" "$archive" || fail "failed to save the archive"
  chmod 600 "$archive" 2>/dev/null
  inspect_archive "$archive"
- say "Архив загружен: $archive"
+ say "Archive uploaded: $archive"
 }
 case "${1:-}" in
  create) create_backup "$@" ;;
@@ -436,7 +436,7 @@ case "${1:-}" in
  upload-chunk) upload_chunk "$@" ;;
  upload-finish) upload_finish "$@" ;;
  upload-abort) upload_abort "$@" ;;
- list) [ -n "${2:-}" ] || fail "укажите путь к архиву"; inspect_archive "$2" ;;
- restore) [ -n "${2:-}" ] || fail "укажите путь к архиву"; restore_backup "$2" "${3:-preview}" ;;
- *) echo "Использование: $0 create [FILE] | list FILE | restore FILE [apply] | download-info NAME | download NAME OFFSET [LENGTH] | upload-start ID | upload-chunk ID BASE64 | upload-finish ID | upload-abort ID" >&2; exit 2 ;;
+ list) [ -n "${2:-}" ] || fail "specify the archive path"; inspect_archive "$2" ;;
+ restore) [ -n "${2:-}" ] || fail "specify the archive path"; restore_backup "$2" "${3:-preview}" ;;
+ *) echo "Usage: $0 create [FILE] | list FILE | restore FILE [apply] | download-info NAME | download NAME OFFSET [LENGTH] | upload-start ID | upload-chunk ID BASE64 | upload-finish ID | upload-abort ID" >&2; exit 2 ;;
 esac

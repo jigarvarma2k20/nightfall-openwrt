@@ -53,23 +53,23 @@ BEGIN {
 
   am["8.8.8.8"] = "Google"
   check("application identity remains Google", appof("8.8.8.8"), "Google")
-  check("unmapped VPN endpoint is identified as lacking DNS", appof("195.19.105.24"), "Прочее · Нет DNS-имени")
+  check("unmapped VPN endpoint is identified as lacking DNS", appof("195.19.105.24"), "Other · No DNS name")
   mapadd("203.0.113.1", "YouTube")
-  mapadd("203.0.113.1", "Прочее · googlevideo.com")
+  mapadd("203.0.113.1", "Other · googlevideo.com")
   mapfinish()
   check("one known service wins over generic DNS alias", appof("203.0.113.1"), "YouTube")
   mapadd("203.0.113.2", "YouTube")
   mapadd("203.0.113.2", "Netflix")
   mapfinish()
-  check("shared IP for two known services stays unclassified with reason", appof("203.0.113.2"), "Прочее · Общий IP (CDN)")
-  mapadd("203.0.113.3", "Прочее · cdn.example")
-  mapadd("203.0.113.3", "Прочее · media.example")
+  check("shared IP for two known services stays unclassified with reason", appof("203.0.113.2"), "Other · Shared IP (CDN)")
+  mapadd("203.0.113.3", "Other · cdn.example")
+  mapadd("203.0.113.3", "Other · media.example")
   mapfinish()
-  check("ambiguous unknown domains do not pick the last DNS name", appof("203.0.113.3"), "Прочее · Несколько доменов")
-  mapadd("203.0.113.4", "Прочее · unique.example")
+  check("ambiguous unknown domains do not pick the last DNS name", appof("203.0.113.3"), "Other · Multiple domains")
+  mapadd("203.0.113.4", "Other · unique.example")
   mapfinish()
-  check("single unknown domain remains available for detail", appof("203.0.113.4"), "Прочее · unique.example")
-  check("destination without DNS map gets explicit reason", appof("203.0.113.99"), "Прочее · Нет DNS-имени")
+  check("single unknown domain remains available for detail", appof("203.0.113.4"), "Other · unique.example")
+  check("destination without DNS map gets explicit reason", appof("203.0.113.99"), "Other · No DNS name")
   if (failed) exit 1
 }
 AWK

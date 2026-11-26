@@ -1,5 +1,5 @@
 #!/bin/sh
-# Проверка классификатора устройств из настоящего nightfall-collector.
+# Checks the device classifier from the real nightfall-collector.
 set -eu
 cd "$(dirname "$0")/.."
 COLLECTOR="luci-app-nightfall-monitor/root/usr/libexec/nightfall-collector"
@@ -34,4 +34,4 @@ vpn-tunnel-address 172.16.0.2 0
 public-address 8.8.8.8 0
 ula-client fd61:bde8:2d8d::805 1
 CASES
-echo "Классификатор LAN: все проверки пройдены."
+echo "LAN classifier: all checks passed."

@@ -18,10 +18,10 @@
 		[ 'win11', 'Windows 11', { style: '', accent: '', bg: 'mica', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true } ],
 		[ 'glass', 'Liquid Glass', { style: 'glass', accent: '#0a84ff', bg: 'mica', density: 'normal', font: 'md', radius: 'round', glass: 'on', motion: true } ],
 		[ 'macos', 'macOS', { style: 'mac', accent: '#007aff', bg: 'flat', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true, cusOn: false } ],
-		[ 'night', 'Ночь', { style: '', mode: 'dark', accent: '#4f6bed', bg: 'stars', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true } ],
-		[ 'aurora', 'Аврора', { style: 'glass', mode: 'dark', accent: '#038387', bg: 'aurora', density: 'normal', font: 'md', radius: 'round', glass: 'on', motion: true } ],
-		[ 'graphite', 'Графит', { style: '', mode: 'dark', accent: '#69797e', bg: 'flat', density: 'compact', font: 'md', radius: 'sharp', glass: 'on', motion: true } ],
-		[ 'sakura', 'Сакура', { style: 'glass', mode: 'light', accent: '#e3008c', bg: 'waves', density: 'normal', font: 'md', radius: 'round', glass: 'on', motion: true } ],
+		[ 'night', 'Night', { style: '', mode: 'dark', accent: '#4f6bed', bg: 'stars', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true } ],
+		[ 'aurora', 'Aurora', { style: 'glass', mode: 'dark', accent: '#038387', bg: 'aurora', density: 'normal', font: 'md', radius: 'round', glass: 'on', motion: true } ],
+		[ 'graphite', 'Graphite', { style: '', mode: 'dark', accent: '#69797e', bg: 'flat', density: 'compact', font: 'md', radius: 'sharp', glass: 'on', motion: true } ],
+		[ 'sakura', 'Sakura', { style: 'glass', mode: 'light', accent: '#e3008c', bg: 'waves', density: 'normal', font: 'md', radius: 'round', glass: 'on', motion: true } ],
 		[ 'nord', 'Nord', { style: '', mode: 'dark', accent: '#88c0d0', bg: 'flat', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true, cusOn: true, cusBg: '#2e3440', cusCard: '#3b4252', cusText: '#eceff4' } ],
 		[ 'dracula', 'Dracula', { style: '', mode: 'dark', accent: '#bd93f9', bg: 'flat', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true, cusOn: true, cusBg: '#282a36', cusCard: '#343746', cusText: '#f8f8f2' } ],
 		[ 'tokyo', 'Tokyo Night', { style: '', mode: 'dark', accent: '#7aa2f7', bg: 'flat', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true, cusOn: true, cusBg: '#1a1b26', cusCard: '#24283b', cusText: '#c0caf5' } ],
@@ -30,33 +30,33 @@
 		[ 'rosepine', 'Rosé Pine', { style: '', mode: 'dark', accent: '#ebbcba', bg: 'flat', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true, cusOn: true, cusBg: '#191724', cusCard: '#1f1d2e', cusText: '#e0def4' } ],
 		[ 'oled', 'OLED', { style: '', mode: 'dark', accent: '#0a84ff', bg: 'flat', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true, cusOn: true, cusBg: '#000000', cusCard: '#0c0c0e', cusText: '#f2f2f2' } ],
 		[ 'terminal', 'Terminal', { style: '', mode: 'dark', accent: '#33ff66', bg: 'flat', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true, cusOn: true, cusBg: '#050a06', cusCard: '#0b140d', cusText: '#b8f5c4', cusFont: 'mono', cusRadius: 2 } ],
-		[ 'paper', 'Бумага', { style: '', mode: 'light', accent: '#b45309', bg: 'flat', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true, cusOn: true, cusBg: '#f4efe6', cusCard: '#fbf7ef', cusText: '#2b2620', cusFont: 'serif' } ],
-		[ 'newyear', 'Новый год', { style: '', mode: 'dark', accent: '#e5484d', bg: 'garland', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true, cusOn: true, cusBg: '#0b1a14', cusCard: '#12261d', cusText: '#f3efe6' } ],
-		[ 'autumn', 'Осень', { style: '', mode: 'light', accent: '#c2410c', bg: 'leaves', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true, cusOn: true, cusBg: '#f6ece0', cusCard: '#fff8ef', cusText: '#3a2a1c' } ],
+		[ 'paper', 'Paper', { style: '', mode: 'light', accent: '#b45309', bg: 'flat', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true, cusOn: true, cusBg: '#f4efe6', cusCard: '#fbf7ef', cusText: '#2b2620', cusFont: 'serif' } ],
+		[ 'newyear', 'New Year', { style: '', mode: 'dark', accent: '#e5484d', bg: 'garland', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true, cusOn: true, cusBg: '#0b1a14', cusCard: '#12261d', cusText: '#f3efe6' } ],
+		[ 'autumn', 'Autumn', { style: '', mode: 'light', accent: '#c2410c', bg: 'leaves', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true, cusOn: true, cusBg: '#f6ece0', cusCard: '#fff8ef', cusText: '#3a2a1c' } ],
 		[ 'solard', 'Solarized Dark', { style: '', mode: 'dark', accent: '#268bd2', bg: 'flat', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true, cusOn: true, cusBg: '#002b36', cusCard: '#073642', cusText: '#93a1a1' } ],
 		[ 'solarl', 'Solarized Light', { style: '', mode: 'light', accent: '#268bd2', bg: 'flat', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true, cusOn: true, cusBg: '#fdf6e3', cusCard: '#eee8d5', cusText: '#586e75' } ],
 		[ 'latte', 'Catppuccin Latte', { style: '', mode: 'light', accent: '#8839ef', bg: 'flat', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true, cusOn: true, cusBg: '#eff1f5', cusCard: '#e6e9ef', cusText: '#4c4f69' } ],
-		[ 'mountains', 'Горы', { style: '', mode: 'dark', accent: '#7c9cff', bg: 'mountains', loginBg: 'mountains', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true } ],
-		[ 'city', 'Ночной город', { style: '', mode: 'dark', accent: '#c084fc', bg: 'city', loginBg: 'city', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true } ],
-		[ 'space', 'Космос', { style: '', mode: 'dark', accent: '#8b5cf6', bg: 'space', loginBg: 'space', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true } ],
-		[ 'lava', 'Лава', { style: '', mode: 'dark', accent: '#ff6b35', bg: 'lava', loginBg: 'lava', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true } ],
-		[ 'synthwave', 'Синтвейв', { style: '', mode: 'dark', accent: '#ff3d9a', bg: 'cyber', loginBg: 'cyber', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true } ],
-		[ 'rainy', 'Дождливый вечер', { style: '', mode: 'dark', accent: '#7fb2ff', bg: 'rainglass', loginBg: 'rainglass', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true } ],
-		[ 'nightforest', 'Ночной лес', { style: '', mode: 'dark', accent: '#9be15d', bg: 'forest', loginBg: 'forest', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true } ],
-		[ 'fogpeaks', 'Туманные горы', { style: '', mode: 'dark', accent: '#c58bd6', bg: 'fogmount', loginBg: 'fogmount', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true } ],
-		[ 'deepsea', 'Подводный мир', { style: '', mode: 'dark', accent: '#4fd1e8', bg: 'underwater', loginBg: 'underwater', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true } ],
+		[ 'mountains', 'Mountains', { style: '', mode: 'dark', accent: '#7c9cff', bg: 'mountains', loginBg: 'mountains', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true } ],
+		[ 'city', 'Night city', { style: '', mode: 'dark', accent: '#c084fc', bg: 'city', loginBg: 'city', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true } ],
+		[ 'space', 'Space', { style: '', mode: 'dark', accent: '#8b5cf6', bg: 'space', loginBg: 'space', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true } ],
+		[ 'lava', 'Lava', { style: '', mode: 'dark', accent: '#ff6b35', bg: 'lava', loginBg: 'lava', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true } ],
+		[ 'synthwave', 'Synthwave', { style: '', mode: 'dark', accent: '#ff3d9a', bg: 'cyber', loginBg: 'cyber', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true } ],
+		[ 'rainy', 'Rainy evening', { style: '', mode: 'dark', accent: '#7fb2ff', bg: 'rainglass', loginBg: 'rainglass', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true } ],
+		[ 'nightforest', 'Night forest', { style: '', mode: 'dark', accent: '#9be15d', bg: 'forest', loginBg: 'forest', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true } ],
+		[ 'fogpeaks', 'Misty mountains', { style: '', mode: 'dark', accent: '#c58bd6', bg: 'fogmount', loginBg: 'fogmount', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true } ],
+		[ 'deepsea', 'Underwater', { style: '', mode: 'dark', accent: '#4fd1e8', bg: 'underwater', loginBg: 'underwater', density: 'normal', font: 'md', radius: 'md', glass: 'on', motion: true } ],
 	];
-	var BGS = [ [ 'mica', 'Mica' ], [ 'flat', 'Плоский' ], [ 'dots', 'Точки' ], [ 'grid', 'Сетка' ], [ 'stars', 'Звёзды' ], [ 'aurora', 'Аврора' ], [ 'waves', 'Волны' ], [ 'mesh', 'Перелив' ], [ 'drift', 'Частицы' ], [ 'neon', 'Неон' ], [ 'sunset', 'Закат' ], [ 'ocean', 'Океан' ], [ 'snow', 'Снег' ], [ 'rain', 'Дождь' ], [ 'tod', 'День/ночь' ], [ 'weather', 'Погода' ], [ 'garland', 'Гирлянда' ], [ 'leaves', 'Листопад' ], [ 'mountains', 'Горы' ], [ 'city', 'Город' ], [ 'space', 'Космос' ], [ 'lava', 'Лава' ], [ 'cyber', 'Синтвейв' ], [ 'rainglass', 'Ливень' ], [ 'forest', 'Лес' ], [ 'fogmount', 'Туман' ], [ 'underwater', 'Глубина' ], [ 'live', 'Живой' ] ];
+	var BGS = [ [ 'mica', 'Mica' ], [ 'flat', 'Flat' ], [ 'dots', 'Dots' ], [ 'grid', 'Grid' ], [ 'stars', 'Stars' ], [ 'aurora', 'Aurora' ], [ 'waves', 'Waves' ], [ 'mesh', 'Mesh' ], [ 'drift', 'Particles' ], [ 'neon', 'Neon' ], [ 'sunset', 'Sunset' ], [ 'ocean', 'Ocean' ], [ 'snow', 'Snow' ], [ 'rain', 'Rain' ], [ 'tod', 'Day/night' ], [ 'weather', 'Weather' ], [ 'garland', 'Garland' ], [ 'leaves', 'Falling leaves' ], [ 'mountains', 'Mountains' ], [ 'city', 'City' ], [ 'space', 'Space' ], [ 'lava', 'Lava' ], [ 'cyber', 'Synthwave' ], [ 'rainglass', 'Downpour' ], [ 'forest', 'Forest' ], [ 'fogmount', 'Fog' ], [ 'underwater', 'Deep sea' ], [ 'live', 'Live' ] ];
 
 	var ACCENTS = [
-		[ '', 'Синий (по умолчанию)', '#0067c0' ],
-		[ '#4f6bed', 'Индиго' ], [ '#8764b8', 'Фиолетовый' ], [ '#b146c2', 'Орхидея' ],
-		[ '#e3008c', 'Розовый' ], [ '#d13438', 'Красный' ], [ '#ca5010', 'Оранжевый' ],
-		[ '#c19c00', 'Золотой' ], [ '#498205', 'Олива' ], [ '#107c10', 'Зелёный' ],
-		[ '#038387', 'Бирюзовый' ], [ '#69797e', 'Графит' ]
+		[ '', 'Blue (default)', '#0067c0' ],
+		[ '#4f6bed', 'Indigo' ], [ '#8764b8', 'Purple' ], [ '#b146c2', 'Orchid' ],
+		[ '#e3008c', 'Pink' ], [ '#d13438', 'Red' ], [ '#ca5010', 'Orange' ],
+		[ '#c19c00', 'Gold' ], [ '#498205', 'Olive' ], [ '#107c10', 'Green' ],
+		[ '#038387', 'Teal' ], [ '#69797e', 'Graphite' ]
 	];
 
-	/* плитки «Потери пакетов», «Сигнал Wi‑Fi», «Трафик за сутки», «Хранилище» (v1.15): у тех, кто уже настраивал плитки, они скрыты, пока их не включат */
+	/* "Packet loss", "Wi‑Fi signal", "Traffic today", "Storage" tiles (v1.15): hidden for users who already customized tiles until they turn them on */
 	function tilesV2(p) {
 		if (p && typeof p === 'object' && p.ovTv !== 2) {
 			if (typeof p.ovHide === 'string') {
@@ -84,10 +84,10 @@
 		if (!fromRouter) { setLocalT(Date.now()); push(); }
 	}
 
-	/* ---------- копия настроек на роутере ----------
-	 * Настройки лежат в localStorage, а он у каждого браузера (и у ярлыка на экране «Домой») свой и может очищаться.
-	 * Поэтому после входа копия пишется на роутер (/etc/nightfall-prefs.json, раздаётся как prefs.json),
-	 * а при открытии страницы, в том числе экрана входа, подтягивается более новая версия. */
+	/* ---------- settings copy on the router ----------
+	 * Settings live in localStorage, which is separate for every browser (and Home screen shortcut) and may be cleared.
+	 * So after sign-in a copy is written to the router (/etc/nightfall-prefs.json, served as prefs.json),
+	 * and when a page opens, including the sign-in screen, a newer version is pulled. */
 	var TKEY = 'nightfall-prefs-t';
 	var fromRouter = false, pushTimer = 0, dirty = false;
 	var BASE = (function () { var s = document.currentScript; return s && s.src ? s.src.replace(/[^\/]*$/, '') : '/luci-static/nightfall/'; })();
@@ -100,7 +100,7 @@
 	function pushNow(manual) {
 		clearTimeout(pushTimer); pushTimer = 0;
 		var env = sid();
-		if (!env || !window.fetch) { if (manual === true) syncNote('Копия на роутер пишется только после входа в LuCI.'); return Promise.resolve(); }
+		if (!env || !window.fetch) { if (manual === true) syncNote('The router copy is only written after signing in to LuCI.'); return Promise.resolve(); }
 		if (!dirty && manual !== true) return Promise.resolve();
 		dirty = false;
 		var data = JSON.stringify({ t: localT() || Date.now(), p: prefs });
@@ -111,17 +111,17 @@
 			.then(function (j) {
 				var res = j && j.result, ok = false, why = '';
 				if (res && res[0] === 0) { try { ok = !!JSON.parse((res[1] && res[1].stdout) || '{}').ok; if (!ok) why = (JSON.parse(res[1].stdout).error) || ''; } catch (e) { ok = false; } }
-				else if (res && res[0] === 6) why = 'нет прав: выйдите и войдите в LuCI заново';
-				else if (j && j.error) why = j.error.message || 'ошибка rpc';
-				else why = 'роутер не ответил (установлен ли пакет монитора nightfall?)';
-				if (ok) syncNote('Настройки сохранены на роутере в ' + hhmm() + ': в других браузерах они подтянутся сами.');
-				else { dirty = true; syncNote('Не удалось сохранить на роутере' + (why ? ': ' + why : '') + '.'); }
-			}).catch(function () { dirty = true; syncNote('Не удалось сохранить на роутере: нет связи.'); });
+				else if (res && res[0] === 6) why = 'access denied: sign out and sign in to LuCI again';
+				else if (j && j.error) why = j.error.message || 'rpc error';
+				else why = 'the router did not respond (is the nightfall monitor package installed?)';
+				if (ok) syncNote('Settings saved on the router at ' + hhmm() + ': other browsers will pick them up automatically.');
+				else { dirty = true; syncNote('Could not save on the router' + (why ? ': ' + why : '') + '.'); }
+			}).catch(function () { dirty = true; syncNote('Could not save on the router: no connection.'); });
 	}
 	function push() {
 		dirty = true;
 		clearTimeout(pushTimer);
-		pushTimer = setTimeout(pushNow, 3000);      /* ползунки не должны писать на флеш на каждый шаг, но другой браузер должен увидеть изменения быстро */
+		pushTimer = setTimeout(pushNow, 3000);      /* sliders must not write to flash on every step, but another browser should see changes quickly */
 	}
 	function pull(force) {
 		if (!window.fetch) return Promise.resolve();
@@ -139,13 +139,13 @@
 				}
 				if (d.t === lt) return;
 			}
-			if (hasLocal && sid()) { if (!lt) setLocalT(Date.now()); dirty = true; pushNow(); }   /* на роутере нет или старее: сохраняем текущие */
-		}).catch(function () { /* нет копии на роутере — работаем с локальной */ });
+			if (hasLocal && sid()) { if (!lt) setLocalT(Date.now()); dirty = true; pushNow(); }   /* missing or older on the router: save the current ones */
+		}).catch(function () { /* no copy on the router: use the local one */ });
 	}
 	var lastPull = 0;
 	document.addEventListener('visibilitychange', function () {
 		if (document.visibilityState === 'hidden') pushNow();
-		else if (Date.now() - lastPull > 20000) { lastPull = Date.now(); pull(); }      /* вернулись во вкладку: подтягиваем свежие настройки с роутера */
+		else if (Date.now() - lastPull > 20000) { lastPull = Date.now(); pull(); }      /* back in the tab: pull fresh settings from the router */
 	});
 	window.addEventListener('pagehide', function () { pushNow(); });
 	window.addEventListener('load', function () { window.setTimeout(function () { pull(); window.setTimeout(fetchLogo, 700); window.setTimeout(fetchPhoto, 900); }, 200); window.setTimeout(loadVer, 600); });
@@ -270,7 +270,7 @@
 		applyAccent();
 	}
 
-	/* ---- своя картинка на экране входа: копия в localStorage (быстро) и на роутере (logo.json, для других браузеров) ---- */
+	/* ---- custom image on the sign-in screen: copy in localStorage (fast) and on the router (logo.json, for other browsers) ---- */
 	var LOGOKEY = 'nightfall-logo-v1';
 	function applyLogo() {
 		var d = null;
@@ -289,17 +289,17 @@
 		try { if (window.localStorage.getItem(LOGOKEY)) return; } catch (e) { return; }
 		window.fetch(BASE + 'logo.json?' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
 			if (d && typeof d.d === 'string') { try { window.localStorage.setItem(LOGOKEY, d.d); } catch (e) { /* ignore */ } applyLogo(); }
-		}).catch(function () { /* нет картинки на роутере */ });
+		}).catch(function () { /* no image on the router */ });
 	}
 	function routerExec(args) {
 		var env = sid();
-		if (!env || !window.fetch) return Promise.reject(new Error('нет сессии'));
+		if (!env || !window.fetch) return Promise.reject(new Error('no session'));
 		return window.fetch(env.ubuspath || '/ubus/', { method: 'POST', headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'call', params: [ env.sessionid, 'file', 'exec', { command: '/usr/libexec/nightfall-config', params: args } ] }) })
 			.then(function (r) { return r.json(); }).then(function (j) {
 				var o = j && j.result && j.result[1] ? j.result[1] : {};
 				var out = {}; try { out = JSON.parse(o.stdout || '{}'); } catch (e) { /* ignore */ }
-				if (!out.ok) throw new Error(out.error || 'роутер не принял картинку (после обновления выйдите и войдите в LuCI снова)');
+				if (!out.ok) throw new Error(out.error || 'the router rejected the image (after updating, sign out and sign in to LuCI again)');
 			});
 	}
 	function readLogo(file, done) {
@@ -324,12 +324,10 @@
 	}
 
 
-	/* ---------- карточки со сводкой на экране входа ----------
-	 * Рисуются здесь, а не в login.js: этот файл подключается с номером сборки и обновляется сразу,
-	 * а модули LuCI браузер может держать в кэше после обновления темы. */
+	/* ---------- summary cards on the sign-in screen ----------
+	 * Drawn here, not in login.js: this file is loaded with the build number and updates immediately,
+	 * while the browser may keep LuCI modules cached after a theme update. */
 	var LTXT = {
-		ru: { net: 'Интернет', up: 'Работает', fw: 'Прошивка', speed: 'Скорость', test: 'Замер скорости', mbit: 'Мбит/с', temp: 'Температура', cpu: 'Процессор', mem: 'Память', cl: 'Устройств',
-			online: 'есть', offline: 'нет связи', nodata: 'нет данных', ms: 'мс', d: 'д', h: 'ч', m: 'мин', dec: ',' },
 		en: { net: 'Internet', up: 'Uptime', fw: 'Firmware', speed: 'Speed', test: 'Speed test', mbit: 'Mbit/s', temp: 'Temperature', cpu: 'CPU', mem: 'Memory', cl: 'Devices',
 			online: 'online', offline: 'offline', nodata: 'no data', ms: 'ms', d: 'd', h: 'h', m: 'min', dec: '.' }
 	};
@@ -378,7 +376,7 @@
 		var info = document.getElementById('view'), plate = document.querySelector('.modal.login .nf-plate');
 		if (!info || !plate || info.dataset.local !== '1') return;
 		var keys = Array.isArray(prefs.loginCells) ? prefs.loginCells.slice(0, 3) : [ 'net', 'up', 'fw' ];
-		var T = /^ru|^uk|^be/i.test(document.documentElement.lang || '') ? LTXT.ru : LTXT.en;
+		var T = LTXT.en;
 		var cells = keys.map(function (k) { return loginCell(k, info.dataset, T); }).filter(Boolean);
 		var sig = keys.join(',') + '|' + Object.keys(info.dataset).map(function (k) { return info.dataset[k]; }).join(',');
 		var old = plate.parentNode.querySelector('.nf-stats');
@@ -395,12 +393,12 @@
 		document.addEventListener('nf-prefs', renderLoginStats);
 	});
 
-	/* слабое устройство: мало памяти или ядер; тогда анимации выключаются сами (можно отключить это в «Персонализации») */
+	/* weak device: little memory or few cores; animations then turn off automatically (can be disabled in Personalization) */
 	function weakDevice() {
 		try { return (navigator.deviceMemory && navigator.deviceMemory <= 2) || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2); } catch (e) { return false; }
 	}
 
-	/* часть суток для фона входа: утро 5–10, день 10–17, вечер 17–21, ночь 21–5 */
+	/* time of day for the sign-in background: morning 5–10, day 10–17, evening 17–21, night 21–5 */
 	function todPart() {
 		var hr = new Date().getHours();
 		return hr >= 5 && hr < 10 ? 'dawn' : hr >= 10 && hr < 17 ? 'day' : hr >= 17 && hr < 21 ? 'dusk' : 'night';
@@ -435,7 +433,7 @@
 	function initTabbar() {
 		var menu = document.getElementById('topmenu');
 		if (!menu || document.getElementById('nf-tabbar')) return;
-		var bar = h('nav', { id: 'nf-tabbar', 'aria-label': 'Разделы' });
+		var bar = h('nav', { id: 'nf-tabbar', 'aria-label': 'Sections' });
 		var sheet = h('div', { id: 'nf-sheet', 'aria-hidden': 'true' });
 		var panel = h('div', { 'class': 'nf-sheet-p', role: 'dialog' });
 		sheet.appendChild(panel);
@@ -448,7 +446,7 @@
 			items.forEach(function (li) {
 				var here = location.pathname + location.search;
 				var own = li.firstElementChild, ls = links(li);
-				/* пункт без подменю (например «Выйти») — просто ссылка */
+				/* item without a submenu (e.g. "Log out"): just a link */
 				if (!ls.length && own && own.getAttribute('href') && own.getAttribute('href') !== '#') {
 					var one = h('a', { href: own.getAttribute('href'), 'class': 'nf-sheet-single', text: own.textContent });
 					if (li.classList.contains('active')) one.className += ' cur';
@@ -470,7 +468,7 @@
 		}
 		sheet.addEventListener('click', function (ev) { if (ev.target === sheet || ev.target.tagName === 'A') close(); });
 		bar.addEventListener('click', function () { buzz(8); }, true);
-		/* свайп вниз закрывает шторку (когда она прокручена к началу) */
+		/* swiping down closes the sheet (when it is scrolled to the top) */
 		(function () {
 			var y0 = null, dy = 0;
 			panel.addEventListener('touchstart', function (ev) { y0 = panel.scrollTop <= 0 ? ev.touches[0].clientY : null; dy = 0; panel.style.transition = 'none'; }, { passive: true });
@@ -502,7 +500,7 @@
 				bar.appendChild(b);
 			});
 			if (rest.length) {
-				var m = h('button', { type: 'button' }, [ tabIcon('more'), h('span', { text: 'Ещё' }) ]);
+				var m = h('button', { type: 'button' }, [ tabIcon('more'), h('span', { text: 'More' }) ]);
 				if (rest.some(function (li) { return li.classList.contains('active'); })) m.setAttribute('aria-current', 'page');
 				m.addEventListener('click', function () { open(m, rest, true); });
 				bar.appendChild(m);
@@ -516,7 +514,7 @@
 		}
 	}
 
-	/* ярлык «Перезапустить Wi-Fi»: открывается обзор, кнопка подсвечивается, действие подтверждается как обычно */
+	/* "Restart Wi-Fi" shortcut: opens the Overview, highlights the button; the action is confirmed as usual */
 	function initHashAction() {
 		if (location.hash !== '#nf-wifi') return;
 		var tries = 0, t = setInterval(function () {
@@ -527,11 +525,11 @@
 		}, 250);
 	}
 
-	/* ---- мобильные жесты и быстрая работа ---- */
+	/* ---- mobile gestures and responsiveness ---- */
 	function buzz(ms) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) {} }
 	var mqPhone = window.matchMedia('(max-width: 899px)');
 
-	/* свайп влево/вправо — соседняя вкладка раздела (телефон) */
+	/* swipe left/right: adjacent tab of the section (phone) */
 	function initSwipe() {
 		var x0 = null, y0 = 0, t0 = 0;
 		function blocked(t) {
@@ -560,7 +558,7 @@
 		});
 	}
 
-	/* потянуть вниз — обновить страницу (только у верхнего края и без открытых окон) */
+	/* pull down to refresh the page (only at the top edge and with no dialogs open) */
 	function initPull() {
 		var ind = h('div', { id: 'nf-ptr', 'aria-hidden': 'true' }, [ h('span') ]);
 		document.body.appendChild(ind);
@@ -587,7 +585,7 @@
 		});
 	}
 
-	/* таблицы мониторинга: подписи столбцов в каждой ячейке, чтобы строки стали карточками */
+	/* monitoring tables: column labels in every cell so rows become cards */
 	function labelTables() {
 		Array.prototype.forEach.call(document.querySelectorAll('.nfm-table'), function (t) {
 			var heads = Array.prototype.map.call(t.querySelectorAll('thead th'), function (th) { return th.textContent.replace(/\s*[↓↑]\s*$/, '').trim(); });
@@ -602,45 +600,47 @@
 		new MutationObserver(function () { if (!raf) raf = requestAnimationFrame(function () { raf = 0; labelTables(); }); })
 			.observe(document.body, { childList: true, subtree: true });
 		labelTables();
-		/* лёгкая вибрация на быстрых действиях обзора */
+		/* light vibration on Overview quick actions */
 		document.addEventListener('click', function (ev) { if (ev.target.closest && ev.target.closest('.nf-qa')) buzz(10); }, true);
 	}
 
-	/* ---- подсказки по терминам ---- */
+	/* ---- term hints ---- */
 	var installEvt = null;
 	window.addEventListener('beforeinstallprompt', function (ev) { ev.preventDefault(); installEvt = ev; if (refs.install) refs.install.hidden = false; });
 
 	var GLOSS = [
-		[ 'MTU', 'MTU', 'Максимальный размер одного пакета в байтах. Обычно 1500, для PPPoE 1492. Слишком большое значение ломает часть сайтов.' ],
-		[ 'DHCP', 'DHCP', 'Служба, которая автоматически выдаёт устройствам IP-адрес, шлюз и DNS при подключении к сети.' ],
-		[ 'DNS', 'DNS', 'Переводит имена сайтов в IP-адреса. Если DNS не отвечает, сайты не открываются, хотя интернет есть.' ],
-		[ 'NAT', 'NAT', 'Трансляция адресов: все устройства дома выходят в интернет под одним внешним адресом роутера.' ],
-		[ 'SSID', 'SSID', 'Имя Wi‑Fi сети, которое видно в списке сетей на телефоне и ноутбуке.' ],
-		[ 'WPA3', 'WPA3', 'Новый стандарт защиты Wi‑Fi. Надёжнее WPA2, но старые устройства могут его не поддерживать.' ],
-		[ 'WPA2', 'WPA2', 'Распространённый стандарт защиты Wi‑Fi паролем. Подходит почти всем устройствам.' ],
-		[ 'VLAN', 'VLAN', 'Логическое разделение сети на изолированные сегменты на одних и тех же кабелях и портах.' ],
-		[ 'MAC', 'MAC-адрес', 'Уникальный адрес сетевой карты устройства. По нему роутер отличает одно устройство от другого.' ],
-		[ 'IPv6', 'IPv6', 'Новая версия адресов в интернете с гораздо большим пространством, чем IPv4.' ],
-		[ 'TTL', 'TTL', 'Сколько «прыжков» через роутеры может пройти пакет, прежде чем будет отброшен.' ],
-		[ 'QoS', 'QoS', 'Приоритизация трафика: например, звонки и игры получают канал раньше загрузок.' ],
-		[ 'SQM', 'SQM', 'Умное управление очередями, снижает задержку под нагрузкой (bufferbloat).' ],
-		[ 'WAN', 'WAN', 'Внешняя сеть: подключение роутера к провайдеру и интернету.' ],
-		[ 'LAN', 'LAN', 'Локальная сеть дома: устройства, подключённые к роутеру кабелем или по Wi‑Fi.' ],
-		[ 'PPPoE', 'PPPoE', 'Способ подключения к провайдеру по логину и паролю. Часто встречается у DSL и некоторых оптоволоконных провайдеров.' ],
-		[ 'DMZ', 'DMZ', 'Устройство, для которого открыты все входящие соединения. Используйте с осторожностью.' ],
-		[ 'DFS', 'DFS', 'Каналы 5 ГГц, которые нужно освобождать при обнаружении радара. Могут быть чище, но иногда переключаются сами.' ],
-		[ 'ARP', 'ARP', 'Сопоставляет IP-адреса и MAC-адреса устройств в локальной сети.' ],
-		[ 'NTP', 'NTP', 'Синхронизация времени через интернет. Нужна для журналов и сертификатов.' ],
-		[ 'SSH', 'SSH', 'Защищённый удалённый доступ к командной строке роутера.' ],
-		[ 'шлюз', 'Шлюз', 'Адрес устройства, через которое трафик уходит за пределы вашей сети, обычно роутер провайдера.' ],
-		[ 'маска', 'Маска подсети', 'Определяет, какая часть IP-адреса относится к сети, а какая к устройству. Чаще всего 255.255.255.0.' ],
-		[ 'мост', 'Мост', 'Объединяет несколько портов или сетей в одну, как будто они подключены к одному коммутатору.' ],
-		[ 'Bridge', 'Мост (bridge)', 'Объединяет несколько портов или сетей в одну, как будто они подключены к одному коммутатору.' ],
-		[ 'Beamforming', 'Beamforming', 'Роутер направляет сигнал Wi‑Fi в сторону устройства, улучшая скорость и дальность.' ],
-		[ 'Mesh', 'Mesh', 'Несколько точек доступа образуют одну Wi‑Fi сеть с бесшовным переходом между ними.' ],
-		[ 'DDNS', 'DDNS', 'Постоянное имя для роутера, даже если провайдер меняет внешний IP-адрес.' ],
-		[ 'Firewall', 'Файрвол', 'Межсетевой экран: решает, какой трафик пропускать, а какой блокировать.' ],
-		[ 'Межсетевой экран', 'Межсетевой экран', 'Решает, какой трафик пропускать, а какой блокировать.' ]
+		[ 'MTU', 'MTU', 'Maximum size of a single packet in bytes. Usually 1500, 1492 for PPPoE. Too large a value breaks some websites.' ],
+		[ 'DHCP', 'DHCP', 'A service that automatically gives devices an IP address, gateway and DNS when they join the network.' ],
+		[ 'DNS', 'DNS', 'Translates website names into IP addresses. If DNS does not respond, websites will not open even though the internet works.' ],
+		[ 'NAT', 'NAT', 'Address translation: all home devices go online under the router\'s single external address.' ],
+		[ 'SSID', 'SSID', 'The Wi‑Fi network name shown in the network list on phones and laptops.' ],
+		[ 'WPA3', 'WPA3', 'The newer Wi‑Fi security standard. More secure than WPA2, but older devices may not support it.' ],
+		[ 'WPA2', 'WPA2', 'The common password-based Wi‑Fi security standard. Works with almost all devices.' ],
+		[ 'VLAN', 'VLAN', 'Logical splitting of a network into isolated segments over the same cables and ports.' ],
+		[ 'MAC', 'MAC address', 'The unique address of a device\'s network adapter. The router uses it to tell devices apart.' ],
+		[ 'IPv6', 'IPv6', 'The newer internet addressing version with a much larger address space than IPv4.' ],
+		[ 'TTL', 'TTL', 'How many "hops" through routers a packet can make before it is dropped.' ],
+		[ 'QoS', 'QoS', 'Traffic prioritization: for example, calls and games get bandwidth before downloads.' ],
+		[ 'SQM', 'SQM', 'Smart queue management; reduces latency under load (bufferbloat).' ],
+		[ 'WAN', 'WAN', 'External network: the router\'s connection to the ISP and the internet.' ],
+		[ 'LAN', 'LAN', 'Home local network: devices connected to the router by cable or Wi‑Fi.' ],
+		[ 'PPPoE', 'PPPoE', 'A way to connect to the ISP with a username and password. Common with DSL and some fiber ISPs.' ],
+		[ 'DMZ', 'DMZ', 'A device that receives all incoming connections. Use with caution.' ],
+		[ 'DFS', 'DFS', '5 GHz channels that must be vacated when radar is detected. Often less crowded, but may switch on their own.' ],
+		[ 'ARP', 'ARP', 'Maps IP addresses to MAC addresses of devices on the local network.' ],
+		[ 'NTP', 'NTP', 'Time synchronization over the internet. Needed for logs and certificates.' ],
+		[ 'SSH', 'SSH', 'Secure remote access to the router\'s command line.' ],
+		[ 'Gateway', 'Gateway', 'The address of the device through which traffic leaves your network, usually the ISP\'s router.' ],
+		[ 'шлюз', 'Gateway', 'The address of the device through which traffic leaves your network, usually the ISP\'s router.' ],
+		[ 'Netmask', 'Subnet mask', 'Defines which part of an IP address belongs to the network and which to the device. Most often 255.255.255.0.' ],
+		[ 'маска', 'Subnet mask', 'Defines which part of an IP address belongs to the network and which to the device. Most often 255.255.255.0.' ],
+		[ 'мост', 'Bridge', 'Combines several ports or networks into one, as if they were connected to a single switch.' ],
+		[ 'Bridge', 'Bridge', 'Combines several ports or networks into one, as if they were connected to a single switch.' ],
+		[ 'Beamforming', 'Beamforming', 'The router steers the Wi‑Fi signal toward the device, improving speed and range.' ],
+		[ 'Mesh', 'Mesh', 'Several access points form one Wi‑Fi network with seamless roaming between them.' ],
+		[ 'DDNS', 'DDNS', 'A permanent name for the router, even if the ISP changes the external IP address.' ],
+		[ 'Firewall', 'Firewall', 'Decides which traffic to allow and which to block.' ],
+		[ 'Межсетевой экран', 'Firewall', 'Decides which traffic to allow and which to block.' ]
 	].map(function (g) {
 		var w = g[0].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 		return { re: new RegExp('(^|[^\\p{L}\\d])' + w + '(?![\\p{L}\\d])', 'iu'), t: g[1], d: g[2] };
@@ -678,8 +678,8 @@
 			}
 		});
 	}
-	/* Вызываем сразу из MutationObserver (до отрисовки кадра): LuCI пересоздаёт таблицы при каждом опросе,
-	   и значок «?», добавленный позже по таймеру, каждый раз сдвигал заголовки и дёргал страницу. */
+	/* Called right from the MutationObserver (before the frame is painted): LuCI rebuilds tables on every poll,
+	   and a "?" icon added later on a timer shifted the headers and made the page jump every time. */
 	function scheduleHints() { addHints(); }
 	document.addEventListener('DOMContentLoaded', function () {
 		scheduleHints();
@@ -697,11 +697,11 @@
 
 	/* ---- icons in card titles (Overview, Monitor): one set, drawn per style in CSS ---- */
 	var TITLE_ICONS = [
-		[ /интернет/i, 'globe' ], [ /порт/i, 'port' ], [ /беспровод|wi.?fi|радио|эфир/i, 'wifi' ], [ /состояние роутера|здоров/i, 'pulse' ],
-		[ /^сеть|сетев|интерфейс|адрес|шлюз/i, 'net' ], [ /процессор|нагрузка|системн|^система|^cpu/i, 'cpu' ], [ /памят|озу|ram/i, 'mem' ],
-		[ /хранил|диск|накопит|flash|флеш/i, 'disk' ], [ /dhcp|аренд|клиент|устройств/i, 'users' ], [ /событ|журнал|лог/i, 'bell' ],
-		[ /быстр|действ/i, 'bolt' ], [ /топ|трафик|скорост|график|статистик/i, 'chart' ], [ /соединен|conntrack/i, 'link' ],
-		[ /маршрут/i, 'route' ], [ /брандмауэр|firewall|защит|зон/i, 'shield' ], [ /температур|охлажд/i, 'temp' ], [ /процесс/i, 'cpu' ]
+		[ /internet|интернет/i, 'globe' ], [ /\bports?\b|порт/i, 'port' ], [ /wireless|wi.?fi|\bradio|беспровод|радио|эфир/i, 'wifi' ], [ /router health|\bhealth|состояние роутера|здоров/i, 'pulse' ],
+		[ /^network|^сеть|interface|address|gateway|сетев|интерфейс|адрес|шлюз/i, 'net' ], [ /processor|\bload\b|^system|^cpu|процессор|нагрузка|системн|^система/i, 'cpu' ], [ /memory|\bram\b|памят|озу/i, 'mem' ],
+		[ /storage|\bdisk|\bdrive|flash|хранил|диск|накопит|флеш/i, 'disk' ], [ /dhcp|lease|client|device|аренд|клиент|устройств/i, 'users' ], [ /event|\blogs?\b|событ|журнал|лог/i, 'bell' ],
+		[ /quick|action|быстр|действ/i, 'bolt' ], [ /\btop\b|traffic|speed|graph|chart|statistic|топ|трафик|скорост|график|статистик/i, 'chart' ], [ /connection|conntrack|соединен/i, 'link' ],
+		[ /\brout(e|es|ing)\b|маршрут/i, 'route' ], [ /firewall|protect|security|\bzones?\b|брандмауэр|защит|зон/i, 'shield' ], [ /temperat|cooling|температур|охлажд/i, 'temp' ], [ /process|процесс/i, 'cpu' ]
 	];
 	function iconFor(text) {
 		for (var i = 0; i < TITLE_ICONS.length; i++) if (TITLE_ICONS[i][0].test(text)) return TITLE_ICONS[i][1];
@@ -717,7 +717,7 @@
 			if (grip) t.insertBefore(ic, grip.nextSibling); else t.insertBefore(ic, t.firstChild);
 		});
 	}
-	/* то же для иконок в заголовках карточек: без задержки, чтобы заголовок не подпрыгивал после опроса */
+	/* same for card title icons: no delay, so the title does not jump after a poll */
 	function scheduleIcons() { addIcons(); }
 
 	/* ---- the active menu item is a pill that glides to the item under the cursor and back ---- */
@@ -1084,20 +1084,20 @@
 	function pick(v, list, def) { return list.indexOf(v) >= 0 ? v : def; }
 
 
-	/* ---- фон «Время суток» и «Погода» ---- */
-	var TILE_NAMES = { net: 'Интернет', wan: 'Трафик WAN', cpu: 'Процессор', temp: 'Температура', mem: 'Память', ct: 'Соединения', up: 'Аптайм', cli: 'Wi‑Fi клиенты', loss: 'Потери пакетов', sig: 'Сигнал Wi‑Fi', day: 'Трафик за сутки', stor: 'Хранилище' };
-	/* раскладки «Сейчас» одной кнопкой: какие плитки видны, в каком порядке и сколько столбцов у карточек */
+	/* ---- "Day/night" and "Weather" backgrounds ---- */
+	var TILE_NAMES = { net: 'Internet', wan: 'WAN traffic', cpu: 'CPU', temp: 'Temperature', mem: 'Memory', ct: 'Connections', up: 'Uptime', cli: 'Wi‑Fi clients', loss: 'Packet loss', sig: 'Wi‑Fi signal', day: 'Traffic today', stor: 'Storage' };
+	/* one-click "Now" layouts: which tiles are visible, in what order, and how many card columns */
 	var LAYOUTS = [
-		[ 'std', 'Стандарт', { ovOrder: DEFAULTS.ovOrder, ovHide: DEFAULTS.ovHide, ovCols: '0', ovSize: 'md' } ],
-		[ 'home', 'Дом', { ovOrder: 'net,wan,day,cli,up,temp,cpu,mem,ct,loss,sig,stor', ovHide: 'cpu,mem,ct,loss,sig,stor', ovCols: '0', ovSize: 'md' } ],
-		[ 'min', 'Минимал', { ovOrder: 'net,wan,cpu,temp,mem,ct,up,cli,loss,sig,day,stor', ovHide: 'temp,mem,ct,up,cli,loss,sig,day,stor', ovCols: '2', ovSize: 'sm' } ],
-		[ 'admin', 'Админ', { ovOrder: 'net,wan,cpu,temp,mem,ct,up,cli,loss,sig,day,stor', ovHide: '', ovCols: '3', ovSize: 'md' } ]
+		[ 'std', 'Standard', { ovOrder: DEFAULTS.ovOrder, ovHide: DEFAULTS.ovHide, ovCols: '0', ovSize: 'md' } ],
+		[ 'home', 'Home', { ovOrder: 'net,wan,day,cli,up,temp,cpu,mem,ct,loss,sig,stor', ovHide: 'cpu,mem,ct,loss,sig,stor', ovCols: '0', ovSize: 'md' } ],
+		[ 'min', 'Minimal', { ovOrder: 'net,wan,cpu,temp,mem,ct,up,cli,loss,sig,day,stor', ovHide: 'temp,mem,ct,up,cli,loss,sig,day,stor', ovCols: '2', ovSize: 'sm' } ],
+		[ 'admin', 'Admin', { ovOrder: 'net,wan,cpu,temp,mem,ct,up,cli,loss,sig,day,stor', ovHide: '', ovCols: '3', ovSize: 'md' } ]
 	];
-	var WX_CITIES = [ [ 'Белгород', '50.60', '36.59' ], [ 'Строитель (Яковлевский р-н)', '50.79', '36.49' ], [ 'Москва', '55.75', '37.62' ], [ 'Санкт-Петербург', '59.94', '30.31' ], [ 'Новосибирск', '55.03', '82.92' ], [ 'Екатеринбург', '56.84', '60.61' ], [ 'Казань', '55.79', '49.12' ],
-		[ 'Нижний Новгород', '56.33', '44.0' ], [ 'Челябинск', '55.16', '61.4' ], [ 'Самара', '53.2', '50.15' ], [ 'Омск', '54.99', '73.37' ], [ 'Ростов-на-Дону', '47.24', '39.71' ], [ 'Уфа', '54.74', '55.97' ],
-		[ 'Красноярск', '56.01', '92.85' ], [ 'Воронеж', '51.67', '39.18' ], [ 'Пермь', '58.01', '56.23' ], [ 'Волгоград', '48.71', '44.51' ], [ 'Краснодар', '45.04', '38.98' ], [ 'Саратов', '51.53', '46.03' ],
-		[ 'Тюмень', '57.15', '65.53' ], [ 'Ижевск', '56.85', '53.2' ], [ 'Барнаул', '53.35', '83.77' ], [ 'Иркутск', '52.29', '104.3' ], [ 'Хабаровск', '48.48', '135.08' ], [ 'Владивосток', '43.12', '131.89' ],
-		[ 'Ярославль', '57.63', '39.87' ], [ 'Калининград', '54.71', '20.51' ], [ 'Мурманск', '68.97', '33.07' ], [ 'Сочи', '43.6', '39.73' ], [ 'Минск', '53.9', '27.57' ], [ 'Алматы', '43.24', '76.89' ], [ 'Киев', '50.45', '30.52' ] ];
+	var WX_CITIES = [ [ 'Belgorod', '50.60', '36.59' ], [ 'Stroitel (Yakovlevsky district)', '50.79', '36.49' ], [ 'Moscow', '55.75', '37.62' ], [ 'Saint Petersburg', '59.94', '30.31' ], [ 'Novosibirsk', '55.03', '82.92' ], [ 'Yekaterinburg', '56.84', '60.61' ], [ 'Kazan', '55.79', '49.12' ],
+		[ 'Nizhny Novgorod', '56.33', '44.0' ], [ 'Chelyabinsk', '55.16', '61.4' ], [ 'Samara', '53.2', '50.15' ], [ 'Omsk', '54.99', '73.37' ], [ 'Rostov-on-Don', '47.24', '39.71' ], [ 'Ufa', '54.74', '55.97' ],
+		[ 'Krasnoyarsk', '56.01', '92.85' ], [ 'Voronezh', '51.67', '39.18' ], [ 'Perm', '58.01', '56.23' ], [ 'Volgograd', '48.71', '44.51' ], [ 'Krasnodar', '45.04', '38.98' ], [ 'Saratov', '51.53', '46.03' ],
+		[ 'Tyumen', '57.15', '65.53' ], [ 'Izhevsk', '56.85', '53.2' ], [ 'Barnaul', '53.35', '83.77' ], [ 'Irkutsk', '52.29', '104.3' ], [ 'Khabarovsk', '48.48', '135.08' ], [ 'Vladivostok', '43.12', '131.89' ],
+		[ 'Yaroslavl', '57.63', '39.87' ], [ 'Kaliningrad', '54.71', '20.51' ], [ 'Murmansk', '68.97', '33.07' ], [ 'Sochi', '43.6', '39.73' ], [ 'Minsk', '53.9', '27.57' ], [ 'Almaty', '43.24', '76.89' ], [ 'Kyiv', '50.45', '30.52' ] ];
 	var wxCode = '', wxTimer = 0, wxAt = 0;
 	function todPhase() { var hr = new Date().getHours(); return hr >= 5 && hr < 8 ? 'dawn' : hr >= 8 && hr < 17 ? 'day' : hr >= 17 && hr < 21 ? 'dusk' : 'night'; }
 	function wxKind(code, day) {
@@ -1109,7 +1109,7 @@
 		if (code >= 51) return 'rain';
 		return 'cloud';
 	}
-	/* коды WWO (wttr.in) → наши виды погоды */
+	/* WWO codes (wttr.in) → our weather kinds */
 	function wwoKind(c, day) {
 		if (c === 113) return day ? 'sun' : 'clear';
 		if (c === 116 || c === 119 || c === 122) return 'cloud';
@@ -1128,7 +1128,7 @@
 	function wxFetch() {
 		var la = parseFloat(prefs.wxLat), lo = parseFloat(prefs.wxLon);
 		if (!window.fetch || !isFinite(la) || !isFinite(lo) || Math.abs(la) > 90 || Math.abs(lo) > 180) return Promise.resolve(false);
-		/* сначала Open-Meteo, если он недоступен (в России часто закрыт), то wttr.in */
+		/* Open-Meteo first; if unavailable (often blocked in Russia), wttr.in */
 		return getJson('https://api.open-meteo.com/v1/forecast?latitude=' + la.toFixed(2) + '&longitude=' + lo.toFixed(2) + '&current=weather_code,is_day')
 			.then(function (j) { var c = j && j.current; if (!c) throw new Error('no'); return wxDone(wxKind(+c.weather_code, +c.is_day === 1), la, lo); })
 			.catch(function () {
@@ -1192,7 +1192,7 @@
 	}
 
 
-	/* ---- редактор своей темы: цвета, скругление, шрифт и тени поверх выбранной основы ---- */
+	/* ---- custom theme editor: colors, corner radius, font and shadows on top of the chosen base ---- */
 	var CUS_VARS = [ '--nf-bg', '--nf-bg-glow', '--nf-bg-glow2', '--nf-card', '--nf-card-alt', '--nf-flyout', '--nf-header-bg', '--nf-text', '--nf-text-dim', '--nf-stroke', '--nf-stroke-strong',
 		'--nf-hover', '--nf-ctrl', '--nf-ctrl-hover', '--nf-ctrl-active', '--nf-input-bg', '--nf-input-line', '--nf-info-bg', '--background-color-high', '--background-color-medium', '--background-color-low',
 		'--text-color-highest', '--text-color-high', '--text-color-medium', '--text-color-low', '--nf-radius', '--nf-radius-sm', '--nf-radius-in', '--font-sans', '--nf-shadow-card' ];
@@ -1203,7 +1203,7 @@
 		mono: 'var(--font-mono)' };
 	var CUS_SHADOWS = { none: 'none', soft: '0 2px 10px rgba(0, 0, 0, .08)', deep: '0 10px 30px rgba(0, 0, 0, .22), 0 2px 6px rgba(0, 0, 0, .12)' };
 	function hex6(v) { return typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v) ? v : ''; }
-	/* шрифт и вид значков — отдельные настройки, работают с любой темой */
+	/* font and icon style are separate settings that work with any theme */
 	function applyFont() {
 		var f = prefs.fontFam;
 		if (f && CUS_FONTS[f]) root.style.setProperty('--font-sans', CUS_FONTS[f]);
@@ -1240,7 +1240,7 @@
 		root.setAttribute('data-nf-cus', '1');
 	}
 
-	/* ---- своё фото на экране входа: тот же приём, что у логотипа (копия в браузере и на роутере, bg.json) ---- */
+	/* ---- custom photo on the sign-in screen: same approach as the logo (copy in the browser and on the router, bg.json) ---- */
 	var PHOTOKEY = 'nightfall-photo-v1';
 	function applyPhoto() {
 		var d = null;
@@ -1253,7 +1253,7 @@
 		try { if (window.localStorage.getItem(PHOTOKEY)) return; } catch (e) { return; }
 		window.fetch(BASE + 'bg.json?' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
 			if (d && typeof d.d === 'string') { try { window.localStorage.setItem(PHOTOKEY, d.d); } catch (e) { /* ignore */ } applyPhoto(); }
-		}).catch(function () { /* нет фото на роутере */ });
+		}).catch(function () { /* no photo on the router */ });
 	}
 	function readPhoto(file, done) {
 		var img = new Image(), url = window.URL.createObjectURL(file);
@@ -1276,7 +1276,7 @@
 		img.src = url;
 	}
 
-	function applyAll() { root.setAttribute('data-nf-nav-open', prefs.navOpenMode === 'hover' ? 'hover' : 'click'); applyMode(); applyMotion(); applyBg(); applyLook(); applyCustom(); applyFont(); applyPhoto(); syncConst(); try { document.dispatchEvent(new CustomEvent('nf-prefs')); } catch (e) { /* старый браузер */ } }
+	function applyAll() { root.setAttribute('data-nf-nav-open', prefs.navOpenMode === 'hover' ? 'hover' : 'click'); applyMode(); applyMotion(); applyBg(); applyLook(); applyCustom(); applyFont(); applyPhoto(); syncConst(); try { document.dispatchEvent(new CustomEvent('nf-prefs')); } catch (e) { /* old browser */ } }
 
 	var txTimer;
 	function themeFade() {
@@ -1336,8 +1336,8 @@
 		refs.mode = {};
 		refs.sw = [];
 
-		var seg = h('div', { 'class': 'nf-seg', role: 'group', 'aria-label': 'Режим' }, [
-			[ 'auto', 'Авто' ], [ 'light', 'Светлая' ], [ 'dark', 'Тёмная' ]
+		var seg = h('div', { 'class': 'nf-seg', role: 'group', 'aria-label': 'Mode' }, [
+			[ 'auto', 'Auto' ], [ 'light', 'Light' ], [ 'dark', 'Dark' ]
 		].map(function (m) {
 			return refs.mode[m[0]] = h('button', { type: 'button', text: m[1], onclick: function () { set('mode', m[0]); } });
 		}));
@@ -1349,14 +1349,14 @@
 			return b;
 		}));
 
-		refs.color = h('input', { type: 'color', 'class': 'nf-color', 'aria-label': 'Свой цвет',
+		refs.color = h('input', { type: 'color', 'class': 'nf-color', 'aria-label': 'Custom color',
 			oninput: function (ev) { set('accent', ev.target.value); } });
 
 		refs.bg = {};
-		var bgseg = h('div', { 'class': 'nf-seg nf-seg-wrap', role: 'group', 'aria-label': 'Фон' }, BGS.map(function (b) {
+		var bgseg = h('div', { 'class': 'nf-seg nf-seg-wrap', role: 'group', 'aria-label': 'Background' }, BGS.map(function (b) {
 			return refs.bg[b[0]] = h('button', { type: 'button', text: b[1], onclick: function () { set('bg', b[0]); } });
 		}));
-		refs.scale = h('input', { type: 'range', min: '40', max: '250', step: '10', 'aria-label': 'Масштаб узора',
+		refs.scale = h('input', { type: 'range', min: '40', max: '250', step: '10', 'aria-label': 'Pattern scale',
 			oninput: function (ev) { set('bgScale', +ev.target.value); } });
 
 		function seg2(key, label, items, grid) {
@@ -1371,99 +1371,99 @@
 			return h('label', { 'class': 'nf-pop-row' }, [ h('span', { text: label }), h('span', { 'class': 'cbi-checkbox' }, [ c ]) ]);
 		}
 		refs.preset = {};
-		var presets = h('div', { 'class': 'nf-seg nf-presets', role: 'group', 'aria-label': 'Стиль' }, PRESETS.map(function (pr) {
+		var presets = h('div', { 'class': 'nf-seg nf-presets', role: 'group', 'aria-label': 'Style' }, PRESETS.map(function (pr) {
 			return refs.preset[pr[0]] = h('button', { type: 'button', text: pr[1], onclick: function () {
 				Object.assign(prefs, { cusOn: false, cusBg: '', cusCard: '', cusText: '', cusFont: '', cusRadius: 0 }, pr[2], { preset: pr[0] }); save(); applyAll(); refreshPanel();
 			} });
 		}));
 		refs.schedule = h('input', { type: 'checkbox', onchange: function (ev) { set('schedule', ev.target.checked); } });
 		var tin = function (key) {
-			return refs[key] = h('input', { type: 'time', 'class': 'nf-time', 'aria-label': key === 'nightFrom' ? 'Тёмная с' : 'Светлая с',
+			return refs[key] = h('input', { type: 'time', 'class': 'nf-time', 'aria-label': key === 'nightFrom' ? 'Dark from' : 'Light from',
 				oninput: function (ev) { if (/^\d\d:\d\d$/.test(ev.target.value)) set(key, ev.target.value); } });
 		};
 		var sched = h('div', { 'class': 'nf-pop-sec' }, [
-			h('label', { 'class': 'nf-pop-row' }, [ h('span', { text: 'Тёмная по расписанию' }), h('span', { 'class': 'cbi-checkbox' }, [ refs.schedule ]) ]),
-			h('div', { 'class': 'nf-pop-times', 'data-sched': '' }, [ h('span', { text: 'Тёмная с' }), tin('nightFrom'), h('span', { text: 'светлая с' }), tin('dayFrom') ])
+			h('label', { 'class': 'nf-pop-row' }, [ h('span', { text: 'Dark on a schedule' }), h('span', { 'class': 'cbi-checkbox' }, [ refs.schedule ]) ]),
+			h('div', { 'class': 'nf-pop-times', 'data-sched': '' }, [ h('span', { text: 'Dark from' }), tin('nightFrom'), h('span', { text: 'light from' }), tin('dayFrom') ])
 		]);
 		function rng(label, input, unit) {
 			input.setAttribute('data-unit', unit);
 			return h('label', { 'class': 'nf-rng' }, [ h('span', { 'class': 'nf-rng-t' }, [ h('span', { text: label }), h('output', { 'class': 'nf-rng-v' }) ]), input ]);
 		}
-		refs.gblur = h('input', { type: 'range', min: '0', max: '48', step: '2', 'aria-label': 'Размытие стекла', oninput: function (ev) { set('glassBlur', +ev.target.value); } });
-		refs.galpha = h('input', { type: 'range', min: '40', max: '160', step: '10', 'aria-label': 'Плотность стекла', oninput: function (ev) { set('glassAlpha', +ev.target.value); } });
-		refs.install = h('button', { type: 'button', 'class': 'nf-pop-reset', hidden: '', text: 'Установить как приложение', onclick: function () {
+		refs.gblur = h('input', { type: 'range', min: '0', max: '48', step: '2', 'aria-label': 'Glass blur', oninput: function (ev) { set('glassBlur', +ev.target.value); } });
+		refs.galpha = h('input', { type: 'range', min: '40', max: '160', step: '10', 'aria-label': 'Glass opacity', oninput: function (ev) { set('glassAlpha', +ev.target.value); } });
+		refs.install = h('button', { type: 'button', 'class': 'nf-pop-reset', hidden: '', text: 'Install as an app', onclick: function () {
 			if (!installEvt) return; installEvt.prompt(); installEvt = null; refs.install.hidden = true;
 		} });
 		var look = [].concat(
-			seg2('density', 'Плотность', [ [ 'normal', 'Обычная' ], [ 'compact', 'Компактная' ] ]),
-			seg2('font', 'Размер текста', [ [ 'sm', 'Мельче' ], [ 'md', 'Обычный' ], [ 'lg', 'Крупнее' ] ]),
-			seg2('fontFam', 'Шрифт', [ [ '', 'Как у темы' ], [ 'system', 'Системный' ], [ 'rounded', 'Округлый' ], [ 'humanist', 'Гуманист' ], [ 'serif', 'С засечками' ], [ 'mono', 'Моно' ] ], true),
-			seg2('icStyle', 'Значки', [ [ 'line', 'Линейные' ], [ 'duo', 'Градиент' ], [ 'big', 'Крупные' ] ]),
-			seg2('radius', 'Скругление углов', [ [ 'sharp', 'Острые' ], [ 'md', 'Средние' ], [ 'round', 'Круглые' ] ]),
-			seg2('glass', 'Стекло и размытие', [ [ 'on', 'Включено' ], [ 'off', 'Выключено' ] ]),
-			seg2('chart', 'Графики', [ [ 'area', 'Заливка' ], [ 'line', 'Линия' ], [ 'bars', 'Столбики' ], [ 'step', 'Ступени' ] ], true),
-			seg2('chartPal', 'Цвета графиков', [ [ 'accent', 'Акцент' ], [ 'vivid', 'Яркие' ], [ 'mono', 'Моно' ], [ 'warm', 'Тёплые' ], [ 'cool', 'Холодные' ], [ 'sunset', 'Закат' ], [ 'neon', 'Неон' ], [ 'pastel', 'Пастель' ], [ 'nord', 'Nord' ], [ 'dracula', 'Dracula' ] ], true),
-			[ sw('chartSmooth', 'Сглаживать линии графиков'), sw('chartGrid', 'Сетка на графиках'), sw('ovRing', 'Кольца на плитках Обзора'), sw('chartThr', 'Цвет линии по нагрузке (зелёный, жёлтый, красный)'), sw('chartShine', 'Бегущий блик по линии') ],
-			seg2('chartW', 'Толщина линии', [ [ '1', 'Тонкая' ], [ '2', 'Обычная' ], [ '3', 'Толстая' ] ]),
-			seg2('glassTone', 'Тон стекла', [ [ 'auto', 'Авто' ], [ 'light', 'Светлое' ], [ 'dark', 'Тёмное' ] ]),
-			[ rng('Размытие', refs.gblur, 'px'), rng('Плотность стекла', refs.galpha, '%') ]
+			seg2('density', 'Density', [ [ 'normal', 'Normal' ], [ 'compact', 'Compact' ] ]),
+			seg2('font', 'Text size', [ [ 'sm', 'Smaller' ], [ 'md', 'Normal' ], [ 'lg', 'Larger' ] ]),
+			seg2('fontFam', 'Font', [ [ '', 'Theme default' ], [ 'system', 'System' ], [ 'rounded', 'Rounded' ], [ 'humanist', 'Humanist' ], [ 'serif', 'Serif' ], [ 'mono', 'Mono' ] ], true),
+			seg2('icStyle', 'Icons', [ [ 'line', 'Line' ], [ 'duo', 'Gradient' ], [ 'big', 'Large' ] ]),
+			seg2('radius', 'Corner radius', [ [ 'sharp', 'Sharp' ], [ 'md', 'Medium' ], [ 'round', 'Round' ] ]),
+			seg2('glass', 'Glass and blur', [ [ 'on', 'On' ], [ 'off', 'Off' ] ]),
+			seg2('chart', 'Charts', [ [ 'area', 'Area' ], [ 'line', 'Line' ], [ 'bars', 'Bars' ], [ 'step', 'Steps' ] ], true),
+			seg2('chartPal', 'Chart colors', [ [ 'accent', 'Accent' ], [ 'vivid', 'Vivid' ], [ 'mono', 'Mono' ], [ 'warm', 'Warm' ], [ 'cool', 'Cool' ], [ 'sunset', 'Sunset' ], [ 'neon', 'Neon' ], [ 'pastel', 'Pastel' ], [ 'nord', 'Nord' ], [ 'dracula', 'Dracula' ] ], true),
+			[ sw('chartSmooth', 'Smooth chart lines'), sw('chartGrid', 'Chart grid'), sw('ovRing', 'Rings on Overview tiles'), sw('chartThr', 'Line color by load (green, yellow, red)'), sw('chartShine', 'Moving shine along the line') ],
+			seg2('chartW', 'Line width', [ [ '1', 'Thin' ], [ '2', 'Normal' ], [ '3', 'Thick' ] ]),
+			seg2('glassTone', 'Glass tint', [ [ 'auto', 'Auto' ], [ 'light', 'Light' ], [ 'dark', 'Dark' ] ]),
+			[ rng('Blur', refs.gblur, 'px'), rng('Glass opacity', refs.galpha, '%') ]
 		);
-		/* что показывать в карточках на входе и своя картинка вместо логотипа */
-		var CELL_OPTS = [ [ 'net', 'Интернет (пинг)' ], [ 'speed', 'Скорость сейчас' ], [ 'test', 'Последний замер' ], [ 'up', 'Время работы' ], [ 'fw', 'Прошивка' ], [ 'temp', 'Температура' ], [ 'cpu', 'Процессор' ], [ 'mem', 'Память' ], [ 'clients', 'Устройств в сети' ], [ 'none', '— пусто —' ] ];
+		/* what the sign-in cards show, and a custom image instead of the logo */
+		var CELL_OPTS = [ [ 'net', 'Internet (ping)' ], [ 'speed', 'Current speed' ], [ 'test', 'Last speed test' ], [ 'up', 'Uptime' ], [ 'fw', 'Firmware' ], [ 'temp', 'Temperature' ], [ 'cpu', 'CPU' ], [ 'mem', 'Memory' ], [ 'clients', 'Devices on the network' ], [ 'none', '— empty —' ] ];
 		function loginExtras() {
-			var arr = [ h('div', { 'class': 'nf-pop-l', text: 'Карточки на входе' }) ];
+			var arr = [ h('div', { 'class': 'nf-pop-l', text: 'Sign-in cards' }) ];
 			refs.cells = [];
 			[ 0, 1, 2 ].forEach(function (i) {
-				var sel = h('select', { 'class': 'nf-sel', 'aria-label': 'Карточка ' + (i + 1), onchange: function (ev) {
+				var sel = h('select', { 'class': 'nf-sel', 'aria-label': 'Card ' + (i + 1), onchange: function (ev) {
 					var c = (Array.isArray(prefs.loginCells) ? prefs.loginCells : [ 'net', 'up', 'fw' ]).slice(); while (c.length < 3) c.push('none');
 					c[i] = ev.target.value; set('loginCells', c);
 				} }, CELL_OPTS.map(function (o) { return h('option', { value: o[0], text: o[1] }); }));
 				refs.cells.push(sel);
-				arr.push(h('label', { 'class': 'nf-pop-row' }, [ h('span', { text: 'Карточка ' + (i + 1) }), sel ]));
+				arr.push(h('label', { 'class': 'nf-pop-row' }, [ h('span', { text: 'Card ' + (i + 1) }), sel ]));
 			});
 			refs.logoNote = h('div', { 'class': 'nf-pop-note', text: '' });
 			var file = h('input', { type: 'file', accept: 'image/png,image/jpeg,image/webp,image/svg+xml,image/gif', hidden: true, onchange: function (ev) {
 				var f = ev.target.files && ev.target.files[0]; ev.target.value = '';
 				if (!f) return;
-				refs.logoNote.textContent = 'Обрабатываю картинку…';
+				refs.logoNote.textContent = 'Processing the image…';
 				readLogo(f, function (d) {
-					if (!d) { refs.logoNote.textContent = 'Не получилось прочитать картинку. Попробуйте PNG или JPG поменьше.'; return; }
+					if (!d) { refs.logoNote.textContent = 'Could not read the image. Try a smaller PNG or JPG.'; return; }
 					try { window.localStorage.setItem(LOGOKEY, d); } catch (e) { /* private mode */ }
-					routerExec([ 'logo-set', d ]).then(function () { refs.logoNote.textContent = 'Картинка сохранена и на роутере: она видна на входе в любом браузере.'; })
-						.catch(function (e) { refs.logoNote.textContent = 'Картинка работает в этом браузере. На роутер не сохранена: ' + e.message; });
+					routerExec([ 'logo-set', d ]).then(function () { refs.logoNote.textContent = 'The image is also saved on the router: it shows at sign-in in any browser.'; })
+						.catch(function (e) { refs.logoNote.textContent = 'The image works in this browser. Not saved on the router: ' + e.message; });
 					set('loginLogo', true);
 				});
 			} });
-			arr.push(h('div', { 'class': 'nf-pop-l', text: 'Своя картинка на входе' }));
+			arr.push(h('div', { 'class': 'nf-pop-l', text: 'Custom sign-in image' }));
 			arr.push(h('div', { 'class': 'nf-logo-row' }, [
-				h('button', { type: 'button', 'class': 'cbi-button', text: 'Выбрать картинку', onclick: function () { file.click(); } }),
-				h('button', { type: 'button', 'class': 'cbi-button', text: 'Убрать', onclick: function () {
+				h('button', { type: 'button', 'class': 'cbi-button', text: 'Choose image', onclick: function () { file.click(); } }),
+				h('button', { type: 'button', 'class': 'cbi-button', text: 'Remove', onclick: function () {
 					try { window.localStorage.removeItem(LOGOKEY); } catch (e) { /* ignore */ }
-					routerExec([ 'logo-set', 'off' ]).catch(function () { /* нечего удалять */ });
+					routerExec([ 'logo-set', 'off' ]).catch(function () { /* nothing to remove */ });
 					refs.logoNote.textContent = '';
 					set('loginLogo', false);
 				} }), file ]));
 			arr.push(refs.logoNote);
-			/* своё фото на фон входа (выбор «Своё фото» выше) */
+			/* custom photo for the sign-in background (the "Custom photo" choice above) */
 			refs.photoNote = h('div', { 'class': 'nf-pop-note', text: '' });
 			var pfile = h('input', { type: 'file', accept: 'image/png,image/jpeg,image/webp', hidden: true, onchange: function (ev) {
 				var f = ev.target.files && ev.target.files[0]; ev.target.value = '';
 				if (!f) return;
-				refs.photoNote.textContent = 'Обрабатываю фото…';
+				refs.photoNote.textContent = 'Processing the photo…';
 				readPhoto(f, function (d) {
-					if (!d) { refs.photoNote.textContent = 'Не получилось уменьшить фото. Попробуйте другое.'; return; }
+					if (!d) { refs.photoNote.textContent = 'Could not resize the photo. Try another one.'; return; }
 					try { window.localStorage.setItem(PHOTOKEY, d); } catch (e) { /* private mode */ }
-					routerExec([ 'bg-set', d ]).then(function () { refs.photoNote.textContent = 'Фото сохранено и на роутере: оно видно на входе в любом браузере.'; })
-						.catch(function (e) { refs.photoNote.textContent = 'Фото работает в этом браузере. На роутер не сохранено: ' + e.message; });
+					routerExec([ 'bg-set', d ]).then(function () { refs.photoNote.textContent = 'The photo is also saved on the router: it shows at sign-in in any browser.'; })
+						.catch(function (e) { refs.photoNote.textContent = 'The photo works in this browser. Not saved on the router: ' + e.message; });
 					set('loginBg', 'photo');
 				});
 			} });
-			arr.push(h('div', { 'class': 'nf-pop-l', text: 'Своё фото на фоне входа' }));
+			arr.push(h('div', { 'class': 'nf-pop-l', text: 'Custom sign-in background photo' }));
 			arr.push(h('div', { 'class': 'nf-logo-row' }, [
-				h('button', { type: 'button', 'class': 'cbi-button', text: 'Выбрать фото', onclick: function () { pfile.click(); } }),
-				h('button', { type: 'button', 'class': 'cbi-button', text: 'Убрать', onclick: function () {
+				h('button', { type: 'button', 'class': 'cbi-button', text: 'Choose photo', onclick: function () { pfile.click(); } }),
+				h('button', { type: 'button', 'class': 'cbi-button', text: 'Remove', onclick: function () {
 					try { window.localStorage.removeItem(PHOTOKEY); } catch (e) { /* ignore */ }
-					routerExec([ 'bg-set', 'off' ]).catch(function () { /* нечего удалять */ });
+					routerExec([ 'bg-set', 'off' ]).catch(function () { /* nothing to remove */ });
 					refs.photoNote.textContent = '';
 					if (prefs.loginBg === 'photo') set('loginBg', 'mica'); else applyPhoto();
 				} }), pfile ]));
@@ -1471,16 +1471,16 @@
 			return arr;
 		}
 		var more = h('div', { 'class': 'nf-pop-sec' }, [
-			h('div', { 'class': 'nf-pop-l', text: 'Экран входа' }),
-			sw('loginClock', 'Часы и дата'), sw('loginInfo', 'Сводка о роутере'), sw('constLogin', 'Анимированный фон')
-		].concat(seg2('constKind', 'Вид анимации', [ [ 'net', 'Созвездия' ], [ 'fire', 'Светлячки' ], [ 'bubbles', 'Пузыри' ], [ 'snow', 'Снег' ], [ 'meteors', 'Звёзды' ], [ 'rain', 'Дождь' ], [ 'sparks', 'Искры' ], [ 'matrix', 'Код' ], [ 'petals', 'Лепестки' ], [ 'ripples', 'Круги' ], [ 'orbits', 'Орбиты' ], [ 'confetti', 'Конфетти' ] ], true)).concat(seg2('loginBg', 'Фон входа', [ [ 'mica', 'Как у темы' ], [ 'flat', 'Однотонный' ], [ 'aurora', 'Аврора' ], [ 'waves', 'Волны' ], [ 'tod', 'По времени' ], [ 'rain', 'Дождь' ], [ 'sunset', 'Закат' ], [ 'mountains', 'Горы' ], [ 'city', 'Город' ], [ 'space', 'Космос' ], [ 'lava', 'Лава' ], [ 'cyber', 'Синтвейв' ], [ 'rainglass', 'Ливень' ], [ 'forest', 'Лес' ], [ 'fogmount', 'Туман' ], [ 'underwater', 'Глубина' ], [ 'photo', 'Своё фото' ] ], true)).concat(loginExtras()));
-		function desk(nodes) { nodes = [].concat(nodes); nodes.forEach(function (n) { if (n && n.classList) n.classList.add('nf-desk'); }); return nodes; }   /* пункты только для компьютера: на телефоне скрыты */
+			h('div', { 'class': 'nf-pop-l', text: 'Sign-in screen' }),
+			sw('loginClock', 'Clock and date'), sw('loginInfo', 'Router summary'), sw('constLogin', 'Animated background')
+		].concat(seg2('constKind', 'Animation', [ [ 'net', 'Constellations' ], [ 'fire', 'Fireflies' ], [ 'bubbles', 'Bubbles' ], [ 'snow', 'Snow' ], [ 'meteors', 'Shooting stars' ], [ 'rain', 'Rain' ], [ 'sparks', 'Sparks' ], [ 'matrix', 'Code' ], [ 'petals', 'Petals' ], [ 'ripples', 'Ripples' ], [ 'orbits', 'Orbits' ], [ 'confetti', 'Confetti' ] ], true)).concat(seg2('loginBg', 'Sign-in background', [ [ 'mica', 'Theme default' ], [ 'flat', 'Solid' ], [ 'aurora', 'Aurora' ], [ 'waves', 'Waves' ], [ 'tod', 'Time of day' ], [ 'rain', 'Rain' ], [ 'sunset', 'Sunset' ], [ 'mountains', 'Mountains' ], [ 'city', 'City' ], [ 'space', 'Space' ], [ 'lava', 'Lava' ], [ 'cyber', 'Synthwave' ], [ 'rainglass', 'Downpour' ], [ 'forest', 'Forest' ], [ 'fogmount', 'Fog' ], [ 'underwater', 'Deep sea' ], [ 'photo', 'Custom photo' ] ], true)).concat(loginExtras()));
+		function desk(nodes) { nodes = [].concat(nodes); nodes.forEach(function (n) { if (n && n.classList) n.classList.add('nf-desk'); }); return nodes; }   /* desktop-only items: hidden on phones */
 		var ov = h('div', { 'class': 'nf-pop-sec' }, [
-			h('div', { 'class': 'nf-pop-l', text: 'Что показывать на «Обзоре»' }),
-			sw('ovLive', 'Полоса «Сейчас»'), sw('ovBadges', 'Цветные метки'),
-			sw('ovTop', 'Топ клиентов'), sw('ovApps', 'Трафик по приложениям'), sw('ovBlock', 'Доступ в интернет'), sw('ovWifi', 'Wi‑Fi сейчас'), sw('ovHealth', 'Состояние роутера'), sw('ovEvents', 'Лента событий'), sw('ovQuick', 'Быстрые действия')
+			h('div', { 'class': 'nf-pop-l', text: 'Show on Overview' }),
+			sw('ovLive', '"Now" strip'), sw('ovBadges', 'Color badges'),
+			sw('ovTop', 'Top clients'), sw('ovApps', 'App traffic'), sw('ovBlock', 'Internet access'), sw('ovWifi', 'Wi‑Fi now'), sw('ovHealth', 'Router health'), sw('ovEvents', 'Event feed'), sw('ovQuick', 'Quick actions')
 		]);
-		/* пороги цвета плиток и порядок плиток */
+		/* tile color thresholds and tile order */
 		var thrBox = h('div', { 'class': 'nf-pop-sec' }), ordBox = h('div', { 'class': 'nf-pop-sec' });
 		function thrRow(key, label, lo, hi) {
 			var v = String(prefs[key] || DEFAULTS[key]).split(','), a, b;
@@ -1490,45 +1490,45 @@
 				m = Math.max(1, Math.min(m, r - 1)); r = Math.max(m + 1, Math.min(r, 150));
 				set(key, m + ',' + r);
 			}
-			a = h('input', { type: 'number', inputmode: 'decimal', min: lo, max: hi, value: v[0], 'aria-label': label + ': внимание', onchange: save });
-			b = h('input', { type: 'number', inputmode: 'decimal', min: lo, max: hi, value: v[1], 'aria-label': label + ': перегрузка', onchange: save });
+			a = h('input', { type: 'number', inputmode: 'decimal', min: lo, max: hi, value: v[0], 'aria-label': label + ': warning', onchange: save });
+			b = h('input', { type: 'number', inputmode: 'decimal', min: lo, max: hi, value: v[1], 'aria-label': label + ': overload', onchange: save });
 			return h('div', { 'class': 'nf-thr-row' }, [ h('span', { text: label }), h('label', {}, [ h('i', { 'class': 'nf-thr-d mid' }), a ]), h('label', {}, [ h('i', { 'class': 'nf-thr-d bad' }), b ]) ]);
 		}
 		function renderOv() {
-			thrBox.replaceChildren.apply(thrBox, [ h('div', { 'class': 'nf-pop-l', text: 'Пороги цвета плиток' }),
-				thrRow('ovThrCpu', 'Процессор, %', 5, 100), thrRow('ovThrTemp', 'Температура, °C', 20, 120), thrRow('ovThrMem', 'Память, %', 5, 100),
-				h('div', { 'class': 'nf-pop-note', text: 'Жёлтый — «внимание», красный — «перегрузка». Работает, когда включены цветные метки.' }),
-				h('div', { 'class': 'nf-pop-io' }, [ h('button', { type: 'button', text: 'Сбросить пороги', onclick: function (ev) { ev.stopPropagation(); set('ovThrCpu', DEFAULTS.ovThrCpu); set('ovThrTemp', DEFAULTS.ovThrTemp); set('ovThrMem', DEFAULTS.ovThrMem); renderOv(); } }) ]) ]);
+			thrBox.replaceChildren.apply(thrBox, [ h('div', { 'class': 'nf-pop-l', text: 'Tile color thresholds' }),
+				thrRow('ovThrCpu', 'CPU, %', 5, 100), thrRow('ovThrTemp', 'Temperature, °C', 20, 120), thrRow('ovThrMem', 'Memory, %', 5, 100),
+				h('div', { 'class': 'nf-pop-note', text: 'Yellow means "warning", red means "overload". Works when color badges are on.' }),
+				h('div', { 'class': 'nf-pop-io' }, [ h('button', { type: 'button', text: 'Reset thresholds', onclick: function (ev) { ev.stopPropagation(); set('ovThrCpu', DEFAULTS.ovThrCpu); set('ovThrTemp', DEFAULTS.ovThrTemp); set('ovThrMem', DEFAULTS.ovThrMem); renderOv(); } }) ]) ]);
 			var ord = String(prefs.ovOrder || DEFAULTS.ovOrder).split(',').filter(function (k) { return TILE_NAMES[k]; });
 			Object.keys(TILE_NAMES).forEach(function (k) { if (ord.indexOf(k) < 0) ord.push(k); });
 			function arrow(t, lbl, off, fn) { var o = { type: 'button', text: t, 'aria-label': lbl, onclick: function (ev) { ev.stopPropagation(); fn(); } }; if (off) o.disabled = 'disabled'; return h('button', o); }
 			function move(i, d) { var j = i + d; if (j < 0 || j >= ord.length) return; var t = ord[i]; ord[i] = ord[j]; ord[j] = t; set('ovOrder', ord.join(',')); renderOv(); }
 			var hid = String(prefs.ovHide == null ? DEFAULTS.ovHide : prefs.ovHide).split(',').filter(function (k) { return TILE_NAMES[k]; });
 			function toggle(k, on) { var l = hid.filter(function (x) { return x !== k; }); if (!on) l.push(k); set('ovHide', l.join(',')); renderOv(); }
-			var lay = h('div', { 'class': 'nf-seg nf-presets', role: 'group', 'aria-label': 'Раскладка «Сейчас»' }, LAYOUTS.map(function (l) {
+			var lay = h('div', { 'class': 'nf-seg nf-presets', role: 'group', 'aria-label': '"Now" layout' }, LAYOUTS.map(function (l) {
 				return h('button', { type: 'button', text: l[1], 'aria-pressed': String(prefs.ovLay === l[0]), onclick: function (ev) { ev.stopPropagation(); applyLayout(l[0]); } });
 			}));
-			ordBox.replaceChildren.apply(ordBox, [ h('div', { 'class': 'nf-pop-l', text: 'Раскладка «Сейчас» одной кнопкой' }), lay,
-				h('div', { 'class': 'nf-pop-note', text: 'Меняет, какие плитки видны, их порядок, число столбцов и размер карточек. Дальше всё можно подправить вручную.' }),
-				h('div', { 'class': 'nf-pop-l', text: 'Плитки «Сейчас»: показ и порядок' }) ].concat(ord.map(function (k, i) {
+			ordBox.replaceChildren.apply(ordBox, [ h('div', { 'class': 'nf-pop-l', text: 'One-click "Now" layout' }), lay,
+				h('div', { 'class': 'nf-pop-note', text: 'Changes which tiles are visible, their order, the number of columns and the card size. You can fine-tune everything afterwards.' }),
+				h('div', { 'class': 'nf-pop-l', text: '"Now" tiles: visibility and order' }) ].concat(ord.map(function (k, i) {
 				var on = hid.indexOf(k) < 0;
-				return h('div', { 'class': 'nf-ord-row' }, [ h('label', { 'class': 'nf-ord-vis' }, [ h('input', { type: 'checkbox', checked: on ? 'checked' : null, 'aria-label': 'Показывать «' + TILE_NAMES[k] + '»', onchange: function (ev) { toggle(k, ev.target.checked); } }),
+				return h('div', { 'class': 'nf-ord-row' }, [ h('label', { 'class': 'nf-ord-vis' }, [ h('input', { type: 'checkbox', checked: on ? 'checked' : null, 'aria-label': 'Show "' + TILE_NAMES[k] + '"', onchange: function (ev) { toggle(k, ev.target.checked); } }),
 						h('span', { text: TILE_NAMES[k] }) ]),
-					arrow('▲', 'Выше', i === 0, function () { move(i, -1); }), arrow('▼', 'Ниже', i === ord.length - 1, function () { move(i, 1); }) ]);
-			})).concat([ h('div', { 'class': 'nf-pop-io' }, [ h('button', { type: 'button', text: 'По умолчанию', onclick: function (ev) { ev.stopPropagation(); set('ovOrder', DEFAULTS.ovOrder); set('ovHide', DEFAULTS.ovHide); renderOv(); } }) ]) ]));
+					arrow('▲', 'Move up', i === 0, function () { move(i, -1); }), arrow('▼', 'Move down', i === ord.length - 1, function () { move(i, 1); }) ]);
+			})).concat([ h('div', { 'class': 'nf-pop-io' }, [ h('button', { type: 'button', text: 'Defaults', onclick: function (ev) { ev.stopPropagation(); set('ovOrder', DEFAULTS.ovOrder); set('ovHide', DEFAULTS.ovHide); renderOv(); } }) ]) ]));
 		}
 		refs.renderOv = renderOv; renderOv();
-		var ovLay = h('div', { 'class': 'nf-pop-sec nf-desk' }, [ h('div', { 'class': 'nf-pop-l', text: 'Раскладка карточек' }), sw('ovWide', 'Один столбец (карточки на всю ширину)') ]
-			.concat(seg2('ovCols', 'Столбцов (без пустых мест)', [ [ '0', 'Авто' ], [ '1', '1' ], [ '2', '2' ], [ '3', '3' ] ], true))
-			.concat(seg2('ovSize', 'Размер карточек', [ [ 'sm', 'Компактные' ], [ 'md', 'Обычные' ], [ 'lg', 'Крупные' ] ], true)));
-		var ui = h('div', { 'class': 'nf-pop-sec' }, [ h('div', { 'class': 'nf-pop-l', text: 'Интерфейс' }) ].concat(desk(sw('navMini', 'Свёрнутое меню (значки)')), seg2('navOpenMode', 'Раскрытие меню', [ [ 'click', 'По клику' ], [ 'hover', 'По наведению' ] ], true), [ sw('constApp', 'Анимация на фоне страниц'), sw('netBar', 'Полоса состояния интернета'), sw('swipe', 'Свайп между вкладками страницы') ], desk(sw('hints', 'Подсказки по терминам')), [ refs.install,
-			h('div', { 'class': 'nf-pop-note', text: 'Приложение: в Chrome и Edge установка работает по HTTPS, на iPhone — «Поделиться → На экран Домой».' })
+		var ovLay = h('div', { 'class': 'nf-pop-sec nf-desk' }, [ h('div', { 'class': 'nf-pop-l', text: 'Card layout' }), sw('ovWide', 'Single column (full-width cards)') ]
+			.concat(seg2('ovCols', 'Columns (no gaps)', [ [ '0', 'Auto' ], [ '1', '1' ], [ '2', '2' ], [ '3', '3' ] ], true))
+			.concat(seg2('ovSize', 'Card size', [ [ 'sm', 'Compact' ], [ 'md', 'Normal' ], [ 'lg', 'Large' ] ], true)));
+		var ui = h('div', { 'class': 'nf-pop-sec' }, [ h('div', { 'class': 'nf-pop-l', text: 'Interface' }) ].concat(desk(sw('navMini', 'Collapsed menu (icons)')), seg2('navOpenMode', 'Menu opens', [ [ 'click', 'On click' ], [ 'hover', 'On hover' ] ], true), [ sw('constApp', 'Animation behind pages'), sw('netBar', 'Internet status bar'), sw('swipe', 'Swipe between page tabs') ], desk(sw('hints', 'Term hints')), [ refs.install,
+			h('div', { 'class': 'nf-pop-note', text: 'App: in Chrome and Edge installing works over HTTPS; on iPhone use "Share → Add to Home Screen".' })
 		]));
 
 		refs.motion = h('input', { type: 'checkbox', onchange: function (ev) { set('motion', ev.target.checked); } });
 		refs.liteAuto = h('input', { type: 'checkbox', onchange: function (ev) { set('liteAuto', ev.target.checked); } });
 
-		var TABS = [ [ 'theme', 'Тема' ], [ 'look', 'Вид' ], [ 'login', 'Вход' ], [ 'ov', 'Обзор' ], [ 'more', 'Ещё' ] ];
+		var TABS = [ [ 'theme', 'Theme' ], [ 'look', 'Look' ], [ 'login', 'Sign-in' ], [ 'ov', 'Overview' ], [ 'more', 'More' ] ];
 		var tabbar = h('div', { 'class': 'nf-tabs', role: 'tablist' }, TABS.map(function (t) {
 			return h('button', { type: 'button', role: 'tab', 'data-t': t[0], text: t[1], onclick: function () { showTab(t[0]); } });
 		}));
@@ -1543,90 +1543,90 @@
 			try { window.sessionStorage.setItem('nightfall-tab', id); } catch (e) { /* ignore */ }
 		}
 
-		pop = h('div', { 'class': 'nf-pop', role: 'dialog', 'aria-label': 'Персонализация' }, [
-			h('div', { 'class': 'nf-pop-h' }, [ h('span', { text: 'Персонализация' }), h('button', { type: 'button', 'class': 'nf-pop-x', 'aria-label': 'Закрыть', title: 'Закрыть', text: '×', onclick: function () { toggle(false); } }) ]),
+		pop = h('div', { 'class': 'nf-pop', role: 'dialog', 'aria-label': 'Personalization' }, [
+			h('div', { 'class': 'nf-pop-h' }, [ h('span', { text: 'Personalization' }), h('button', { type: 'button', 'class': 'nf-pop-x', 'aria-label': 'Close', title: 'Close', text: '×', onclick: function () { toggle(false); } }) ]),
 			tabbar,
 			pane('theme', [
-				h('div', { 'class': 'nf-pop-l', text: 'Стиль' }), presets,
-				h('button', { type: 'button', 'class': 'nf-ed-open', text: '🎨 Редактор своей темы', onclick: function () { openEditor(); } }),
-				h('div', { 'class': 'nf-pop-l', text: 'Режим' }), seg, sched,
-				h('div', { 'class': 'nf-pop-l', text: 'Цвет акцента' }), grid,
-				h('label', { 'class': 'nf-pop-c' }, [ h('span', { text: 'Свой цвет' }), refs.color ])
+				h('div', { 'class': 'nf-pop-l', text: 'Style' }), presets,
+				h('button', { type: 'button', 'class': 'nf-ed-open', text: '🎨 Custom theme editor', onclick: function () { openEditor(); } }),
+				h('div', { 'class': 'nf-pop-l', text: 'Mode' }), seg, sched,
+				h('div', { 'class': 'nf-pop-l', text: 'Accent color' }), grid,
+				h('label', { 'class': 'nf-pop-c' }, [ h('span', { text: 'Custom color' }), refs.color ])
 			]),
 			pane('look', [
-				h('div', { 'class': 'nf-pop-l', text: 'Фон' }), bgseg,
-				rng('Масштаб узора', refs.scale, '%'),
+				h('div', { 'class': 'nf-pop-l', text: 'Background' }), bgseg,
+				rng('Pattern scale', refs.scale, '%'),
 				refs.wxSec = h('div', { 'class': 'nf-pop-sec', hidden: true }, [
-					h('div', { 'class': 'nf-pop-l', text: 'Погода для фона' }),
-					h('div', { 'class': 'nf-pop-note', text: 'Фон меняется по погоде у вас: солнце, облака, дождь, снег, туман, гроза. Выберите город или введите координаты. Данные берутся в вашем браузере из бесплатных сервисов Open-Meteo и wttr.in, регистрация не нужна, роутер ничего не отправляет. Если оба закрыты у вашего провайдера, нужен VPN на устройстве.' }),
-					refs.wxCity = h('select', { 'class': 'nf-sel', 'aria-label': 'Город', onchange: function (ev) {
+					h('div', { 'class': 'nf-pop-l', text: 'Weather for the background' }),
+					h('div', { 'class': 'nf-pop-note', text: 'The background follows your local weather: sun, clouds, rain, snow, fog, thunderstorm. Choose a city or enter coordinates. Data is fetched by your browser from the free Open-Meteo and wttr.in services, no sign-up needed; the router sends nothing. If both are blocked by your ISP, use a VPN on the device.' }),
+					refs.wxCity = h('select', { 'class': 'nf-sel', 'aria-label': 'City', onchange: function (ev) {
 						var c = WX_CITIES[+ev.target.value]; if (!c) return;
 						set('wxLat', c[1]); set('wxLon', c[2]); wxCode = ''; refreshPanel();
-						refs.wxNote.textContent = 'Запрашиваю погоду…'; wxFetch().then(function (ok) { refs.wxNote.textContent = ok ? 'Сейчас: ' + wxCode : 'Не получилось: сервис погоды недоступен (в России может быть нужен VPN).'; });
-					} }, [ h('option', { value: '-1', text: 'Выберите город…' }) ].concat(WX_CITIES.map(function (c, i) { return h('option', { value: String(i), text: c[0] }); }))),
+						refs.wxNote.textContent = 'Fetching the weather…'; wxFetch().then(function (ok) { refs.wxNote.textContent = ok ? 'Now: ' + wxCode : 'Failed: the weather service is unavailable (a VPN may be needed in Russia).'; });
+					} }, [ h('option', { value: '-1', text: 'Choose a city…' }) ].concat(WX_CITIES.map(function (c, i) { return h('option', { value: String(i), text: c[0] }); }))),
 					h('div', { 'class': 'nf-wx-ll' }, [
-						h('label', {}, [ h('span', { text: 'Широта' }), refs.wxLat = h('input', { type: 'text', inputmode: 'decimal', placeholder: '55.75', 'aria-label': 'Широта', onchange: function (ev) { set('wxLat', ev.target.value.replace(',', '.').trim()); wxCode = ''; skyUpdate(); } }) ]),
-						h('label', {}, [ h('span', { text: 'Долгота' }), refs.wxLon = h('input', { type: 'text', inputmode: 'decimal', placeholder: '37.62', 'aria-label': 'Долгота', onchange: function (ev) { set('wxLon', ev.target.value.replace(',', '.').trim()); wxCode = ''; skyUpdate(); } }) ])
+						h('label', {}, [ h('span', { text: 'Latitude' }), refs.wxLat = h('input', { type: 'text', inputmode: 'decimal', placeholder: '55.75', 'aria-label': 'Latitude', onchange: function (ev) { set('wxLat', ev.target.value.replace(',', '.').trim()); wxCode = ''; skyUpdate(); } }) ]),
+						h('label', {}, [ h('span', { text: 'Longitude' }), refs.wxLon = h('input', { type: 'text', inputmode: 'decimal', placeholder: '37.62', 'aria-label': 'Longitude', onchange: function (ev) { set('wxLon', ev.target.value.replace(',', '.').trim()); wxCode = ''; skyUpdate(); } }) ])
 					]),
 					h('div', { 'class': 'nf-pop-io' }, [
-						h('button', { type: 'button', text: 'Моё место', onclick: function () {
-							if (!navigator.geolocation) { refs.wxNote.textContent = 'Браузер не умеет определять место. Выберите город.'; return; }
-							refs.wxNote.textContent = 'Определяю…';
+						h('button', { type: 'button', text: 'My location', onclick: function () {
+							if (!navigator.geolocation) { refs.wxNote.textContent = 'This browser cannot detect location. Choose a city.'; return; }
+							refs.wxNote.textContent = 'Locating…';
 							navigator.geolocation.getCurrentPosition(function (pos) {
 								set('wxLat', pos.coords.latitude.toFixed(2)); set('wxLon', pos.coords.longitude.toFixed(2)); wxCode = ''; refreshPanel();
-								wxFetch().then(function (ok) { refs.wxNote.textContent = ok ? 'Готово: ' + wxCode : 'Не удалось получить погоду.'; });
-							}, function () { refs.wxNote.textContent = 'Нет доступа к месту (нужен HTTPS и разрешение). Выберите город.'; }, { timeout: 8000 });
+								wxFetch().then(function (ok) { refs.wxNote.textContent = ok ? 'Done: ' + wxCode : 'Could not get the weather.'; });
+							}, function () { refs.wxNote.textContent = 'No access to location (HTTPS and permission required). Choose a city.'; }, { timeout: 8000 });
 						} }),
-						h('button', { type: 'button', text: 'Проверить', onclick: function () { wxCode = ''; refs.wxNote.textContent = 'Запрашиваю…'; wxFetch().then(function (ok) { refs.wxNote.textContent = ok ? 'Сейчас: ' + wxCode : 'Не получилось: сервис погоды недоступен (в России может быть нужен VPN).'; }); } })
+						h('button', { type: 'button', text: 'Check', onclick: function () { wxCode = ''; refs.wxNote.textContent = 'Fetching…'; wxFetch().then(function (ok) { refs.wxNote.textContent = ok ? 'Now: ' + wxCode : 'Failed: the weather service is unavailable (a VPN may be needed in Russia).'; }); } })
 					]),
 					refs.wxNote = h('div', { 'class': 'nf-pop-ionote', role: 'status' })
 				]),
 				h('div', { 'class': 'nf-pop-sec' }, look),
-				h('label', { 'class': 'nf-pop-row' }, [ h('span', { text: 'Анимации' }), h('span', { 'class': 'cbi-checkbox' }, [ refs.motion ]) ]),
-				h('label', { 'class': 'nf-pop-row' }, [ h('span', { text: 'Выключать анимации на слабых телефонах' }), h('span', { 'class': 'cbi-checkbox' }, [ refs.liteAuto ]) ])
+				h('label', { 'class': 'nf-pop-row' }, [ h('span', { text: 'Animations' }), h('span', { 'class': 'cbi-checkbox' }, [ refs.motion ]) ]),
+				h('label', { 'class': 'nf-pop-row' }, [ h('span', { text: 'Turn off animations on low-end phones' }), h('span', { 'class': 'cbi-checkbox' }, [ refs.liteAuto ]) ])
 			]),
 			pane('login', [ more ]),
 			pane('ov', [ ov, ovLay, ordBox, thrBox ]),
 			pane('more', [
 				ui,
 				h('div', { 'class': 'nf-pop-sec' }, [
-					h('div', { 'class': 'nf-pop-l', text: 'Копия настроек' }),
-					h('div', { 'class': 'nf-pop-note', text: 'Настройки автоматически сохраняются на роутере и подтягиваются в других браузерах после входа в LuCI.' }),
+					h('div', { 'class': 'nf-pop-l', text: 'Settings copy' }),
+					h('div', { 'class': 'nf-pop-note', text: 'Settings are saved on the router automatically and picked up in other browsers after signing in to LuCI.' }),
 					h('div', { 'class': 'nf-pop-io' }, [
-						h('button', { type: 'button', text: 'На роутер', onclick: function () { syncNote('Отправляю…'); pushNow(true); } }),
-						h('button', { type: 'button', text: 'С роутера', onclick: function () { syncNote('Загружаю…'); pull(true).then(function () { syncNote('Настройки взяты с роутера.'); }); } })
+						h('button', { type: 'button', text: 'To router', onclick: function () { syncNote('Sending…'); pushNow(true); } }),
+						h('button', { type: 'button', text: 'From router', onclick: function () { syncNote('Loading…'); pull(true).then(function () { syncNote('Settings loaded from the router.'); }); } })
 					]),
 					refs.syncNote,
 					h('div', { 'class': 'nf-pop-io' }, [
-						h('button', { type: 'button', text: 'В файл', onclick: exportPrefs }),
-						h('button', { type: 'button', text: 'Из файла', onclick: function () { refs.file.click(); } }),
+						h('button', { type: 'button', text: 'To file', onclick: exportPrefs }),
+						h('button', { type: 'button', text: 'From file', onclick: function () { refs.file.click(); } }),
 						refs.file = h('input', { type: 'file', accept: 'application/json,.json', hidden: true, onchange: function (ev) { importPrefs(ev.target.files && ev.target.files[0]); ev.target.value = ''; } })
 					]),
 					refs.ioNote = h('div', { 'class': 'nf-pop-ionote', role: 'status' })
 				]),
 				h('div', { 'class': 'nf-pop-sec nf-backup-sec' }, [
-					h('div', { 'class': 'nf-pop-l', text: 'Резервная копия настроек роутера' }),
-					h('div', { 'class': 'nf-pop-note', text: 'Создаёт архив настроек Nightfall на роутере и сразу скачивает его на устройство. Для восстановления выберите ранее сохранённый архив. Секреты Telegram и сетевые настройки OpenWrt в архив не входят.' }),
+					h('div', { 'class': 'nf-pop-l', text: 'Router settings backup' }),
+					h('div', { 'class': 'nf-pop-note', text: 'Creates an archive of Nightfall settings on the router and downloads it to this device right away. To restore, choose a previously saved archive. Telegram secrets and OpenWrt network settings are not included.' }),
 					h('div', { 'class': 'nf-pop-io' }, [
-						h('button', { type: 'button', text: 'Создать и скачать', onclick: createAndDownloadBackup }),
-						h('button', { type: 'button', text: 'Выбрать архив', onclick: function () { refs.backupFile.click(); } }),
+						h('button', { type: 'button', text: 'Create and download', onclick: createAndDownloadBackup }),
+						h('button', { type: 'button', text: 'Choose archive', onclick: function () { refs.backupFile.click(); } }),
 						refs.backupFile = h('input', { type: 'file', accept: '.tar.gz,application/gzip,application/x-gzip', hidden: true, onchange: function (ev) { uploadAndPreviewBackup(ev.target.files && ev.target.files[0]); ev.target.value = ''; } })
 					]),
-					h('div', { 'class': 'nf-pop-io' }, [ refs.backupApply = h('button', { type: 'button', text: 'Восстановить настройки', hidden: true, onclick: applyUploadedBackup }) ]),
+					h('div', { 'class': 'nf-pop-io' }, [ refs.backupApply = h('button', { type: 'button', text: 'Restore settings', hidden: true, onclick: applyUploadedBackup }) ]),
 					refs.backupNote = h('div', { 'class': 'nf-pop-ionote', role: 'status', 'aria-live': 'polite' })
 				]),
 				h('div', { 'class': 'nf-pop-sec nf-pop-about' }, [
-					h('div', { 'class': 'nf-pop-l', text: 'О теме' }),
+					h('div', { 'class': 'nf-pop-l', text: 'About the theme' }),
 					refs.ver = h('div', { 'class': 'nf-ver' }),
-					h('label', { 'class': 'nf-pop-row' }, [ h('span', { text: 'Проверять обновления раз в неделю' }), h('span', { 'class': 'cbi-checkbox' }, [ refs.upd = h('input', { type: 'checkbox', onchange: function (ev) { set('updCheck', ev.target.checked); } }) ]) ]),
+					h('label', { 'class': 'nf-pop-row' }, [ h('span', { text: 'Check for updates weekly' }), h('span', { 'class': 'cbi-checkbox' }, [ refs.upd = h('input', { type: 'checkbox', onchange: function (ev) { set('updCheck', ev.target.checked); } }) ]) ]),
 					h('div', { 'class': 'nf-pop-io' }, [
-						h('button', { type: 'button', text: 'Что нового', onclick: showWhatsNew }),
-						h('button', { type: 'button', text: 'Проверить', onclick: function () { checkUpdate(true); } }),
-						h('a', { 'class': 'nf-pop-btn', href: 'https://github.com/' + REPO + '/releases', target: '_blank', rel: 'noopener', text: 'Страница релизов' })
+						h('button', { type: 'button', text: 'What\'s new', onclick: showWhatsNew }),
+						h('button', { type: 'button', text: 'Check', onclick: function () { checkUpdate(true); } }),
+						h('a', { 'class': 'nf-pop-btn', href: 'https://github.com/' + REPO + '/releases', target: '_blank', rel: 'noopener', text: 'Releases page' })
 					]),
 					refs.updNote = h('div', { 'class': 'nf-pop-ionote', role: 'status' })
 				]),
-				h('button', { type: 'button', 'class': 'nf-pop-reset', text: 'Сбросить всё', onclick: function () {
+				h('button', { type: 'button', 'class': 'nf-pop-reset', text: 'Reset all', onclick: function () {
 					prefs = Object.assign({}, DEFAULTS); save(); applyAll(); refreshPanel();
 				} })
 			])
@@ -1635,16 +1635,16 @@
 
 		pop.addEventListener('input', function (ev) { if (ev.target.type === 'range') paintRange(ev.target); });
 		document.body.appendChild(pop);
-		var IC = { 'Стиль': 'style', 'Режим': 'mode', 'Цвет акцента': 'color', 'Фон': 'bg', 'Погода для фона': 'wx', 'Копия настроек': 'sync', 'О теме': 'info',
-			'Экран входа': 'login', 'Что показывать на «Обзоре»': 'ov', 'Раскладка карточек': 'ov', 'Порядок плиток «Сейчас»': 'ov', 'Пороги цвета плиток': 'ov', 'Интерфейс': 'ui', 'Карточки на входе': 'login', 'Поделиться темой': 'sync' };
+		var IC = { 'Style': 'style', 'Mode': 'mode', 'Accent color': 'color', 'Background': 'bg', 'Weather for the background': 'wx', 'Settings copy': 'sync', 'About the theme': 'info',
+			'Sign-in screen': 'login', 'Show on Overview': 'ov', 'Card layout': 'ov', '"Now" tile order': 'ov', 'Tile color thresholds': 'ov', 'Interface': 'ui', 'Sign-in cards': 'login', 'Share theme': 'sync' };
 		[].forEach.call(pop.querySelectorAll('.nf-pop-l'), function (l) { var k = IC[l.textContent.trim()]; if (k) l.setAttribute('data-ic', k); });
 		refreshPanel();
 	}
 
 
-	/* ---------- редактор своей темы ----------
-	 * Окно с цветами, скруглением, шрифтом и тенями. Страница вокруг и есть предпросмотр: всё применяется сразу.
-	 * Тему можно отправить другому текстом-кодом (одна строка) и применить у него. */
+	/* ---------- custom theme editor ----------
+	 * A window with colors, corner radius, font and shadows. The page around it is the preview: everything applies immediately.
+	 * A theme can be sent to someone else as a one-line text code and applied on their side. */
 	var ed = null, edRefs = {};
 	var CODE_KEYS = [ 'mode', 'accent', 'style', 'bg', 'bgScale', 'radius', 'density', 'font', 'glass', 'glassTone', 'glassBlur', 'glassAlpha', 'chart', 'chartSmooth', 'chartPal', 'chartW', 'chartGrid', 'chartThr', 'chartShine', 'cusOn', 'cusBg', 'cusCard', 'cusText', 'cusRadius', 'cusFont', 'cusShadow' ];
 	function themeCode() {
@@ -1655,11 +1655,11 @@
 	}
 	function applyCode(txt) {
 		var m = /^\s*NF1:([A-Za-z0-9+\/=]+)\s*$/.exec(String(txt || ''));
-		if (!m) return 'Это не код темы Nightfall (он начинается с NF1:).';
+		if (!m) return 'This is not a Nightfall theme code (it starts with NF1:).';
 		var src = null;
-		try { src = JSON.parse(decodeURIComponent(escape(window.atob(m[1])))); } catch (e) { return 'Код повреждён.'; }
+		try { src = JSON.parse(decodeURIComponent(escape(window.atob(m[1])))); } catch (e) { return 'The code is corrupted.'; }
 		var clean = src && typeof src === 'object' ? cleanPrefs(src) : null;
-		if (!clean) return 'В коде нет настроек темы.';
+		if (!clean) return 'The code contains no theme settings.';
 		var out = {}; CODE_KEYS.forEach(function (k) { if (Object.prototype.hasOwnProperty.call(clean, k)) out[k] = clean[k]; });
 		Object.assign(prefs, out, { preset: '' }); save(); applyAll(); refreshPanel(); refreshEditor();
 		return '';
@@ -1686,7 +1686,7 @@
 	function buildEditor() {
 		function color(key, label) {
 			var inp = edRefs[key] = h('input', { type: 'color', 'class': 'nf-color', 'aria-label': label, oninput: function (ev) { prefs.cusOn = true; set(key, ev.target.value); refreshEditor(); } });
-			var x = edRefs[key + 'x'] = h('button', { type: 'button', 'class': 'nf-ed-x', title: 'Вернуть как в теме', 'aria-label': 'Сбросить: ' + label, text: '↺', onclick: function () { set(key, ''); refreshEditor(); } });
+			var x = edRefs[key + 'x'] = h('button', { type: 'button', 'class': 'nf-ed-x', title: 'Revert to theme default', 'aria-label': 'Reset: ' + label, text: '↺', onclick: function () { set(key, ''); refreshEditor(); } });
 			return h('div', { 'class': 'nf-ed-c' }, [ h('span', { text: label }), inp, x ]);
 		}
 		function seg(key, label, items) {
@@ -1698,42 +1698,42 @@
 		}
 		edRefs.on = h('input', { type: 'checkbox', onchange: function (ev) { set('cusOn', ev.target.checked); refreshEditor(); } });
 		edRefs.base = {
-			light: h('button', { type: 'button', text: 'Светлая основа', onclick: function () { prefs.schedule = false; set('mode', 'light'); refreshEditor(); } }),
-			dark: h('button', { type: 'button', text: 'Тёмная основа', onclick: function () { prefs.schedule = false; set('mode', 'dark'); refreshEditor(); } })
+			light: h('button', { type: 'button', text: 'Light base', onclick: function () { prefs.schedule = false; set('mode', 'light'); refreshEditor(); } }),
+			dark: h('button', { type: 'button', text: 'Dark base', onclick: function () { prefs.schedule = false; set('mode', 'dark'); refreshEditor(); } })
 		};
-		edRefs.color = h('input', { type: 'color', 'class': 'nf-color', 'aria-label': 'Цвет акцента', oninput: function (ev) { set('accent', ev.target.value); refreshEditor(); } });
-		edRefs.radius = h('input', { type: 'range', min: '0', max: '28', step: '1', 'aria-label': 'Скругление, пикселей', oninput: function (ev) { prefs.cusOn = true; set('cusRadius', +ev.target.value); } });
+		edRefs.color = h('input', { type: 'color', 'class': 'nf-color', 'aria-label': 'Accent color', oninput: function (ev) { set('accent', ev.target.value); refreshEditor(); } });
+		edRefs.radius = h('input', { type: 'range', min: '0', max: '28', step: '1', 'aria-label': 'Corner radius, pixels', oninput: function (ev) { prefs.cusOn = true; set('cusRadius', +ev.target.value); } });
 		edRefs.radius.setAttribute('data-unit', 'px');
-		edRefs.code = h('textarea', { 'class': 'nf-ed-code', rows: '3', spellcheck: 'false', 'aria-label': 'Код темы', placeholder: 'Вставьте сюда код чужой темы (начинается с NF1:)' });
+		edRefs.code = h('textarea', { 'class': 'nf-ed-code', rows: '3', spellcheck: 'false', 'aria-label': 'Theme code', placeholder: 'Paste someone else\'s theme code here (starts with NF1:)' });
 		edRefs.note = h('div', { 'class': 'nf-pop-ionote', role: 'status' });
 		var note = function (t, bad) { edRefs.note.textContent = t; edRefs.note.classList.toggle('bad', !!bad); };
-		var rngRow = h('label', { 'class': 'nf-rng' }, [ h('span', { 'class': 'nf-rng-t' }, [ h('span', { text: 'Скругление углов' }), h('output', { 'class': 'nf-rng-v' }) ]), edRefs.radius ]);
-		ed = h('div', { 'class': 'nf-pop nf-ed', role: 'dialog', 'aria-label': 'Редактор темы' }, [
-			h('div', { 'class': 'nf-pop-h' }, [ h('span', { text: 'Редактор темы' }), h('button', { type: 'button', 'class': 'nf-pop-x', 'aria-label': 'Закрыть', title: 'Закрыть', text: '×', onclick: function () { ed.classList.remove('open'); } }) ]),
-			h('div', { 'class': 'nf-pop-note', text: 'Изменения видны сразу на этой странице. Выберите основу и подстройте цвета, форму и шрифт.' }),
-			h('label', { 'class': 'nf-pop-row' }, [ h('span', { text: 'Использовать свою тему' }), h('span', { 'class': 'cbi-checkbox' }, [ edRefs.on ]) ]),
-			h('div', { 'class': 'nf-seg', role: 'group', 'aria-label': 'Основа' }, [ edRefs.base.light, edRefs.base.dark ]),
+		var rngRow = h('label', { 'class': 'nf-rng' }, [ h('span', { 'class': 'nf-rng-t' }, [ h('span', { text: 'Corner radius' }), h('output', { 'class': 'nf-rng-v' }) ]), edRefs.radius ]);
+		ed = h('div', { 'class': 'nf-pop nf-ed', role: 'dialog', 'aria-label': 'Theme editor' }, [
+			h('div', { 'class': 'nf-pop-h' }, [ h('span', { text: 'Theme editor' }), h('button', { type: 'button', 'class': 'nf-pop-x', 'aria-label': 'Close', title: 'Close', text: '×', onclick: function () { ed.classList.remove('open'); } }) ]),
+			h('div', { 'class': 'nf-pop-note', text: 'Changes show up on this page right away. Choose a base and adjust the colors, shape and font.' }),
+			h('label', { 'class': 'nf-pop-row' }, [ h('span', { text: 'Use custom theme' }), h('span', { 'class': 'cbi-checkbox' }, [ edRefs.on ]) ]),
+			h('div', { 'class': 'nf-seg', role: 'group', 'aria-label': 'Base' }, [ edRefs.base.light, edRefs.base.dark ]),
 			h('div', { 'class': 'nf-ed-body' }, [
-				color('cusBg', 'Фон страницы'), color('cusCard', 'Карточки'), color('cusText', 'Текст'),
-				h('div', { 'class': 'nf-ed-c' }, [ h('span', { text: 'Акцент' }), edRefs.color ]),
+				color('cusBg', 'Page background'), color('cusCard', 'Cards'), color('cusText', 'Text'),
+				h('div', { 'class': 'nf-ed-c' }, [ h('span', { text: 'Accent' }), edRefs.color ]),
 				rngRow
-			].concat(seg('cusFont', 'Шрифт', [ [ '_', 'Как в теме' ], [ 'system', 'Системный' ], [ 'rounded', 'Округлый' ], [ 'humanist', 'Мягкий' ], [ 'serif', 'Засечки' ], [ 'mono', 'Моно' ] ]),
-				seg('cusShadow', 'Тени карточек', [ [ '_', 'Как в теме' ], [ 'none', 'Без теней' ], [ 'soft', 'Мягкие' ], [ 'deep', 'Глубокие' ] ]),
-				[ h('div', { 'class': 'nf-ed-prev' }, [ h('b', { text: 'Так выглядит карточка' }), h('span', { text: 'Текст, ссылки и кнопки в выбранных цветах.' }), h('button', { type: 'button', 'class': 'cbi-button cbi-button-action', text: 'Кнопка' }) ]) ])),
-			h('div', { 'class': 'nf-pop-l', text: 'Поделиться темой' }),
+			].concat(seg('cusFont', 'Font', [ [ '_', 'Theme default' ], [ 'system', 'System' ], [ 'rounded', 'Rounded' ], [ 'humanist', 'Soft' ], [ 'serif', 'Serif' ], [ 'mono', 'Mono' ] ]),
+				seg('cusShadow', 'Card shadows', [ [ '_', 'Theme default' ], [ 'none', 'No shadows' ], [ 'soft', 'Soft' ], [ 'deep', 'Deep' ] ]),
+				[ h('div', { 'class': 'nf-ed-prev' }, [ h('b', { text: 'This is how a card looks' }), h('span', { text: 'Text, links and buttons in the chosen colors.' }), h('button', { type: 'button', 'class': 'cbi-button cbi-button-action', text: 'Button' }) ]) ])),
+			h('div', { 'class': 'nf-pop-l', text: 'Share theme' }),
 			edRefs.code,
 			h('div', { 'class': 'nf-pop-io' }, [
-				h('button', { type: 'button', text: 'Показать код моей темы', onclick: function () { edRefs.code.value = themeCode(); edRefs.code.select(); note('Скопируйте код и отправьте: на другом роутере вставьте его сюда и нажмите «Применить код».'); } }),
-				h('button', { type: 'button', text: 'Копировать', onclick: function () {
+				h('button', { type: 'button', text: 'Show my theme code', onclick: function () { edRefs.code.value = themeCode(); edRefs.code.select(); note('Copy the code and send it: on the other router paste it here and press "Apply code".'); } }),
+				h('button', { type: 'button', text: 'Copy', onclick: function () {
 					if (!edRefs.code.value) edRefs.code.value = themeCode(); edRefs.code.select();
 					var ok = false; try { ok = document.execCommand('copy'); } catch (e) { /* ignore */ }
-					if (!ok && navigator.clipboard) { navigator.clipboard.writeText(edRefs.code.value).then(function () { note('Код скопирован.'); }, function () { note('Выделите код и скопируйте вручную.', true); }); return; }
-					note(ok ? 'Код скопирован.' : 'Выделите код и скопируйте вручную.', !ok);
+					if (!ok && navigator.clipboard) { navigator.clipboard.writeText(edRefs.code.value).then(function () { note('Code copied.'); }, function () { note('Select the code and copy it manually.', true); }); return; }
+					note(ok ? 'Code copied.' : 'Select the code and copy it manually.', !ok);
 				} }),
-				h('button', { type: 'button', text: 'Применить код', onclick: function () { var e = applyCode(edRefs.code.value); note(e || 'Тема применена.', !!e); } })
+				h('button', { type: 'button', text: 'Apply code', onclick: function () { var e = applyCode(edRefs.code.value); note(e || 'Theme applied.', !!e); } })
 			]),
 			edRefs.note,
-			h('button', { type: 'button', 'class': 'nf-pop-reset', text: 'Сбросить свою тему', onclick: function () {
+			h('button', { type: 'button', 'class': 'nf-pop-reset', text: 'Reset custom theme', onclick: function () {
 				[ 'cusBg', 'cusCard', 'cusText', 'cusFont', 'cusShadow' ].forEach(function (k) { prefs[k] = ''; }); prefs.cusRadius = 0; prefs.cusOn = false; save(); applyAll(); refreshPanel(); refreshEditor();
 			} })
 		]);
@@ -1742,7 +1742,7 @@
 		document.body.appendChild(ed);
 	}
 
-	/* ---------- резервная копия настроек Nightfall на роутере ---------- */
+	/* ---------- Nightfall settings backup on the router ---------- */
 	var backupRestorePath = '', backupBusy = false;
 	function backupNote(text, bad) {
 		if (!refs.backupNote) return;
@@ -1751,14 +1751,14 @@
 	}
 	function backupExec(args) {
 		var env = sid();
-		if (!env || !window.fetch) return Promise.reject(new Error('Сначала войдите в LuCI.'));
+		if (!env || !window.fetch) return Promise.reject(new Error('Sign in to LuCI first.'));
 		return window.fetch(env.ubuspath || '/ubus/', { method: 'POST', cache: 'no-store', headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'call', params: [ env.sessionid, 'file', 'exec', { command: '/usr/libexec/nightfall-backup', params: args } ] })
 		}).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }).then(function (j) {
 			var res = j && j.result;
-			if (!res || res[0] !== 0) throw new Error(res && res[0] === 6 ? 'Нет прав на резервное копирование. Выйдите и войдите в LuCI заново.' : (j && j.error && j.error.message) || 'Ошибка вызова роутера.');
+			if (!res || res[0] !== 0) throw new Error(res && res[0] === 6 ? 'No permission to back up. Sign out and sign in to LuCI again.' : (j && j.error && j.error.message) || 'Router call failed.');
 			var data = res[1] || {};
-			if (data.code !== undefined && +data.code !== 0) throw new Error(String(data.stderr || data.stdout || 'Команда завершилась с ошибкой.').trim());
+			if (data.code !== undefined && +data.code !== 0) throw new Error(String(data.stderr || data.stdout || 'The command failed.').trim());
 			return String(data.stdout || '').replace(/\s+$/, '');
 		});
 	}
@@ -1780,100 +1780,100 @@
 	}
 	function createAndDownloadBackup() {
 		if (backupBusy) return;
-		backupBusyState(true); backupNote('Создаю резервную копию…');
+		backupBusyState(true); backupNote('Creating a backup…');
 		backupExec([ 'create' ]).then(function (out) {
-			var m = out.match(/Резервная копия создана:\s*(\/[^\s]+\.tar\.gz)/);
-			if (!m) throw new Error(out || 'Роутер не сообщил путь к архиву.');
+			var m = out.match(/Backup created:\s*(\/[^\s]+\.tar\.gz)/);
+			if (!m) throw new Error(out || 'The router did not report the archive path.');
 			var name = m[1].split('/').pop(), parts = [], offset = 0, chunkSize = 24576;
 			return backupExec([ 'download-info', name ]).then(function (info) {
 				var sm = info.match(/(?:^|\s)size=(\d+)(?:\s|$)/), hm = info.match(/(?:^|\s)sha256=([a-f0-9]{64})(?:\s|$)/i);
-				if (!sm || !hm) throw new Error('Роутер не сообщил размер и контрольную сумму архива.');
+				if (!sm || !hm) throw new Error('The router did not report the archive size and checksum.');
 				var expectedSize = Number(sm[1]), expectedHash = hm[1].toLowerCase();
-				if (!isFinite(expectedSize) || expectedSize < 1 || expectedSize > 5 * 1024 * 1024) throw new Error('Недопустимый размер архива: ' + expectedSize + ' байт.');
-				backupNote('Архив создан (' + expectedSize + ' байт). Скачиваю на устройство…');
+				if (!isFinite(expectedSize) || expectedSize < 1 || expectedSize > 5 * 1024 * 1024) throw new Error('Invalid archive size: ' + expectedSize + ' bytes.');
+				backupNote('Archive created (' + expectedSize + ' bytes). Downloading to the device…');
 				function next() {
 					if (offset >= expectedSize) return Promise.resolve();
 					return backupExec([ 'download', name, String(offset), String(chunkSize) ]).then(function (b64) {
-						if (!b64) throw new Error('Роутер вернул пустой блок на смещении ' + offset + ' из ' + expectedSize + ' байт.');
+						if (!b64) throw new Error('The router returned an empty chunk at offset ' + offset + ' of ' + expectedSize + ' bytes.');
 						var bytes = decodeBackupChunk(b64), expectedChunk = Math.min(chunkSize, expectedSize - offset);
-						if (bytes.length !== expectedChunk) throw new Error('Получен неполный блок: ' + bytes.length + ' из ' + expectedChunk + ' байт.');
+						if (bytes.length !== expectedChunk) throw new Error('Incomplete chunk received: ' + bytes.length + ' of ' + expectedChunk + ' bytes.');
 						parts.push(bytes); offset += bytes.length;
-						backupNote('Скачано ' + Math.round(offset / expectedSize * 100) + '%…');
+						backupNote('Downloaded ' + Math.round(offset / expectedSize * 100) + '%…');
 						return next();
 					});
 				}
 				return next().then(function () {
 					var blob = new Blob(parts, { type: 'application/gzip' });
-					if (blob.size !== expectedSize) throw new Error('Размер скачанного файла не совпадает: ' + blob.size + ' из ' + expectedSize + ' байт.');
-					if (!parts.length || parts[0].length < 2 || parts[0][0] !== 31 || parts[0][1] !== 139) throw new Error('Полученный файл не имеет заголовка gzip.');
-					/* SHA-256 сверяем там, где браузер разрешает Web Crypto (обычно HTTPS/localhost). */
+					if (blob.size !== expectedSize) throw new Error('Downloaded file size mismatch: ' + blob.size + ' of ' + expectedSize + ' bytes.');
+					if (!parts.length || parts[0].length < 2 || parts[0][0] !== 31 || parts[0][1] !== 139) throw new Error('The received file has no gzip header.');
+					/* SHA-256 is verified where the browser allows Web Crypto (usually HTTPS/localhost). */
 					var verifyHash = Promise.resolve(false);
 					if (window.crypto && window.crypto.subtle && blob.arrayBuffer) {
 						verifyHash = blob.arrayBuffer().then(function (buffer) {
 							return window.crypto.subtle.digest('SHA-256', buffer);
 						}).then(function (digest) {
 							var actualHash = Array.prototype.map.call(new Uint8Array(digest), function (v) { return ('0' + v.toString(16)).slice(-2); }).join('');
-							if (actualHash !== expectedHash) throw new Error('SHA-256 скачанного файла не совпадает с роутером.');
+							if (actualHash !== expectedHash) throw new Error('SHA-256 of the downloaded file does not match the router.');
 							return true;
 						});
 					}
 					return verifyHash.then(function (hashChecked) {
-						/* В браузерах с DecompressionStream дополнительно проверяем gzip CRC и длину потока. */
+						/* In browsers with DecompressionStream, also verify the gzip CRC and stream length. */
 						if (window.DecompressionStream && blob.stream && window.Response) {
 							return new window.Response(blob.stream().pipeThrough(new window.DecompressionStream('gzip'))).arrayBuffer().then(function () {
 								saveBackupBlob(parts, name);
-								backupNote('Резервная копия скачана и проверена: ' + name + ' (' + expectedSize + ' байт). ' + (hashChecked ? 'SHA-256 подтверждён.' : 'SHA-256 роутера: ' + expectedHash));
-							}).catch(function () { throw new Error('Проверка gzip не пройдена: архив повреждён или скачан не полностью.'); });
+								backupNote('Backup downloaded and verified: ' + name + ' (' + expectedSize + ' bytes). ' + (hashChecked ? 'SHA-256 confirmed.' : 'Router SHA-256: ' + expectedHash));
+							}).catch(function () { throw new Error('gzip check failed: the archive is corrupted or incomplete.'); });
 						}
 						saveBackupBlob(parts, name);
-						backupNote('Резервная копия скачана: ' + name + ' (' + expectedSize + ' байт). ' + (hashChecked ? 'SHA-256 подтверждён.' : 'SHA-256 роутера: ' + expectedHash));
+						backupNote('Backup downloaded: ' + name + ' (' + expectedSize + ' bytes). ' + (hashChecked ? 'SHA-256 confirmed.' : 'Router SHA-256: ' + expectedHash));
 					});
 				});
 			});
-		}).catch(function (e) { backupNote('Не удалось создать или скачать архив: ' + e.message, true); }).then(function () { backupBusyState(false); }, function (e) { backupNote('Ошибка: ' + e.message, true); backupBusyState(false); });
+		}).catch(function (e) { backupNote('Could not create or download the archive: ' + e.message, true); }).then(function () { backupBusyState(false); }, function (e) { backupNote('Error: ' + e.message, true); backupBusyState(false); });
 	}
 	function readFileChunk(file, start, end) {
 		return new Promise(function (resolve, reject) {
 			var rd = new FileReader();
 			rd.onload = function () { var s = String(rd.result || ''), i = s.indexOf(','); resolve(i >= 0 ? s.slice(i + 1) : ''); };
-			rd.onerror = function () { reject(new Error('Не удалось прочитать выбранный файл.')); };
+			rd.onerror = function () { reject(new Error('Could not read the selected file.')); };
 			rd.readAsDataURL(file.slice(start, end));
 		});
 	}
 	function uploadAndPreviewBackup(file) {
 		if (!file || backupBusy) return;
-		if (!/\.tar\.gz$/i.test(file.name) || file.size < 1 || file.size > 5 * 1024 * 1024) { backupNote('Выберите архив .tar.gz размером до 5 МБ.', true); return; }
+		if (!/\.tar\.gz$/i.test(file.name) || file.size < 1 || file.size > 5 * 1024 * 1024) { backupNote('Choose a .tar.gz archive up to 5 MB.', true); return; }
 		var id = (Date.now().toString(16) + Math.floor(Math.random() * 0xffffffff).toString(16)).slice(-8).toLowerCase();
 		backupRestorePath = ''; refs.backupApply.hidden = true;
-		backupBusyState(true); backupNote('Подготавливаю загрузку архива…');
+		backupBusyState(true); backupNote('Preparing to upload the archive…');
 		var chunkSize = 24576, offset = 0;
 		backupExec([ 'upload-start', id ]).then(function sendNext() {
 			if (offset >= file.size) return backupExec([ 'upload-finish', id ]);
 			var start = offset, end = Math.min(file.size, start + chunkSize);
 			return readFileChunk(file, start, end).then(function (b64) {
-				return backupExec([ 'upload-chunk', id, b64 ]).then(function () { offset = end; backupNote('Загружено ' + Math.round(offset / file.size * 100) + '%…'); return sendNext(); });
+				return backupExec([ 'upload-chunk', id, b64 ]).then(function () { offset = end; backupNote('Uploaded ' + Math.round(offset / file.size * 100) + '%…'); return sendNext(); });
 			});
 		}).then(function (out) {
-			var m = out.match(/Архив загружен:\s*(\/[^\s]+\.tar\.gz)/);
-			if (!m) throw new Error(out || 'Не удалось проверить загруженный архив.');
+			var m = out.match(/Archive uploaded:\s*(\/[^\s]+\.tar\.gz)/);
+			if (!m) throw new Error(out || 'Could not verify the uploaded archive.');
 			backupRestorePath = m[1]; refs.backupApply.hidden = false;
-			backupNote(out + '\nАрхив проверен. Нажмите «Восстановить настройки», когда будете готовы.');
+			backupNote(out + '\nArchive verified. Press "Restore settings" when you are ready.');
 		}).catch(function (e) {
 			backupExec([ 'upload-abort', id ]).catch(function () {});
-			backupNote('Загрузка или проверка не удалась: ' + e.message, true);
+			backupNote('Upload or verification failed: ' + e.message, true);
 		}).then(function () { backupBusyState(false); });
 	}
 	function applyUploadedBackup() {
 		if (!backupRestorePath || backupBusy) return;
-		if (!window.confirm('Восстановить настройки Nightfall из выбранного архива? Текущие настройки Nightfall будут заменены. Сетевые настройки OpenWrt не меняются; текущий TG_TOKEN сохраняется.')) return;
-		backupBusyState(true); backupNote('Восстанавливаю настройки…');
+		if (!window.confirm('Restore Nightfall settings from the selected archive? Current Nightfall settings will be replaced. OpenWrt network settings are not changed; the current TG_TOKEN is kept.')) return;
+		backupBusyState(true); backupNote('Restoring settings…');
 		backupExec([ 'restore', backupRestorePath, 'apply' ]).then(function (out) {
-			backupNote(out + '\nПерезагрузите страницу LuCI, чтобы применить настройки персонализации.');
+			backupNote(out + '\nReload the LuCI page to apply the personalization settings.');
 			backupRestorePath = ''; refs.backupApply.hidden = true;
-		}).catch(function (e) { backupNote('Восстановление не выполнено: ' + e.message, true); }).then(function () { backupBusyState(false); });
+		}).catch(function (e) { backupNote('Restore failed: ' + e.message, true); }).then(function () { backupBusyState(false); });
 	}
 
-	/* ---------- экспорт и импорт настроек вида одним файлом ---------- */
+	/* ---------- export and import of appearance settings as one file ---------- */
 	function ioNote(text, bad) {
 		if (!refs.ioNote) return;
 		refs.ioNote.textContent = text; refs.ioNote.classList.toggle('bad', !!bad);
@@ -1884,12 +1884,12 @@
 		Object.keys(DEFAULTS).forEach(function (k) { out[k] = prefs[k]; });
 		var blob = new Blob([ JSON.stringify({ app: 'nightfall', v: 1, prefs: out }, null, 2) ], { type: 'application/json' });
 		var a = h('a', { href: URL.createObjectURL(blob), download: 'nightfall-settings.json' });
-		a.addEventListener('click', function (ev) { ev.stopPropagation(); });   /* иначе панель решит, что кликнули снаружи, и закроется */
+		a.addEventListener('click', function (ev) { ev.stopPropagation(); });   /* otherwise the panel thinks the click was outside and closes */
 		document.body.appendChild(a); a.click();
 		window.setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
-		ioNote('Файл nightfall-settings.json сохранён.');
+		ioNote('nightfall-settings.json saved.');
 	}
-	/* из файла берём только известные ключи с тем же типом значения, цвета и время проверяем по шаблону */
+	/* take only known keys with the same value type from the file; colors and times are checked against a pattern */
 	function cleanPrefs(src) {
 		var out = {}, n = 0;
 		Object.keys(DEFAULTS).forEach(function (k) {
@@ -1909,31 +1909,31 @@
 	}
 	function importPrefs(file) {
 		if (!file) return;
-		if (file.size > 65536) { ioNote('Файл слишком большой для файла настроек.', true); return; }
+		if (file.size > 65536) { ioNote('The file is too large to be a settings file.', true); return; }
 		var rd = new FileReader();
 		rd.onload = function () {
 			var d = null;
-			try { d = JSON.parse(String(rd.result)); } catch (e) { /* ниже сообщим */ }
+			try { d = JSON.parse(String(rd.result)); } catch (e) { /* reported below */ }
 			var src = d && typeof d === 'object' ? (d.prefs || d.p || d) : null;
 			var clean = src && typeof src === 'object' ? cleanPrefs(src) : null;
-			if (!clean) { ioNote('Это не файл настроек Nightfall.', true); return; }
+			if (!clean) { ioNote('This is not a Nightfall settings file.', true); return; }
 			prefs = Object.assign({}, DEFAULTS, clean); save(); applyAll(); refreshPanel();
-			ioNote('Настройки загружены.');
+			ioNote('Settings loaded.');
 		};
-		rd.onerror = function () { ioNote('Не удалось прочитать файл.', true); };
+		rd.onerror = function () { ioNote('Could not read the file.', true); };
 		rd.readAsText(file);
 	}
 
-	/* ---------- версия темы и проверка обновлений ----------
-	 * Версия лежит в version.json рядом с темой (её пишет сборка релиза). Раз в неделю браузер (не роутер) спрашивает у GitHub,
-	 * какой релиз последний, и сравнивает номера. Ставить ничего не будет: только подсказка. Отключается в панели. */
-	var REPO = 'Nikolai752/nightfall-openwrt', UKEY = 'nightfall-upd-v', verInfo = null;
+	/* ---------- theme version and update check ----------
+	 * The version is in version.json next to the theme (written by the release build). Once a week the browser (not the router) asks GitHub
+	 * for the latest release and compares versions. Nothing is installed: it is only a hint. Can be turned off in the panel. */
+	var REPO = 'jigarvarma2k20/nightfall-openwrt', UKEY = 'nightfall-upd-v', verInfo = null;
 	function versionParts(s) {
 		var m = /^v?(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:-([0-9A-Za-z.-]+))?(?:\+[0-9A-Za-z.-]+)?$/i.exec(String(s || '').trim());
 		if (!m) return null;
 		return { core: [ +m[1] || 0, +m[2] || 0, +m[3] || 0 ], pre: m[4] ? m[4].split('.') : null };
 	}
-	function isNewer(a, b) {   /* b новее a? Стабильный релиз новее prerelease той же версии. */
+	function isNewer(a, b) {   /* is b newer than a? A stable release is newer than a prerelease of the same version. */
 		var x = versionParts(a), y = versionParts(b);
 		if (!x || !y) return false;
 		for (var i = 0; i < 3; i++) if (x.core[i] !== y.core[i]) return y.core[i] > x.core[i];
@@ -1954,18 +1954,18 @@
 	function updAvail() { var c = updCache(); return verInfo && c && c.tag && isNewer(verInfo.version, c.tag) ? c.tag : ''; }
 	function paintVer() {
 		var tag = updAvail();
-		if (refs.ver) refs.ver.textContent = verInfo ? 'Nightfall v' + verInfo.version + (verInfo.build ? ' · сборка ' + verInfo.build : '') : 'Версия не определена (файл version.json не найден)';
-		if (refs.updNote && tag) { refs.updNote.textContent = 'Доступна ' + fullTag(tag) + '. '; refs.updNote.classList.remove('bad'); refs.updNote.appendChild(h('a', { href: '#', text: 'Обновить', onclick: function (ev) { ev.preventDefault(); offerUpdate(true); } })); }
+		if (refs.ver) refs.ver.textContent = verInfo ? 'Nightfall v' + verInfo.version + (verInfo.build ? ' · build ' + verInfo.build : '') : 'Version unknown (version.json not found)';
+		if (refs.updNote && tag) { refs.updNote.textContent = fullTag(tag) + ' is available. '; refs.updNote.classList.remove('bad'); refs.updNote.appendChild(h('a', { href: '#', text: 'Update', onclick: function (ev) { ev.preventDefault(); offerUpdate(true); } })); }
 		document.querySelectorAll('.nf-pers-main').forEach(function (b) { b.classList.toggle('nf-has-upd', !!tag); });
 	}
 	function loadVer() {
 		if (!window.fetch) return;
 		window.fetch(BASE + 'version.json?' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
 			verInfo = d && typeof d.version === 'string' ? d : null; paintVer(); checkWhatsNew(); loginCheck();
-		}).catch(function () { /* без версии просто не показываем */ });
+		}).catch(function () { /* without a version, just show nothing */ });
 	}
-	/* Номер последнего релиза берём сначала из latest.json в репозитории (raw.githubusercontent.com, лимитов нет;
-	 * файл обновляет сборка релиза), а если не вышло — из API GitHub (у него лимит 60 запросов в час на адрес). */
+	/* The latest release number comes first from latest.json in the repo (raw.githubusercontent.com, no rate limits;
+	 * the release build updates the file), and if that fails, from the GitHub API (limited to 60 requests per hour per address). */
 	function getLatestTag() {
 		function ok(t) { return typeof t === 'string' && /^v?\d+(\.\d+){0,2}$/.test(t) ? t : ''; }
 		return window.fetch('https://raw.githubusercontent.com/' + REPO + '/main/latest.json?' + Math.floor(Date.now() / 300000), { cache: 'no-store' })
@@ -1979,21 +1979,21 @@
 	}
 	function checkUpdate(manual, announce) {
 		if (!window.fetch) return;
-		if (manual && refs.updNote) { refs.updNote.textContent = 'Проверяю…'; refs.updNote.classList.remove('bad'); }
+		if (manual && refs.updNote) { refs.updNote.textContent = 'Checking…'; refs.updNote.classList.remove('bad'); }
 		getLatestTag().then(function (tag) {
 			try { window.localStorage.setItem(UKEY, JSON.stringify({ tag: tag, t: Date.now() })); } catch (e) { /* ignore */ }
 			paintVer(); if (announce) offerUpdate(false);
-			if (manual && refs.updNote && !updAvail()) { refs.updNote.textContent = 'Установлена последняя версия (' + (/^v/i.test(tag) ? tag : 'v' + tag) + ').'; refs.updNote.classList.remove('bad'); }
+			if (manual && refs.updNote && !updAvail()) { refs.updNote.textContent = 'The latest version is installed (' + (/^v/i.test(tag) ? tag : 'v' + tag) + ').'; refs.updNote.classList.remove('bad'); }
 		}).catch(function () {
 			if (announce) offerUpdate(false);
-			if (manual && refs.updNote) { refs.updNote.textContent = 'Не удалось проверить: GitHub не ответил или исчерпан лимит запросов. Попробуйте позже.'; refs.updNote.classList.add('bad'); }
+			if (manual && refs.updNote) { refs.updNote.textContent = 'Check failed: GitHub did not respond or the request limit was reached. Try again later.'; refs.updNote.classList.add('bad'); }
 		});
 	}
 
-	/* ---------- обновление из интерфейса ----------
-	 * Окно «Доступна новая версия» -> роутер сам скачивает релиз и ставит его (/usr/libexec/nightfall-update,
-	 * проверка sha256, откат при ошибке) -> окно «Установлено» и выход из сессии (права обновляются при входе) ->
-	 * после входа окно «Что нового» из CHANGELOG.md. Для скачивания на роутере нужен curl (apk add curl). */
+	/* ---------- updating from the UI ----------
+	 * "New version available" window -> the router downloads and installs the release itself (/usr/libexec/nightfall-update,
+	 * sha256 check, rollback on error) -> "Installed" window and session sign-out (permissions refresh at sign-in) ->
+	 * after sign-in, the "What's new" window from CHANGELOG.md. Downloading on the router needs curl (apk add curl). */
 	var SKIPKEY = 'nightfall-upd-skip', SEENKEY = 'nightfall-seen-ver', ACKKEY = 'nightfall-whatsnew-ack-v1', updModal = null, updBusy = false;
 	function lsGet(k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } }
 	function lsSet(k, v) { try { if (v === null) window.localStorage.removeItem(k); else window.localStorage.setItem(k, v); } catch (e) { /* ignore */ } }
@@ -2020,7 +2020,7 @@
 		document.documentElement.classList.add('nf-upd-open');
 		return box;
 	}
-	/* CHANGELOG.md: разделы «## v1.0.9 ...», внутри пункты «- ...» и подзаголовки «### ...» */
+	/* CHANGELOG.md: "## v1.0.9 ..." sections containing "- ..." items and "### ..." subheadings */
 	function parseChangelog(md) {
 		var out = [], cur = null;
 		String(md || '').split(/\r?\n/).forEach(function (ln) {
@@ -2030,7 +2030,7 @@
 		});
 		return out;
 	}
-	/* **жирный** и `код` из CHANGELOG.md */
+	/* **bold** and `code` from CHANGELOG.md */
 	function inlineMd(el, text) {
 		String(text).split(/(\*\*[^*]+\*\*|`[^`]+`)/).forEach(function (part) {
 			if (!part) return;
@@ -2040,15 +2040,20 @@
 		});
 		return el;
 	}
-	/* тип пункта по первым словам: новое / исправлено / важно / улучшено */
+	/* item type: tag or first words: new / fixed / important / improved.
+	 * Russian tags and words are kept on purpose: release notes already published on GitHub are in Russian. */
+	var CL_TAG = /^\[(New|Added|Improved|Fixed|Important|Новое|Улучшено|Исправлено|Важно)\]\s*/i;
+	var CL_TAG_KIND = { 'new': 'new', 'added': 'new', 'improved': 'imp', 'fixed': 'fix', 'important': 'warn', 'новое': 'new', 'улучшено': 'imp', 'исправлено': 'fix', 'важно': 'warn' };
+	var CL_LABEL = { 'new': 'New', imp: 'Improved', fix: 'Fixed', warn: 'Important' };
+	function clKind(k) { return [ k, CL_LABEL[k] ]; }
 	function lineKind(t) {
-		var m = /^\[(Новое|Улучшено|Исправлено|Важно)\]\s*/i.exec(t), x;
-		if (m) return { 'новое': [ 'new', 'Новое' ], 'улучшено': [ 'imp', 'Улучшено' ], 'исправлено': [ 'fix', 'Исправлено' ], 'важно': [ 'warn', 'Важно' ] }[m[1].toLowerCase()];
+		var m = CL_TAG.exec(t), x;
+		if (m) return clKind(CL_TAG_KIND[m[1].toLowerCase()]);
 		x = t.replace(/^\*\*/, '');
-		if (/^(Нужно|Важно|После обновления|Обновите)/i.test(x)) return [ 'warn', 'Важно' ];
-		if (/^(Исправ|Починил|Устранен)|больше не |не (дёргаются|обрывается|растягиваются|показывается)|пропал[аио]? |убран[аоы]? |без обрыва/i.test(x)) return [ 'fix', 'Исправлено' ];
-		if (/^(Нов|Добавл|Появил|Теперь|Число|Выбор|Можно|Окно|Редактор|Проверка)/i.test(x) || /^\*\*/.test(t)) return [ 'new', 'Новое' ];
-		return [ 'imp', 'Улучшено' ];
+		if (/^(Important|Required|You need|You must|After updat|Update (the|your)|Нужно|Важно|После обновления|Обновите)/i.test(x)) return clKind('warn');
+		if (/^(Fix|Resolved|No longer)|\bno longer |\b(doesn't|does not|don't|do not|won't|is not|are not|isn't|aren't) (jitter|jump|break|drop|stretch|show)|\b(disappeared|removed) |without (a )?(break|drop)|^(Исправ|Починил|Устранен)|больше не |не (дёргаются|обрывается|растягиваются|показывается)|пропал[аио]? |убран[аоы]? |без обрыва/i.test(x)) return clKind('fix');
+		if (/^(New|Added|Add |Now|Number|Choice|Choose|You can|Can |Window|Editor|Check|Нов|Добавл|Появил|Теперь|Число|Выбор|Можно|Окно|Редактор|Проверка)/i.test(x) || /^\*\*/.test(t)) return clKind('new');
+		return clKind('imp');
 	}
 	function renderChanges(sections) {
 		var wrap = h('div', { 'class': 'nf-upd-log' });
@@ -2058,7 +2063,7 @@
 			var sec = h('section', { 'class': 'nf-cl' }, [ head ]);
 			s.lines.forEach(function (ln) {
 				if (/^[-*]\s+/.test(ln)) {
-					var txt = ln.replace(/^[-*]\s+/, ''), k = lineKind(txt); txt = txt.replace(/^\[(Новое|Улучшено|Исправлено|Важно)\]\s*/i, '');
+					var txt = ln.replace(/^[-*]\s+/, ''), k = lineKind(txt); txt = txt.replace(CL_TAG, '');
 					sec.appendChild(h('div', { 'class': 'nf-cl-row' }, [ h('span', { 'class': 'nf-cl-b ' + k[0], text: k[1] }), inlineMd(h('span', { 'class': 'nf-cl-x' }), txt) ]));
 				} else sec.appendChild(h(/^###/.test(ln) ? 'h6' : 'p', { text: ln.replace(/^#+\s*/, '') }));
 			});
@@ -2066,7 +2071,7 @@
 		});
 		return wrap;
 	}
-	/* карточка с «шапкой»: значок, заголовок, переход версий; по центру на компьютере, снизу на телефоне */
+	/* card with a header: icon, title, version transition; centered on desktop, at the bottom on phones */
 	function openCard(title, sub, from, to, body, btns, extra) {
 		var chips = h('div', { 'class': 'nf-upd-vers' });
 		if (from) chips.appendChild(h('span', { 'class': 'nf-upd-chip old', text: fullTag(from) }));
@@ -2090,33 +2095,33 @@
 		loadChangelog(BASE + 'CHANGELOG.md?' + Date.now()).then(function (all) {
 			var list = all.filter(function (s) { return !isNewer(verInfo.version, s.v); }).slice(0, 4);
 			if (!list.length) {
-				openCard('Что нового', 'История изменений', null, verInfo.version, [
-					h('p', { 'class': 'nf-upd-note', text: 'Для установленной версии пока нет опубликованного раздела в CHANGELOG.md.' })
-				], [ h('button', { type: 'button', 'class': 'nf-upd-go', text: 'Закрыть', onclick: closeUpd }) ]);
+				openCard('What\'s new', 'Change history', null, verInfo.version, [
+					h('p', { 'class': 'nf-upd-note', text: 'There is no published CHANGELOG.md section for the installed version yet.' })
+				], [ h('button', { type: 'button', 'class': 'nf-upd-go', text: 'Close', onclick: closeUpd }) ]);
 				return;
 			}
-			openCard('Что нового', 'Панель обновлена', list[list.length - 1].v, verInfo.version, [ renderChanges(list) ], [
-				h('button', { type: 'button', 'class': 'nf-upd-go', text: 'Понятно', onclick: function () {
+			openCard('What\'s new', 'Panel updated', list[list.length - 1].v, verInfo.version, [ renderChanges(list) ], [
+				h('button', { type: 'button', 'class': 'nf-upd-go', text: 'Got it', onclick: function () {
 					lsSet(ACKKEY, verInfo.version); lsSet(SEENKEY, verInfo.version); closeUpd();
 				} })
 			]);
 		}).catch(function () {
-			openCard('Что нового', 'Не удалось загрузить журнал', null, verInfo.version, [
-				h('p', { 'class': 'nf-upd-note', text: 'CHANGELOG.md временно недоступен. Попробуйте ещё раз позже.' })
-			], [ h('button', { type: 'button', 'class': 'nf-upd-go', text: 'Закрыть', onclick: closeUpd }) ]);
+			openCard('What\'s new', 'Could not load the changelog', null, verInfo.version, [
+				h('p', { 'class': 'nf-upd-note', text: 'CHANGELOG.md is temporarily unavailable. Try again later.' })
+			], [ h('button', { type: 'button', 'class': 'nf-upd-go', text: 'Close', onclick: closeUpd }) ]);
 		});
 	}
-	/* После обновления показываем CHANGELOG. Версия считается просмотренной
-	 * только после нажатия «Понятно», а не до сетевой загрузки файла.
-	 * Это позволяет повторить попытку, если CHANGELOG временно недоступен.
+	/* After an update we show the CHANGELOG. The version counts as seen
+	 * only after pressing "Got it", not before the file is fetched over the network.
+	 * This allows a retry if the CHANGELOG is temporarily unavailable.
 	 */
 	function checkWhatsNew() {
 		if (!verInfo || document.body.classList.contains('nf-blank') || !window.fetch) return;
 		var seen = lsGet(SEENKEY), ack = lsGet(ACKKEY), cur = verInfo.version;
 		var legacy = !ack && !!seen;
-		/* Первый запуск новой установки — без окна. Для существующих установок
-		 * мигрируем старый маркер: прежний код мог отметить версию просмотренной
-		 * ещё до загрузки CHANGELOG и навсегда потерять уведомление.
+		/* First run of a fresh install: no window. For existing installs
+		 * migrate the old marker: the previous code could mark the version as seen
+		 * before loading the CHANGELOG and lose the notice forever.
 		 */
 		if (!ack && !seen) { lsSet(SEENKEY, cur); lsSet(ACKKEY, cur); return; }
 		if (ack && (ack === cur || !isNewer(ack, cur))) return;
@@ -2125,15 +2130,15 @@
 				? all.filter(function (s) { return !isNewer(cur, s.v); }).slice(0, 4)
 				: all.filter(function (s) { return isNewer(ack, s.v) && !isNewer(cur, s.v); }).slice(0, 4);
 			if (!list.length) {
-				/* Не подтверждаем просмотр: возможно, CHANGELOG ещё не опубликован вместе с релизом. */
+				/* Do not acknowledge: the CHANGELOG may not be published with the release yet. */
 				return;
 			}
-			openCard('Что нового', 'Панель обновлена', legacy ? list[list.length - 1].v : ack, cur, [ renderChanges(list) ], [
-				h('button', { type: 'button', 'class': 'nf-upd-go', text: 'Понятно', onclick: function () {
+			openCard('What\'s new', 'Panel updated', legacy ? list[list.length - 1].v : ack, cur, [ renderChanges(list) ], [
+				h('button', { type: 'button', 'class': 'nf-upd-go', text: 'Got it', onclick: function () {
 					lsSet(ACKKEY, cur); lsSet(SEENKEY, cur); closeUpd();
 				} })
 			]);
-		}).catch(function () { /* не отмечаем просмотренным: повторим после следующего входа */ });
+		}).catch(function () { /* not marked as seen: retry after the next sign-in */ });
 	}
 	function restartSession() {
 		var env = window.L && window.L.env;
@@ -2143,70 +2148,70 @@
 	function runUpdate(tag) {
 		if (updBusy) return;
 		updBusy = true;
-		var bar = h('i'), msg = h('p', { 'class': 'nf-upd-msg', text: 'Запуск…' });
-		openUpd('Обновление Nightfall', [ h('div', { 'class': 'nf-upd-bar' }, [ bar ]), msg, h('p', { 'class': 'nf-upd-note', text: 'Не закрывайте страницу и не выключайте роутер.' }) ]);
+		var bar = h('i'), msg = h('p', { 'class': 'nf-upd-msg', text: 'Starting…' });
+		openUpd('Nightfall update', [ h('div', { 'class': 'nf-upd-bar' }, [ bar ]), msg, h('p', { 'class': 'nf-upd-note', text: 'Do not close the page or turn off the router.' }) ]);
 		var errs = 0, t0 = Date.now(), lastPct = 0;
 		function finish(ok, text, canRestart) {
 			updBusy = false;
 			var btns = [];
-			if (canRestart) { lsSet(SEENKEY, verInfo ? verInfo.version : null); btns.push(h('button', { type: 'button', 'class': 'nf-upd-go', text: 'Перезапустить сессию', onclick: restartSession })); }
-			else btns.push(h('button', { type: 'button', 'class': 'nf-upd-go', text: 'Закрыть', onclick: closeUpd }));
-			openUpd(ok ? 'Всё установилось' : 'Обновление не выполнено', [ h('p', { 'class': 'nf-upd-msg' + (ok ? '' : ' bad'), text: text }), h('div', { 'class': 'nf-upd-btns' }, btns) ]);
+			if (canRestart) { lsSet(SEENKEY, verInfo ? verInfo.version : null); btns.push(h('button', { type: 'button', 'class': 'nf-upd-go', text: 'Restart session', onclick: restartSession })); }
+			else btns.push(h('button', { type: 'button', 'class': 'nf-upd-go', text: 'Close', onclick: closeUpd }));
+			openUpd(ok ? 'Update installed' : 'Update failed', [ h('p', { 'class': 'nf-upd-msg' + (ok ? '' : ' bad'), text: text }), h('div', { 'class': 'nf-upd-btns' }, btns) ]);
 			if (canRestart) window.setTimeout(function () { if (updModal) restartSession(); }, 4000);
 		}
 		function poll() {
 			updExec('status').then(function (s) {
 				errs = 0;
-				if (s.state === 'done') return finish(true, (s.msg || 'Установлено.') + ' Сейчас сессия перезапустится, войдите снова, чтобы применились все изменения.', true);
-				if (s.state === 'error' || s.state === 'rolledback') return finish(false, s.msg || 'Неизвестная ошибка.', false);
-				if (s.state === 'idle' && Date.now() - t0 > 15000) return finish(false, 'Обновление не запустилось.', false);
+				if (s.state === 'done') return finish(true, (s.msg || 'Installed.') + ' The session will now restart; sign in again to apply all changes.', true);
+				if (s.state === 'error' || s.state === 'rolledback') return finish(false, s.msg || 'Unknown error.', false);
+				if (s.state === 'idle' && Date.now() - t0 > 15000) return finish(false, 'The update did not start.', false);
 				lastPct = Math.max(lastPct, +s.pct || 0);
 				bar.style.width = lastPct + '%'; msg.textContent = s.msg || '…';
 				window.setTimeout(poll, 1500);
 			}).catch(function () {
-				/* во время перезагрузки rpcd ответа может не быть: если установка уже шла, считаем её завершённой */
+				/* rpcd may not respond while restarting: if installation was already under way, treat it as finished */
 				errs++;
-				if (errs >= 4 && lastPct >= 65) return finish(true, 'Обновление, судя по всему, установлено (роутер перезапустил службу). Войдите снова.', true);
-				if (errs >= 8) return finish(false, 'Нет ответа от роутера. Обновите страницу и проверьте версию.', false);
+				if (errs >= 4 && lastPct >= 65) return finish(true, 'The update appears to be installed (the router restarted the service). Sign in again.', true);
+				if (errs >= 8) return finish(false, 'No response from the router. Reload the page and check the version.', false);
 				window.setTimeout(poll, 2000);
 			});
 		}
 		lsSet(SEENKEY, verInfo ? verInfo.version : null);
 		updExec('start').then(function () { window.setTimeout(poll, 1200); }).catch(function (e) {
-			finish(false, e && e.message === 'denied' ? 'Нет прав на запуск обновления. Выйдите и войдите снова, затем повторите; если не помогло, обновите вручную (install-update.sh).' : 'Не удалось запустить обновление.', false);
+			finish(false, e && e.message === 'denied' ? 'No permission to run the update. Sign out and sign in again, then retry; if that does not help, update manually (install-update.sh).' : 'Could not start the update.', false);
 		});
 	}
 	var SNZKEY = 'nightfall-upd-snooze', LOGKEY = 'nightfall-upd-login';
 	function offerUpdate(force) {
 		var tag = updAvail();
 		if (!tag || updBusy || document.body.classList.contains('nf-blank') || !sid()) return;
-		if (!force && (updModal || lsGet(SNZKEY) === sid().sessionid)) return;      /* «Отложить» действует до следующего входа */
+		if (!force && (updModal || lsGet(SNZKEY) === sid().sessionid)) return;      /* "Later" lasts until the next sign-in */
 		var log = h('div', { 'class': 'nf-upd-more' }), loaded = false, moreBtn;
 		function toggleMore() {
 			var open = log.classList.toggle('open');
-			moreBtn.textContent = open ? 'Скрыть' : 'Что изменится';
+			moreBtn.textContent = open ? 'Hide' : 'What will change';
 			box.classList.toggle('expanded', open);
 			if (open && !loaded) {
 				loaded = true;
-				log.appendChild(h('p', { 'class': 'nf-upd-note', text: 'Загружаю список изменений…' }));
+				log.appendChild(h('p', { 'class': 'nf-upd-note', text: 'Loading the list of changes…' }));
 				loadChangelog('https://raw.githubusercontent.com/' + REPO + '/main/CHANGELOG.md?' + Math.floor(Date.now() / 300000)).then(function (all) {
 					var list = all.filter(function (x) { return verInfo && isNewer(verInfo.version, x.v) && !isNewer(tag, x.v); }).slice(0, 4);
 					log.textContent = '';
-					log.appendChild(list.length ? renderChanges(list) : h('p', { 'class': 'nf-upd-note', text: 'Список изменений для этой версии не найден.' }));
-				}).catch(function () { log.textContent = ''; log.appendChild(h('p', { 'class': 'nf-upd-note', text: 'Не удалось загрузить список изменений (GitHub не ответил).' })); });
+					log.appendChild(list.length ? renderChanges(list) : h('p', { 'class': 'nf-upd-note', text: 'No list of changes found for this version.' }));
+				}).catch(function () { log.textContent = ''; log.appendChild(h('p', { 'class': 'nf-upd-note', text: 'Could not load the list of changes (GitHub did not respond).' })); });
 			}
 		}
-		moreBtn = h('button', { type: 'button', text: 'Что изменится', onclick: toggleMore });
-		var box = openCard('Доступно обновление', 'Nightfall ' + fullTag(tag), verInfo && verInfo.version, tag, [
-			h('p', { 'class': 'nf-upd-msg', text: 'Роутер сам скачает и установит обновление, проверит подпись и откатит при ошибке. После установки нужно войти в LuCI заново.' }),
+		moreBtn = h('button', { type: 'button', text: 'What will change', onclick: toggleMore });
+		var box = openCard('New version available', 'Nightfall ' + fullTag(tag), verInfo && verInfo.version, tag, [
+			h('p', { 'class': 'nf-upd-msg', text: 'The router will download and install the update itself, verify the signature and roll back on error. After installing, you need to sign in to LuCI again.' }),
 			log
 		], [
 			moreBtn,
-			h('button', { type: 'button', text: 'Отложить', onclick: function () { lsSet(SNZKEY, sid() ? sid().sessionid : '1'); closeUpd(); } }),
-			h('button', { type: 'button', 'class': 'nf-upd-go', text: 'Обновить', onclick: function () { runUpdate(tag); } })
+			h('button', { type: 'button', text: 'Later', onclick: function () { lsSet(SNZKEY, sid() ? sid().sessionid : '1'); closeUpd(); } }),
+			h('button', { type: 'button', 'class': 'nf-upd-go', text: 'Update', onclick: function () { runUpdate(tag); } })
 		], 'sheet');
 	}
-	/* проверка при каждом входе в LuCI и ещё раз через минуту после входа */
+	/* check at every LuCI sign-in and once more a minute after */
 	function loginCheck() {
 		var env = sid();
 		if (!env || document.body.classList.contains('nf-blank') || prefs.updCheck === false) return;
@@ -2271,7 +2276,7 @@
 		refs.gblur.disabled = refs.galpha.disabled = prefs.style !== 'glass';
 		refs.motion.disabled = !!mqMotion.matches;
 		Array.prototype.forEach.call(pop.querySelectorAll('input[type="range"]'), paintRange);
-		pop.querySelector('.nf-seg[aria-label="Режим"]').toggleAttribute('data-fixed', root.hasAttribute('data-nf-fixed') || !!prefs.schedule);
+		pop.querySelector('.nf-seg[aria-label="Mode"]').toggleAttribute('data-fixed', root.hasAttribute('data-nf-fixed') || !!prefs.schedule);
 	}
 
 	function toggle(open) {
@@ -2283,15 +2288,15 @@
 	}
 
 	var MODE_NEXT = { auto: 'light', light: 'dark', dark: 'auto' };
-	var MODE_NAME = { auto: 'Авто', light: 'Светлая', dark: 'Тёмная' };
+	var MODE_NAME = { auto: 'Auto', light: 'Light', dark: 'Dark' };
 	var qbtn = null;
 
 	function refreshQuick() {
 		if (!qbtn) return;
 		qbtn.setAttribute('data-mode', prefs.mode);
-		var nm = prefs.schedule ? 'По расписанию' : MODE_NAME[prefs.mode];
-		qbtn.setAttribute('title', 'Тема: ' + nm + ' (нажмите, чтобы сменить)');
-		qbtn.firstChild.textContent = 'Тема: ' + nm;
+		var nm = prefs.schedule ? 'Scheduled' : MODE_NAME[prefs.mode];
+		qbtn.setAttribute('title', 'Theme: ' + nm + ' (click to change)');
+		qbtn.firstChild.textContent = 'Theme: ' + nm;
 		qbtn.disabled = root.hasAttribute('data-nf-fixed');
 	}
 
@@ -2314,7 +2319,7 @@
 		new MutationObserver(scheduleIcons).observe(document.body, { childList: true, subtree: true });
 
 		/* collapse the menu to icons */
-		var nb = h('button', { type: 'button', 'class': 'nf-navbtn', title: 'Свернуть / развернуть меню', onclick: function () { set('navMini', !prefs.navMini); } }, [ h('span', { text: 'Свернуть меню' }) ]);
+		var nb = h('button', { type: 'button', 'class': 'nf-navbtn', title: 'Collapse / expand menu', onclick: function () { set('navMini', !prefs.navMini); } }, [ h('span', { text: 'Collapse menu' }) ]);
 		qbtn.parentNode.insertBefore(nb, qbtn);
 
 		/* Ctrl/Cmd+K or "/" focuses the menu search */
@@ -2338,7 +2343,7 @@
 	});
 
 
-	/* волна на кнопках */
+	/* ripple on buttons */
 	document.addEventListener('pointerdown', function (ev) {
 		if (root.getAttribute('data-nf-motion') === 'off') return;
 		var b = ev.target.closest && ev.target.closest('.cbi-button, .btn, .nf-pop-io button, .nf-ed-open');
@@ -2352,7 +2357,7 @@
 	window.Nightfall = { prefs: function () { return Object.assign({}, prefs); }, set: set, layout: applyLayout, layouts: LAYOUTS.map(function (l) { return [ l[0], l[1] ]; }), accents: ACCENTS };
 })();
 
-/* v1.10.4: скользящая «пилюля» под активным пунктом меню и вкладкой Монитора, заливка дорожки ползунков */
+/* v1.10.4: sliding "pill" under the active menu item and Monitor tab, slider track fill */
 (function () {
 	'use strict';
 	var hoverOk = window.matchMedia && window.matchMedia('(hover: hover)').matches;

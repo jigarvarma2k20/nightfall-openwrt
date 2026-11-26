@@ -5,7 +5,7 @@ HELPER="$ROOT/luci-app-nightfall-monitor/root/usr/libexec/nightfall-dns-map"
 TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT HUP INT TERM
 NOW=1795032000
-printf '192.0.2.1|StaleApp|%s|www.youtube.com\n192.0.2.2|WrongApp|%s|www.youtube.com\n192.0.2.3|Одноклассники|%s|cdn.okcdn.ru\n192.0.2.4|RuTube|%s|cdn.rtbcdn.ru\n192.0.2.5|LegacyApp|%s\n' "$((NOW-30000))" "$((NOW-60))" "$((NOW-60))" "$((NOW-60))" "$((NOW-60))" > "$TMP/map"
+printf '192.0.2.1|StaleApp|%s|www.youtube.com\n192.0.2.2|WrongApp|%s|www.youtube.com\n192.0.2.3|Odnoklassniki|%s|cdn.okcdn.ru\n192.0.2.4|RuTube|%s|cdn.rtbcdn.ru\n192.0.2.5|LegacyApp|%s\n' "$((NOW-30000))" "$((NOW-60))" "$((NOW-60))" "$((NOW-60))" "$((NOW-60))" > "$TMP/map"
 cat > "$TMP/dns.log" <<'LOG'
 Nov 18 19:10:58 dnsmasq[1]: query[A] www.youtube.com from 127.0.0.1
 Nov 18 19:10:58 dnsmasq[1]: reply www.youtube.com is <CNAME>
@@ -27,12 +27,12 @@ sh "$HELPER" "$ROOT/luci-app-nightfall-monitor/root/usr/share/nightfall/apps.lis
 has() { grep -Fqx "$1" "$TMP/map" || { echo "FAIL: missing $1" >&2; cat "$TMP/map" >&2; exit 1; }; }
 lacks() { grep -Fq "$1" "$TMP/map" && { echo "FAIL: unexpected $1" >&2; exit 1; } || :; }
 has "192.0.2.2|YouTube|$((NOW-60))|www.youtube.com"
-has "192.0.2.3|Прочее · okcdn.ru|$((NOW-60))|cdn.okcdn.ru"
-has "192.0.2.4|Прочее · rtbcdn.ru|$((NOW-60))|cdn.rtbcdn.ru"
+has "192.0.2.3|Other · okcdn.ru|$((NOW-60))|cdn.okcdn.ru"
+has "192.0.2.4|Other · rtbcdn.ru|$((NOW-60))|cdn.rtbcdn.ru"
 lacks "192.0.2.1|"
 lacks "192.0.2.5|"
 has "203.0.113.10|YouTube|$NOW|www.youtube.com"
-has "203.0.113.11|Прочее · example.com|$NOW|api.unknown.example.com"
+has "203.0.113.11|Other · example.com|$NOW|api.unknown.example.com"
 has "203.0.113.12|Netflix|$NOW|static.netflix.com"
 has "203.0.113.12|YouTube|$NOW|video.youtube.com"
 has "203.0.113.14|MAX|$NOW|calls.okcdn.ru"

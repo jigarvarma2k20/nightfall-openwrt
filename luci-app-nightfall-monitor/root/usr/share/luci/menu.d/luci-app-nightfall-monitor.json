@@ -1,6 +1,6 @@
 {
 	"admin/status/nightfall-monitor": {
-		"title": "Монитор ресурсов",
+		"title": "Resource Monitor",
 		"order": 2,
 		"action": {
 			"type": "view",
@@ -11,7 +11,7 @@
 		}
 	},
 	"admin/status/nightfall-devices": {
-		"title": "Устройства",
+		"title": "Devices",
 		"order": 3,
 		"action": {
 			"type": "view",

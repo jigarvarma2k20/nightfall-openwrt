@@ -1,23 +1,23 @@
 #!/bin/sh
-# Nightfall collector: фоновый сборщик истории для «Монитора ресурсов».
-# Раз в STEP секунд (15) пишет в /tmp/nightfall:
-#   hist.fine    — последний час (шаг 15 с)
-#   hist.coarse  — последние 7 суток (шаг 5 мин)
-#   temps.fine / temps.coarse — температура каждого датчика: час (шаг 15 с) и 7 суток (шаг 5 мин), строки «время имя:°C имя:°C»
-#   hist.long    — длинная история (шаг 30 мин, HIST_DAYS суток); при PERSIST_DIR переживает перезагрузку
-#   wifi.hr / dev.hr — сигнал Wi-Fi и трафик по устройствам по часам (тепловая карта, мини-графики)
-#   dev.rate / dev.day / dev.yday — трафик по устройствам (из conntrack accounting)
-#   apps.day / apps.hist, dns.map — трафик по приложениям (при APPS=1; имена из журнала DNS dnsmasq)
-#   events.log, alerts.active    — события и активные предупреждения
-# Режим: LITE=1 (слабые роутеры) — шаг 60 с, без учёта по приложениям (APPS) и истории Wi-Fi (WIFI_HIST); текущий режим пишется в info (mode=full|lite).
-# Настройки: /etc/nightfall-monitor.conf (см. /usr/share/nightfall/nightfall-monitor.conf.default)
+# Nightfall collector: background history collector for the "Resource Monitor".
+# Every STEP seconds (15) it writes to /tmp/nightfall:
+#   hist.fine    — last hour (15 s step)
+#   hist.coarse  — last 7 days (5 min step)
+#   temps.fine / temps.coarse — temperature of each sensor: an hour (15 s step) and 7 days (5 min step), lines "time name:°C name:°C"
+#   hist.long    — long history (30 min step, HIST_DAYS days); survives a reboot with PERSIST_DIR
+#   wifi.hr / dev.hr — Wi-Fi signal and per-device traffic by hour (heat map, mini charts)
+#   dev.rate / dev.day / dev.yday — per-device traffic (from conntrack accounting)
+#   apps.day / apps.hist, dns.map — traffic by app (with APPS=1; names from the dnsmasq DNS log)
+#   events.log, alerts.active    — events and active warnings
+# Mode: LITE=1 (low-end routers) — 60 s step, no per-app accounting (APPS) and no Wi-Fi history (WIFI_HIST); the current mode is written to info (mode=full|lite).
+# Settings: /etc/nightfall-monitor.conf (see /usr/share/nightfall/nightfall-monitor.conf.default)
 
 PROC=${NF_PROC:-/proc}
 SYS=${NF_SYS:-/sys}
 DIR=${NF_DIR:-/tmp/nightfall}
 CONF=${NF_CONF:-/etc/nightfall-monitor.conf}
 STEP=${NF_STEP:-15}
-LOOPS=${NF_LOOPS:-0}            # для тестов: сколько циклов выполнить (0 = бесконечно)
+LOOPS=${NF_LOOPS:-0}            # for tests: how many cycles to run (0 = forever)
 CT=${NF_CT:-$PROC/net/nf_conntrack}
 
 TEMP_WARN=80; TEMP_CRIT=90; MEM_MIN_PCT=10; FLASH_MAX_PCT=90; CT_MAX_PCT=80
@@ -33,13 +33,13 @@ RULES_USER=${NF_RULES_USER:-/etc/nightfall-apps.list}
 SPEED_URL=https://speed.cloudflare.com/__down?bytes=25000000
 JOURNAL_FILE=${NF_JOURNAL:-/etc/nightfall-journal.log}
 [ -r "$CONF" ] && . "$CONF"
-# режим работы: LITE=1 для слабых роутеров (шаг 60 с вместо 15, без учёта по приложениям и истории Wi-Fi); по умолчанию «мощный»
+# operating mode: LITE=1 for low-end routers (60 s step instead of 15, no per-app accounting and no Wi-Fi history); "full" by default
 MODE=full
 if [ "$LITE" = 1 ]; then MODE=lite; [ -n "$NF_STEP" ] || STEP=60; WIFI_HIST=0; APPS=0; fi
 
 mkdir -p "$DIR" || exit 1
 
-# одна копия: если уже работает другой сборщик (например, оставшийся от прошлой версии), останавливаем его
+# single instance: if another collector is already running (for example, one left over from a previous version), stop it
 for p in /proc/[0-9]*; do
 	pid=${p#/proc/}
 	[ "$pid" = "$$" ] && continue
@@ -47,11 +47,11 @@ for p in /proc/[0-9]*; do
 	case "$cmd" in "/bin/sh $0 "*|"sh $0 "*) kill "$pid" 2>/dev/null ;; esac
 done
 echo $$ > "$DIR/pid"
-AGG=${NF_AGG:-$((300 / STEP))}  # сколько шагов в 5 минутах
+AGG=${NF_AGG:-$((300 / STEP))}  # how many steps are in 5 minutes
 [ "$AGG" -ge 1 ] || AGG=1
 HOST=$(cat "$PROC/sys/kernel/hostname" 2>/dev/null || echo router)
 
-# ---------- события и предупреждения ----------
+# ---------- events and warnings ----------
 clean() { printf '%s' "$1" | tr -d '"\\|' | tr '\n' ' '; }
 
 BLOCKBIN=${NF_BLOCKBIN:-/usr/libexec/nightfall-block}
@@ -60,7 +60,7 @@ BLOCKLIST=${NF_BLOCK:-/etc/nightfall-block.list}
 GROUPLIST=${NF_GROUPS:-/etc/nightfall-groups.list}
 REPORT_MARK="$DIR/report.sent"
 
-tgsend() {  # tgsend ТЕКСТ [КНОПКИ_JSON]: в фоне, чтобы сбой сети не тормозил сборщик
+tgsend() {  # tgsend TEXT [BUTTONS_JSON]: in the background so a network failure does not slow the collector
 	[ "$TG" = 1 ] && [ -x "$NOTIFY" ] || return 0
 	"$NOTIFY" send "$1" "$2" >/dev/null 2>&1 &
 }
@@ -78,9 +78,9 @@ event() {   # event LEVEL TEXT [quiet]
 
 fmt_dur() {
 	d=$1
-	if [ "$d" -ge 3600 ]; then echo "$((d / 3600)) ч $((d % 3600 / 60)) мин"
-	elif [ "$d" -ge 60 ]; then echo "$((d / 60)) мин $((d % 60)) с"
-	else echo "$d с"; fi
+	if [ "$d" -ge 3600 ]; then echo "$((d / 3600)) h $((d % 3600 / 60)) min"
+	elif [ "$d" -ge 60 ]; then echo "$((d / 60)) min $((d % 60)) s"
+	else echo "$d s"; fi
 }
 
 # alert KEY LEVEL NEED_ON COND(0|1) TEXT
@@ -102,16 +102,16 @@ alert() {
 			was=$(grep "^$k|" "$DIR/alerts.active" 2>/dev/null | head -n 1 | cut -d'|' -f4)
 			[ -n "$was" ] || was=$txt
 			grep -v "^$k|" "$DIR/alerts.active" > "$DIR/alerts.tmp" 2>/dev/null; mv "$DIR/alerts.tmp" "$DIR/alerts.active"
-			event ok "Снова в норме: $was (длилось $dur)"
-			logger -t nightfall "Снова в норме: $was" 2>/dev/null
+			event ok "Back to normal: $was (lasted $dur)"
+			logger -t nightfall "Back to normal: $was" 2>/dev/null
 			a=0
 		fi
 	fi
 	eval "n_$k=$n; f_$k=$f; a_$k=$a"
 }
 
-# ---------- измерения ----------
-read_temp() {   # печатает температуру процессора в °C с десятой долей или -1
+# ---------- measurements ----------
+read_temp() {   # prints the CPU temperature in °C with one decimal, or -1
 	best=""; first=""
 	for z in "$SYS"/class/thermal/thermal_zone*; do
 		[ -r "$z/temp" ] || continue
@@ -133,7 +133,7 @@ read_temp() {   # печатает температуру процессора �
 	echo "$((best / 1000)).$((best % 1000 / 100))"
 }
 
-read_temps() {  # печатает температуры всех датчиков «имя:°C» через пробел (имена как в nightfall-stats; повтор имени получает #2, #3)
+read_temps() {  # prints the temperatures of all sensors as "name:°C" separated by spaces (names as in nightfall-stats; a repeated name gets #2, #3)
 	out=""
 	for z in "$SYS"/class/thermal/thermal_zone*; do
 		[ -r "$z/temp" ] || continue
@@ -149,7 +149,7 @@ read_temps() {  # печатает температуры всех датчик�
 		read -r nm < "$h/name" 2>/dev/null
 		out="$out h|$(printf '%s' "$nm" | tr -cd 'A-Za-z0-9_.-')|$t"
 	done
-	# один и тот же датчик виден и как зона (cpu-thermal), и как hwmon (cpu_thermal): оставляем hwmon, как в штатной карточке LuCI
+	# the same sensor is visible both as a zone (cpu-thermal) and as hwmon (cpu_thermal): keep hwmon, as the stock LuCI card does
 	printf '%s\n' "$out" | tr ' ' '\n' | awk -F'|' '
 		function norm(x) { x = tolower(x); gsub(/-/, "_", x); return x }
 		NF == 3 && $3 ~ /^[0-9]+$/ && $3 > 0 { n++; src[n] = $1; nm[n] = ($2 == "" ? "sensor" : $2); v[n] = $3; if ($1 == "h") hw[norm(nm[n])] = 1 }
@@ -159,14 +159,14 @@ read_temps() {  # печатает температуры всех датчик�
 			printf "%s%s:%d.%d", (m++ ? " " : ""), k, int(v[i] / 1000), int((v[i] % 1000) / 100) } }'
 }
 
-ping_ms() {     # ping_ms HOST -> миллисекунды или -1
+ping_ms() {     # ping_ms HOST -> milliseconds or -1
 	[ -n "$1" ] || { echo -1; return; }
 	r=$(ping -c 1 -W 1 "$1" 2>/dev/null | awk -F'time=' '/time=/ { split($2, a, " "); print a[1]; exit }')
 	[ -n "$r" ] && echo "$r" || echo -1
 }
 
-# ---------- новые устройства ----------
-# Источник: ARP-таблица (проводные и Wi-Fi) и аренды DHCP. Первый запуск только запоминает то, что уже есть.
+# ---------- new devices ----------
+# Source: the ARP table (wired and Wi-Fi) and DHCP leases. The first run only remembers what is already there.
 do_newdev() {
 	[ "$NEWDEV" = 1 ] || return 0
 	[ -r "$PROC/net/arp" ] || return 0
@@ -178,12 +178,12 @@ do_newdev() {
 			while ((getline l < leases) > 0) { split(l, a, " "); m = tolower(a[2]); nm[m] = (a[4] == "*" ? "" : a[4]); ip[m] = a[3]; ls[m] = 1 }
 			close(leases)
 		}
-		NR > 1 && $3 == "0x2" && $4 != "00:00:00:00:00:00" && ($6 != wan || (tolower($4) in ls)) {   # на WAN-интерфейсе берём только клиентов из аренд DHCP (схема «на одной ноге»)
+		NR > 1 && $3 == "0x2" && $4 != "00:00:00:00:00:00" && ($6 != wan || (tolower($4) in ls)) {   # on the WAN interface take only clients from DHCP leases ("router on a stick" setup)
 			m = tolower($4); ip[m] = $1
 			if (!(m in k)) { k[m] = 1; print m "|" nm[m] "|" ip[m] > out; n++ }
 		}
 		END {
-			# арендованные, но сейчас не видимые адреса тоже считаем знакомыми (иначе после включения «новыми» станут свои выключенные устройства)
+			# leased but currently invisible addresses are also known (otherwise your own devices that were off would become "new" when turned on)
 			for (m in ls) if (!(m in k)) { k[m] = 1; print m "|" nm[m] "|" ip[m] > out }
 		}' "$PROC/net/arp"
 	[ -s "$DIR/newdev.out" ] || { rm -f "$DIR/newdev.out"; [ "$seed" = 1 ] && : > "$KNOWN"; return 0; }
@@ -191,16 +191,16 @@ do_newdev() {
 		printf '%s|%s|%s\n' "$m" "$nm" "$now" >> "$KNOWN"
 		[ "$seed" = 1 ] && continue
 		h=$(printf '%s' "$m" | cut -c2)
-		priv=""; case "$h" in 2|6|a|e|A|E) priv=" (частный адрес Wi-Fi, у телефона он может меняться)" ;; esac
-		txt="Новое устройство в сети: ${nm:-без имени}, $ipa, $m$priv"
+		priv=""; case "$h" in 2|6|a|e|A|E) priv=" (private Wi-Fi address, a phone may change it)" ;; esac
+		txt="New device on the network: ${nm:-unnamed}, $ipa, $m$priv"
 		event warn "$txt" quiet
 		k=$(printf '%s' "$m" | tr -d ':')
-		tgsend "🆕 $(clean "$txt"). Если это ваше устройство, больше это сообщение не повторится." "{\"inline_keyboard\":[[{\"text\":\"✅ Это моё\",\"callback_data\":\"ok:$k\"},{\"text\":\"🚫 Заблокировать\",\"callback_data\":\"bk:$k\"}]]}"
+		tgsend "🆕 $(clean "$txt"). If this is your device, this message will not be repeated." "{\"inline_keyboard\":[[{\"text\":\"✅ It is mine\",\"callback_data\":\"ok:$k\"},{\"text\":\"🚫 Block\",\"callback_data\":\"bk:$k\"}]]}"
 	done < "$DIR/newdev.out"
 	rm -f "$DIR/newdev.out"
 }
 
-# журнал DNS dnsmasq -> dns.map («адрес приложение»): по именам из ответов определяем, какому сервису принадлежит адрес
+# dnsmasq DNS log -> dns.map ("address app"): the names in answers tell which service an address belongs to
 do_dns() {
 	[ "$APPS" = 1 ] && [ -r "$DNSLOG" ] || return 0
 	size=$(wc -c < "$DNSLOG" 2>/dev/null | tr -d ' '); [ -n "$size" ] || return 0
@@ -216,18 +216,18 @@ do_dns() {
 		tail -c +$((off + 1)) "$DNSLOG" 2>/dev/null | sh "${NF_DNSMAP:-/usr/libexec/nightfall-dns-map}" "$RULES" "$RULES_USER" "$DIR/dns.map" "$now" || return 0
 	fi
 	[ "$rebuild" = 0 ] || echo 2 > "$DIR/dns.map.v"
-	# журнал не должен расти бесконечно
+	# the log must not grow forever
 	if [ "$size" -gt 1048576 ]; then : > "$DNSLOG"; size=0; fi
 	echo "$size" > "$DIR/dns.off"
 }
 
-# ---------- суточные итоги трафика WAN (для календаря «Трафик по месяцам») ----------
-# traffic.daily: строки «ГГГГММДД принято_байт отправлено_байт», не более 400 дней.
+# ---------- daily WAN traffic totals (for the "Traffic by month" calendar) ----------
+# traffic.daily: lines "YYYYMMDD rx_bytes tx_bytes", at most 400 days.
 td_date=""; td_rx=0; td_tx=0; td_flush=0
 traffic_day() {
 	[ "$rx" -ge 0 ] 2>/dev/null && [ "$dtm" -gt 0 ] || return 0
 	d=$(date +%Y%m%d)
-	[ "$d" -gt 20240101 ] 2>/dev/null || return 0    # часы ещё не синхронизированы
+	[ "$d" -gt 20240101 ] 2>/dev/null || return 0    # the clock is not synchronized yet
 	if [ "$d" != "$td_date" ]; then
 		td_date=$d; td_rx=0; td_tx=0
 		set -- $(awk -v d="$d" '$1 == d { print $2, $3 }' "$DIR/traffic.daily" 2>/dev/null)
@@ -241,17 +241,17 @@ traffic_day() {
 	fi
 }
 
-archive_devday() {   # итоги устройств за закончившиеся сутки: «ГГГГММДД ip принято отправлено mac» (отчёт «Трафик по месяцам → день»)
+archive_devday() {   # device totals for the finished day: "YYYYMMDD ip rx tx mac" (the "Traffic by month → day" report)
 	[ -s "$DIR/dev.day" ] || return 0
 	lf=${NF_LEASES:-/tmp/dhcp.leases}; [ -r "$lf" ] || lf=/dev/null
 	awk -v d="$1" 'FILENAME == ARGV[1] { ip[$3] = tolower($2); next } NF >= 3 { print d, $1, $2, $3, ($1 in ip ? ip[$1] : "-") }' "$lf" "$DIR/dev.day" >> "$DIR/dev.daily" 2>/dev/null
-	if [ "$(wc -l < "$DIR/dev.daily" 2>/dev/null || echo 0)" -gt 6500 ]; then   # около 90 суток по 64 устройства
+	if [ "$(wc -l < "$DIR/dev.daily" 2>/dev/null || echo 0)" -gt 6500 ]; then   # about 90 days of 64 devices
 		tail -n 6000 "$DIR/dev.daily" > "$DIR/dev.daily.tmp" && mv "$DIR/dev.daily.tmp" "$DIR/dev.daily"
 	fi
 	return 0
 }
 
-do_devices() {  # трафик по устройствам: разница счётчиков conntrack между замерами
+do_devices() {  # per-device traffic: the difference of conntrack counters between samples
 	[ -r "$CT" ] || return 0
 	today=$(date +%Y%m%d)
 	if [ "$today" -gt 20240101 ] 2>/dev/null; then
@@ -261,7 +261,7 @@ do_devices() {  # трафик по устройствам: разница сч�
 			[ -n "$old" ] && mv "$DIR/dev.day" "$DIR/dev.yday" 2>/dev/null
 			if [ -n "$old" ] && [ -s "$DIR/apps.day" ]; then
 				awk -v d="$old" '{ print d "|" $0 }' "$DIR/apps.day" >> "$DIR/apps.hist"
-				# храним последние 30 суток
+				# keep the last 30 days
 				awk -F'|' '{ if (!($1 in s)) { s[$1] = 1; n++; ds[n] = $1 } l[NR] = $0; dt[NR] = $1 } END { for (i = 1; i <= n; i++) for (j = i + 1; j <= n; j++) if (ds[j] > ds[i]) { t = ds[i]; ds[i] = ds[j]; ds[j] = t }
 					for (i = 1; i <= n && i <= 30; i++) keep[ds[i]] = 1
 					for (i = 1; i <= NR; i++) if (dt[i] in keep) print l[i] }' "$DIR/apps.hist" > "$DIR/apps.hist.tmp" && mv "$DIR/apps.hist.tmp" "$DIR/apps.hist"
@@ -271,16 +271,16 @@ do_devices() {  # трафик по устройствам: разница сч�
 			: > "$DIR/dev.day"
 		fi
 	fi
-	# Формат приложений v2 добавляет маршрут (VPN/Direct/Unknown); старые строки нельзя смешивать с новыми.
+	# App format v2 adds the route (VPN/Direct/Unknown); old lines must not be mixed with new ones.
 	if [ "$(cat "$DIR/apps.v" 2>/dev/null)" != 2 ]; then : > "$DIR/apps.day"; : > "$DIR/apps.hist"; echo 2 > "$DIR/apps.v"; fi
-	# Версия 3: пересобираем суточные итоги после перехода от эвристики private-IP к реальным LAN-подсетям.
-	# Старые итоги могли включать WAN/VPN-адреса и не могут быть достоверно исправлены задним числом.
+	# Version 3: rebuild the daily totals after moving from the private-IP heuristic to real LAN subnets.
+	# Old totals could include WAN/VPN addresses and cannot be reliably corrected after the fact.
 	if [ "$(cat "$DIR/acct.v" 2>/dev/null)" != 3 ]; then
 		: > "$DIR/dev.day"; : > "$DIR/dev.yday"; : > "$DIR/apps.day"; : > "$DIR/apps.hist"; rm -f "$DIR/ct.state"
 		echo 3 > "$DIR/acct.v"
 	fi
-	# Строим список реальных клиентских IPv4-подсетей по connected routes основной таблицы.
-# WAN-подсеть допускается только при наличии в ней DHCP-клиента (режим «на одной ноге»).
+	# Build the list of real client IPv4 subnets from the connected routes of the main table.
+# The WAN subnet is allowed only when it has a DHCP client ("router on a stick" mode).
 : > "$DIR/client.nets"
 ip -4 route show table main 2>/dev/null | awk -v wan="$wdev" -v lf="$LEASES" '
 	function num(ip, a) { split(ip, a, "."); return (((a[1] * 256 + a[2]) * 256 + a[3]) * 256 + a[4]) }
@@ -304,11 +304,11 @@ ip -4 route show table main 2>/dev/null | awk -v wan="$wdev" -v lf="$LEASES" '
 		}
 		print net
 	}' > "$DIR/client.nets"
-# Исключаем все текущие адреса самого роутера, включая VPN /32 и WAN.
+# Exclude all current addresses of the router itself, including VPN /32 and WAN.
 for ra in $(ip -4 addr show 2>/dev/null | awk '/inet / { split($2, a, "/"); print a[1] }'); do
 	grep -qx "$ra" "$DIR/router.ips" 2>/dev/null || echo "$ra" >> "$DIR/router.ips"
 done
-# Собираем фактические policy-route selectors. Не предполагаем фиксированные имена интерфейсов или значения fwmark.
+# Collect the actual policy-route selectors. Do not assume fixed interface names or fwmark values.
 vpn_tunnel_dev() {
 	[ -n "$1" ] || return 1
 	vi=$(ip -d link show dev "$1" 2>/dev/null | tr 'A-Z' 'a-z')
@@ -327,7 +327,7 @@ tunnel_present=0
 for ti in $(ip -o link show 2>/dev/null | awk -F': ' '$0 ~ /<[^>]*UP[,>]/ { sub(/@.*/, "", $2); print $2 }'); do
 	vpn_tunnel_dev "$ti" && { tunnel_present=1; break; }
 done
-# Сохраняем selectors обеих семейств адресов: второй проход не должен стирать IPv4.
+# Keep selectors of both address families: the second pass must not erase IPv4.
 : > "$DIR/vpn.rules"
 for fam in 4 6; do
 	ip -"$fam" rule show 2>/dev/null | awk '
@@ -435,7 +435,7 @@ first=0; [ -s "$DIR/ct.state" ] || first=1
 	# One public IP can serve several unrelated apps (CDN/anycast). Never let the last DNS answer win.
 	function mapadd(ip, name,   old) {
 		if (ip == "" || name == "") return
-		if (name !~ /^Прочее( ·|$)/) {
+		if (name !~ /^(Other|Прочее)( ·|$)/) {
 			if (!(ip in am_known)) am_known[ip] = name
 			else if (am_known[ip] != name) am_conflict[ip] = 1
 		}
@@ -445,15 +445,15 @@ first=0; [ -s "$DIR/ct.state" ] || first=1
 	function mapfinish(   ip) {
 		# Several known services on one address usually mean shared CDN/anycast.
 		# Keep the conflict visible instead of attributing bytes to whichever DNS reply arrived last.
-		for (ip in am_known) am[ip] = (ip in am_conflict ? "Прочее · Общий IP (CDN)" : am_known[ip])
-		for (ip in am_fallback) if (!(ip in am)) am[ip] = (ip in am_fallback_conflict ? "Прочее · Несколько доменов" : am_fallback[ip])
+		for (ip in am_known) am[ip] = (ip in am_conflict ? "Other · Shared IP (CDN)" : am_known[ip])
+		for (ip in am_fallback) if (!(ip in am)) am[ip] = (ip in am_fallback_conflict ? "Other · Multiple domains" : am_fallback[ip])
 	}
 	function appof(ip,   i) {
 		if (ip in am) return am[ip]
 		for (i = 1; i <= npf; i++) if (index(ip, pf[i]) == 1) return pfa[i]
 		# No recent DNS answer was observed for this destination. This does not prove
 		# DoH/DoT: it can also be direct-IP traffic, external DNS, cache/TTL expiry or missing logs.
-		return "Прочее · Нет DNS-имени"
+		return "Other · No DNS name"
 	}
 	{
 		src = ""; dst = ""; sp = ""; dp = ""; mark = ""; nb = 0; ob = 0; rb = 0
@@ -467,11 +467,11 @@ first=0; [ -s "$DIR/ct.state" ] || first=1
 			else if (substr(f, 1, 6) == "bytes=") { nb++; if (nb == 1) ob = substr(f, 7) + 0; else if (nb == 2) rb = substr(f, 7) + 0 }
 		}
 		if (nb < 2 || src == "" || dst == "") next
-		if (!islan(src) || isrouter(src)) next                 # источник должен принадлежать реальной LAN/VLAN-подсети
-		if (islan(dst) || isrouter(dst)) next                  # LAN↔LAN и обращения к роутеру не считаем интернетом
+		if (!islan(src) || isrouter(src)) next                 # the source must belong to a real LAN/VLAN subnet
+		if (islan(dst) || isrouter(dst)) next                  # LAN↔LAN and requests to the router are not counted as internet
 		key = $1 "|" $3 "|" src ">" dst ":" sp ">" dp
-		# одинаковые «адрес:порт» бывают у нескольких записей (старая в TIME_WAIT и новая): складываем их счётчики,
-		# иначе одна запись «уменьшалась» и каждый цикл засчитывалась заново целиком (завышение в сотни раз)
+		# the same "address:port" can appear in several entries (an old one in TIME_WAIT and a new one): add their counters,
+		# otherwise one entry "shrank" and was counted again in full every cycle (overstating hundreds of times)
 		if (key in so) { so[key] += ob; sr[key] += rb; if (apps == 1 && sroute[key] != routeof(mark, index(src, ":") ? 6 : 4)) sroute[key] = "Unknown"; next }
 		so[key] = ob; sr[key] = rb; sa[key] = src; sd[key] = dst; sp3[key] = $3; sdp[key] = dp; sroute[key] = (apps == 1 ? routeof(mark, index(src, ":") ? 6 : 4) : "Unknown")
 	}
@@ -482,7 +482,7 @@ first=0; [ -s "$DIR/ct.state" ] || first=1
 		if (first) return
 		if (key in po) { do_ = ob - po[key]; dr_ = rb - pr[key]; if (do_ < 0) do_ = ob; if (dr_ < 0) dr_ = rb }
 		else { do_ = ob; dr_ = rb }
-		# за один цикл по одному соединению не может пройти больше ~2 Гбит/с: всё, что выше, это сбой счётчика
+		# one connection cannot pass more than ~2 Gbit/s in one cycle: anything above is a counter glitch
 		if (do_ + dr_ > cap) return
 		cu[src] += do_; cd[src] += dr_
 		if (do_ + dr_ > 0) {
@@ -538,12 +538,12 @@ write_info() {
 		echo "acct=${acct:-0}"
 		echo "flow_hw=$FLOW_HW"
 		echo "offload=${off:-0}"
-		# адреса самого роутера: текущие и прежние (внешний адрес провайдера может меняться; его трафик не принадлежит устройствам)
+		# addresses of the router itself: current and previous (the ISP-assigned external address can change; its traffic does not belong to devices)
 		for ra in $(ip -4 addr show 2>/dev/null | awk '/inet / { split($2, a, "/"); print a[1] }'); do grep -qx "$ra" "$DIR/router.ips" 2>/dev/null || echo "$ra" >> "$DIR/router.ips"; done
 		[ "$(wc -l < "$DIR/router.ips" 2>/dev/null || echo 0)" -gt 24 ] && { tail -n 16 "$DIR/router.ips" > "$DIR/router.ips.tmp" && mv "$DIR/router.ips.tmp" "$DIR/router.ips"; }
 		echo "router_ips=$(tr '\n' ' ' < "$DIR/router.ips" 2>/dev/null)"
-		# подсеть на внешнем интерфейсе: провайдер выдаёт роутеру разные адреса из неё, и весь трафик с этих адресов принадлежит роутеру,
-		# а не устройству. Исключение: подсеть, в которой есть клиенты из аренд DHCP (схема «на одной ноге»: WAN и LAN на одном интерфейсе)
+		# the subnet on the external interface: the ISP gives the router various addresses from it, and all traffic from those addresses belongs to the router,
+		# not to a device. Exception: a subnet with clients from DHCP leases ("router on a stick": WAN and LAN on one interface)
 		rnets=""
 		if [ -n "$wdev" ]; then
 			for rc in $(ip -4 addr show dev "$wdev" 2>/dev/null | awk '/inet / { print $2 }'); do
@@ -574,8 +574,8 @@ write_info() {
 	} > "$DIR/info.tmp" && mv "$DIR/info.tmp" "$DIR/info"
 }
 
-# Возвращает устройство и самую длинную точку монтирования, содержащую путь.
-# NF_MOUNTS позволяет тестировать поведение без изменения настоящей таблицы монтирования.
+# Returns the device and the longest mount point that contains the path.
+# NF_MOUNTS allows testing the behavior without changing the real mount table.
 persist_mount_info() {
 	local p
 	p=$1
@@ -596,17 +596,17 @@ persist_mount_info() {
 	' "${NF_MOUNTS:-/proc/mounts}" 2>/dev/null
 }
 
-on_flash() {    # 0 = встроенное/неподтверждённое хранилище (запись запрещена), 1 = внешний mount
+on_flash() {    # 0 = built-in/unconfirmed storage (writing not allowed), 1 = external mount
 	local mi fd mp
 	mi=$(persist_mount_info "$1")
 	[ -n "$mi" ] || return 0
 	fd=${mi%%|*}; mp=${mi#*|}
-	# Корневую файловую систему и ROM не используем. Запись в overlay разрешена
-	# только при явном PERSIST_ANY=1: пользователь принимает износ флеш-памяти.
+	# The root file system and ROM are never used. Writing to overlay is allowed
+	# only with an explicit PERSIST_ANY=1: the user accepts flash wear.
 	case "$mp" in /|/rom|/rom/*) return 0 ;; esac
 	case "$mp" in /overlay|/overlay/*) [ "$PERSIST_ANY" = 1 ] && return 1; return 0 ;; esac
 	[ "$PERSIST_ANY" = 1 ] && return 1
-	# Только явно распознанные внешние блочные устройства. Неизвестные источники запрещаем по умолчанию.
+	# Only explicitly recognized external block devices. Unknown sources are denied by default.
 	case "$fd" in /dev/mmcblk*|/dev/sd[a-z]*|/dev/nvme*|/dev/vd[a-z]*|/dev/loop*) return 1 ;; esac
 	return 0
 }
@@ -620,13 +620,13 @@ persist_overlay_space_ok() {
 }
 
 PFILES="extip.log hist.coarse temps.coarse hist.long wifi.hr dev.hr dev.snap dev.daily router.ips events.log dev.day dev.yday day.date speed.log apps.day apps.hist apps.v traffic.daily acct.v"
-procmem_point() {   # раз в 15 минут: память (RSS, КБ) десяти самых «толстых» программ; по ней монитор ищет утечки
+procmem_point() {   # every 15 minutes: memory (RSS, KB) of the ten "heaviest" programs; the monitor looks for leaks in it
 	[ "$LITE" = 1 ] && return 0
 	cat "${NF_PROCDIR:-/proc}"/[0-9]*/status 2>/dev/null | awk '
 		/^Name:/ { n = $2 } /^VmRSS:/ { if (n != "") { m[n] += $2; n = "" } }
 		END { for (k in m) if (m[k] >= 1024) print m[k], k }' | sort -rn | head -n 10 | awk -v t="$(date +%s)" '{ printf "%s%s:%s", (n++ ? " " : t " "), $2, $1 } END { if (n) print "" }' >> "$DIR/procmem.log"
 }
-extip_point() {   # адрес роутера на WAN: пишем только когда он сменился
+extip_point() {   # the router's WAN address: written only when it changes
 	ip=$(ifstatus wan 2>/dev/null | jsonfilter -e '@["ipv4-address"][0].address' 2>/dev/null)
 	[ -n "$ip" ] || return 0
 	[ "$(tail -n 1 "$DIR/extip.log" 2>/dev/null | awk '{ print $2 }')" = "$ip" ] && return 0
@@ -643,8 +643,8 @@ persist() {
 	mi=$(persist_mount_info "$PERSIST_DIR")
 	if [ -z "$mi" ] || on_flash "$PERSIST_DIR"; then
 		case "$PERSIST_DIR" in
-			/overlay|/overlay/*) persist_warn "Сохранение во внутреннюю флеш-память запрещено. Включите «Разрешить запись во внутреннюю флеш-память» и учитывайте износ и свободное место" 0 ;;
-			*) persist_warn "Постоянная история недоступна: $PERSIST_DIR не находится на подключённом накопителе с разрешённым типом хранения. Сбор данных продолжается в RAM" 0 ;;
+			/overlay|/overlay/*) persist_warn "Saving to internal flash is not allowed. Turn on \"Allow writing to internal flash\" and keep wear and free space in mind" 0 ;;
+			*) persist_warn "Persistent history is unavailable: $PERSIST_DIR is not on a connected drive with an allowed storage type. Data collection continues in RAM" 0 ;;
 		esac
 		return 1
 	fi
@@ -652,17 +652,17 @@ persist() {
 	case "$mp" in
 		/overlay|/overlay/*)
 			if ! persist_overlay_space_ok "$mp"; then
-				persist_warn "Недостаточно свободного места во внутренней флеш-памяти (нужно не менее ${NF_PERSIST_MIN_FREE_KB:-2048} КБ). История продолжает собираться в RAM" 0
+				persist_warn "Not enough free space in internal flash (at least ${NF_PERSIST_MIN_FREE_KB:-2048} KB needed). History keeps being collected in RAM" 0
 				return 1
 			fi ;;
 	esac
-	case "/$rel/" in */../*) persist_warn "Некорректный путь постоянной истории: $PERSIST_DIR" 1; return 1 ;; esac
+	case "/$rel/" in */../*) persist_warn "Invalid persistent history path: $PERSIST_DIR" 1; return 1 ;; esac
 
-	# При первом подключении или после возврата USB объединяем временную RAM-историю с архивной.
+	# On the first connection or after USB comes back, merge the temporary RAM history with the archive.
 	[ "${persist_need_restore:-0}" = 1 ] && restore
 
-	# Переход внутрь mount удерживает файловую систему на время записи: штатное отключение не
-	# сможет незаметно переключить путь в нижележащий overlay.
+	# Changing into the mount keeps the file system busy while writing: a regular unmount cannot
+	# silently switch the path to the underlying overlay.
 	(
 		cd "$mp" 2>/dev/null || exit 3
 		on_flash "$PWD" && exit 2
@@ -671,7 +671,7 @@ persist() {
 			cd "$rel" 2>/dev/null || exit 3
 		fi
 		on_flash "$PWD" && exit 2
-		# Проверяем реальную возможность записи, но только после входа в подтверждённый mount.
+		# Check that writing really works, but only after entering a confirmed mount.
 		probe=".nightfall-write-test.$"
 		(umask 077; : > "$probe") 2>/dev/null || exit 3
 		rm -f "$probe" 2>/dev/null || exit 3
@@ -685,32 +685,32 @@ persist() {
 	)
 	rc=$?
 	if [ "$rc" = 2 ]; then
-		persist_warn "Внешний накопитель $PERSIST_DIR отключён; запись на внутреннюю память запрещена. Сбор данных продолжается в RAM" 0
+		persist_warn "External drive $PERSIST_DIR is disconnected; writing to internal storage is not allowed. Data collection continues in RAM" 0
 		return 1
 	elif [ "$rc" != 0 ]; then
-		persist_warn "Не удалось сохранить постоянную историю в $PERSIST_DIR; проверьте накопитель и файловую систему" 1
+		persist_warn "Failed to save persistent history to $PERSIST_DIR; check the drive and the file system" 1
 		return 1
 	fi
 
 	persist_ok=1
 	persist_last=$(date +%s)
 	persist_kb=$(du -sk "$PERSIST_DIR" 2>/dev/null | awk '{ print $1 + 0 }')
-	if [ "${persist_error_notified:-0}" = 1 ]; then event ok "Постоянное хранение Nightfall снова работает"; fi
+	if [ "${persist_error_notified:-0}" = 1 ]; then event ok "Nightfall persistent storage works again"; fi
 	persist_error=0; persist_error_notified=0
 	return 0
 }
 
-# Проверяем доступность USB на каждом пятиминутном цикле. Если накопитель
-# вернулся после отключения, сохраняем RAM-историю сразу, не ожидая PERSIST_HOURS.
-# При штатной работе периодичность записи остаётся прежней.
+# Check USB availability on every five-minute cycle. If the drive
+# came back after being disconnected, save the RAM history right away without waiting for PERSIST_HOURS.
+# In normal operation the write interval stays the same.
 persist_check() {
 	local mi mp
 	[ -n "$PERSIST_DIR" ] || return 0
 	mi=$(persist_mount_info "$PERSIST_DIR")
 	if [ -z "$mi" ] || on_flash "$PERSIST_DIR"; then
 		case "$PERSIST_DIR" in
-			/overlay|/overlay/*) persist_warn "Сохранение во внутреннюю флеш-память запрещено или недоступно. Включите явное разрешение и проверьте свободное место" 0 ;;
-			*) persist_warn "Постоянная история недоступна: $PERSIST_DIR не находится на подключённом накопителе с разрешённым типом хранения. Сбор данных продолжается в RAM" 0 ;;
+			/overlay|/overlay/*) persist_warn "Saving to internal flash is not allowed or unavailable. Turn on the explicit permission and check the free space" 0 ;;
+			*) persist_warn "Persistent history is unavailable: $PERSIST_DIR is not on a connected drive with an allowed storage type. Data collection continues in RAM" 0 ;;
 		esac
 		return 1
 	fi
@@ -718,7 +718,7 @@ persist_check() {
 	case "$mp" in
 		/overlay|/overlay/*)
 			if ! persist_overlay_space_ok "$mp"; then
-				persist_warn "Недостаточно свободного места во внутренней флеш-памяти (нужно не менее ${NF_PERSIST_MIN_FREE_KB:-2048} КБ). История продолжает собираться в RAM" 0
+				persist_warn "Not enough free space in internal flash (at least ${NF_PERSIST_MIN_FREE_KB:-2048} KB needed). History keeps being collected in RAM" 0
 				return 1
 			fi ;;
 	esac
@@ -748,8 +748,8 @@ restore() {
 				cp "$f" "$DIR/$f" 2>/dev/null || :
 				continue
 			fi
-			# Исторические ряды объединяем по полным строкам и времени, чтобы подключение USB
-			# после длительного отсутствия не затирало архив свежей RAM-историей.
+			# Historical series are merged by full lines and time so that connecting USB
+			# after a long absence does not overwrite the archive with the fresh RAM history.
 			case "$f" in
 				extip.log|hist.coarse|temps.coarse|hist.long|wifi.hr|dev.hr|events.log|speed.log)
 					cat "$f" "$DIR/$f" | awk '!seen[$0]++' | sort -n -k1,1 > "$DIR/$f.merge"
@@ -771,7 +771,7 @@ restore() {
 					;;
 				dev.day|apps.day)
 					cmp -s "$f" "$DIR/$f" && continue
-					# Суточные счётчики складываем только если USB и RAM относятся к одной дате.
+					# Daily counters are added only if USB and RAM belong to the same date.
 					pday=$(cat day.date 2>/dev/null); rday=$(cat "$DIR/day.date" 2>/dev/null)
 					[ -n "$pday" ] && [ "$pday" = "$rday" ] || continue
 					if [ "$f" = dev.day ]; then
@@ -804,7 +804,7 @@ restore() {
 	return "$rc"
 }
 
-# ---------- журнал перезагрузок и обрывов связи (редкие короткие записи на флеш) ----------
+# ---------- reboot and outage log (rare short writes to flash) ----------
 jwrite() {      # jwrite TS TYPE DURATION TEXT
 	[ "$JOURNAL" = 1 ] || return 0
 	printf '%s|%s|%s|%s\n' "$1" "$2" "$3" "$(clean "$4")" >> "$JOURNAL_FILE" 2>/dev/null || return 0
@@ -813,7 +813,7 @@ jwrite() {      # jwrite TS TYPE DURATION TEXT
 	fi
 }
 
-# ---------- Wi-Fi клиенты в динамике (раз в минуту, только в памяти) ----------
+# ---------- Wi-Fi clients over time (once a minute, in memory only) ----------
 do_wifi() {
 	command -v ubus >/dev/null 2>&1 || return 0
 	devs=$(ubus call iwinfo devices 2>/dev/null | awk -F'"' 'NF >= 3 && $2 != "devices" { print $2 }')
@@ -832,24 +832,24 @@ do_wifi() {
 	mv "$DIR/wifi.cur.new" "$DIR/wifi.cur"
 }
 
-# ---------- почасовые ряды: сигнал Wi-Fi по клиентам и трафик по устройствам ----------
-wifi_hour() {   # средний сигнал каждого клиента за прошедший час: «время mac сигнал замеров»
+# ---------- hourly series: Wi-Fi signal per client and traffic per device ----------
+wifi_hour() {   # average signal of each client over the past hour: "time mac signal samples"
 	[ -s "$DIR/wifi.fine" ] || return 0
 	awk -v ts="$now" -v lim=$((now - 3600)) '$1 >= lim && $3 ~ /^-?[0-9]+$/ { s[$2] += $3; c[$2]++ }
 		END { for (m in s) printf "%s %s %d %d\n", ts, m, s[m] / c[m], c[m] }' "$DIR/wifi.fine" >> "$DIR/wifi.hr"
 }
-dev_hour() {    # сколько каждое устройство передало за прошедший час: «время ip скачано отдано»
+dev_hour() {    # how much each device transferred over the past hour: "time ip downloaded uploaded"
 	local today prev=
 	today=$(date +%Y%m%d)
 	[ -s "$DIR/dev.day" ] || { echo "#$today" > "$DIR/dev.snap"; return 0; }
-	if [ ! -f "$DIR/dev.snap" ]; then { echo "#$today"; cat "$DIR/dev.day"; } > "$DIR/dev.snap"; return 0; fi   # нет точки отсчёта: первый час не пишем
+	if [ ! -f "$DIR/dev.snap" ]; then { echo "#$today"; cat "$DIR/dev.day"; } > "$DIR/dev.snap"; return 0; fi   # no reference point: the first hour is not written
 	read -r prev < "$DIR/dev.snap"
 	awk -v ts="$now" -v same=$([ "$prev" = "#$today" ] && echo 1 || echo 0) 'FILENAME == ARGV[1] { if ($1 !~ /^#/) { pd[$1] = $2; pu[$1] = $3 } next }
 		{ d = $2; u = $3; if (same && ($1 in pd)) { dd = d - pd[$1]; du = u - pu[$1]; if (dd < 0 || du < 0) { dd = d; du = u } } else { dd = d; du = u }
 		  if (dd + du > 0) printf "%s %s %.0f %.0f\n", ts, $1, dd, du }' "$DIR/dev.snap" "$DIR/dev.day" >> "$DIR/dev.hr"
 	{ echo "#$today"; cat "$DIR/dev.day"; } > "$DIR/dev.snap"
 }
-# длинная история: средние за 30 минут по шести точкам hist.coarse и пики скорости
+# long history: 30-minute averages over six hist.coarse points, plus speed peaks
 long_point() {
 	[ -s "$DIR/hist.coarse" ] || return 0
 	tail -n 6 "$DIR/hist.coarse" | awk '{ last = $1; for (i = 2; i <= 10; i++) if ($i >= 0) { s[i] += $i; c[i]++ } if ($5 > pr) pr = $5; if ($6 > pt) pt = $6 }
@@ -859,7 +859,7 @@ long_point() {
 stop() { persist; exit 0; }
 trap stop TERM INT
 
-# блокировка устройств: правила применяются при старте и раз в минуту (расписание), если список не пуст
+# device blocking: rules are applied at start and once a minute (schedule) if the list is not empty
 do_block() {
 	[ -x "$BLOCKBIN" ] || return 0
 	if [ -s "$BLOCKLIST" ] || [ -s "$GROUPLIST" ]; then
@@ -871,7 +871,7 @@ do_block() {
 }
 bt=0; blast=0; bhad=0
 
-# ежедневный отчёт: раз в сутки в заданное время (ЧЧ:ММ), метка последней отправки хранится рядом с данными
+# daily report: once a day at the configured time (HH:MM), the last-sent mark is kept next to the data
 do_report() {
 	[ "$TG" = 1 ] && [ -n "$TG_REPORT" ] && [ -x "$BOTBIN" ] || return 0
 	hm=$(date +%H:%M); [ "$hm" = "$TG_REPORT" ] || return 0
@@ -880,16 +880,16 @@ do_report() {
 	txt=$("$BOTBIN" report 2>/dev/null) && [ -n "$txt" ] && tgsend "$txt"
 }
 
-# ---------- основной цикл ----------
+# ---------- main loop ----------
 now=$(date +%s); started=$now
-# Состояние постоянного хранилища определяется заново при каждой записи.
-# Не создаём PERSIST_DIR до подтверждения внешнего mount: иначе отсутствующая USB станет каталогом на overlay.
+# The persistent storage state is determined again on every write.
+# Do not create PERSIST_DIR before the external mount is confirmed: otherwise a missing USB drive would become a directory on overlay.
 persist_ok=0; persist_error=0; persist_error_notified=0; persist_need_restore=1
-# аппаратное ускорение пакетов (HW flow offloading) прячет трафик от счётчиков сетевых портов
+# hardware packet acceleration (HW flow offloading) hides traffic from the network port counters
 FLOW_HW=0; command -v uci >/dev/null 2>&1 && [ "$(uci -q get firewall.@defaults[0].flow_offloading_hw 2>/dev/null)" = 1 ] && FLOW_HW=1
 case "$HIST_DAYS" in ''|*[!0-9]*) HIST_DAYS=30 ;; esac; [ "$HIST_DAYS" -ge 7 ] || HIST_DAYS=7; [ "$HIST_DAYS" -le 90 ] || HIST_DAYS=90
 case "$PERSIST_HOURS" in ''|*[!0-9]*) PERSIST_HOURS=6 ;; esac; [ "$PERSIST_HOURS" -ge 1 ] || PERSIST_HOURS=1
-# Не смешиваем локальную старую схему apps.day с уже обновлённой историей на USB.
+# Do not mix the old local apps.day layout with the already upgraded history on USB.
 if [ "$(cat "$DIR/apps.v" 2>/dev/null)" != 2 ]; then rm -f "$DIR/apps.day" "$DIR/apps.hist" "$DIR/apps.v"; fi
 restore
 [ -n "$PERSIST_DIR" ] && persist
@@ -906,7 +906,7 @@ while :; do
 	now=$(date +%s)
 	tick=$((tick + 1))
 
-	# процессор
+	# CPU
 	cpu=-1
 	read -r _ u n s i w q sq st _ < "$PROC/stat"
 	tot=$((u + n + s + i + w + q + sq + st)); idl=$((i + w))
@@ -916,21 +916,21 @@ while :; do
 	fi
 	ptot=$tot; pidl=$idl
 
-	# память
+	# memory
 	set -- $(awk '/^MemTotal:/ { t = $2 } /^MemAvailable:/ { a = $2 } /^MemFree:/ { f = $2 } /^Buffers:/ { b = $2 } /^Cached:/ { c = $2 } END { if (a == "") a = f + b + c; print t + 0, a + 0 }' "$PROC/meminfo")
 	memt=${1:-0}; mema=${2:-0}
 	mem=0; [ "$memt" -gt 0 ] && mem=$((100 * (memt - mema) / memt))
 
 	temp=$(read_temp)
 
-	# WAN-интерфейс и шлюз (маршрут по умолчанию)
+	# WAN interface and gateway (default route)
 	if [ -n "$NF_WAN_DEV" ]; then wdev=$NF_WAN_DEV; gw=${NF_GW:-}
 	else
 		set -- $(ip -4 route show default 2>/dev/null | awk 'NR == 1 { d = ""; g = ""; for (i = 1; i <= NF; i++) { if ($i == "dev") d = $(i + 1); if ($i == "via") g = $(i + 1) } print d, g }')
 		wdev=${1:-}; gw=${2:-}
 	fi
 
-	# скорость WAN
+	# WAN speed
 	rx=-1; tx=-1; dtm=0
 	if [ -n "$wdev" ]; then
 		set -- $(awk -v d="$wdev" '{ gsub(/:/, " ") } $1 == d { print $2, $10 }' "$PROC/net/dev")
@@ -950,7 +950,7 @@ while :; do
 	[ "$dtm" -gt 0 ] || dtm=$((now - ${pts:-$now}))
 	pts=$now
 
-	# задержка до шлюза и до интернета
+	# latency to the gateway and to the internet
 	gwms=-1; netms=-1
 	[ -n "$gw" ] && gwms=$(ping_ms "$gw")
 	if [ -n "$PING_TARGET" ]; then
@@ -959,33 +959,33 @@ while :; do
 	fi
 	loss=0; [ "$netms" = -1 ] && loss=100
 
-	# журнал обрывов: старт — первый неудачный замер, запись — когда связь вернулась (от 2 неудач подряд)
+	# outage log: start is the first failed sample, the entry is written when the connection is back (from 2 failures in a row)
 	if [ -n "$PING_TARGET" ] && [ "$tick" -gt 1 ] && [ "$now" -gt 1700000000 ]; then
 		if [ "$netms" = -1 ]; then
 			out_n=$((out_n + 1)); [ "$out_n" = 1 ] && { out_t=$now; out_gwfail=0; }
 			[ "$gwms" = -1 ] && [ -n "$gw" ] && out_gwfail=1
 		elif [ "$out_n" -gt 0 ]; then
 			if [ "$out_n" -ge 2 ]; then
-				if [ "$out_gwfail" = 1 ]; then cz="нет связи со шлюзом (кабель, модем или провайдер)"; else cz="шлюз отвечал, нет выхода в интернет (провайдер или DNS)"; fi
+				if [ "$out_gwfail" = 1 ]; then cz="no connection to the gateway (cable, modem or ISP)"; else cz="the gateway answered, no internet access (ISP or DNS)"; fi
 				jwrite "$out_t" outage "$((now - out_t))" "$cz"
 			fi
 			out_n=0
 		fi
 	fi
-	# журнал перезагрузок: пишем один раз после синхронизации времени
+	# reboot log: written once after the time is synchronized
 	if [ "$boot_pending" = 1 ] && [ "$now" -gt 1700000000 ]; then
 		boot_pending=0
 		read -r upn _ < "$PROC/uptime"; upn=${upn%.*}; bt=$((now - upn))
-		if [ "$lastts" -gt 1700000000 ] && [ "$bt" -gt "$lastts" ]; then gap_note="; данных не было $(fmt_dur $((bt - lastts)))"; fi
+		if [ "$lastts" -gt 1700000000 ] && [ "$bt" -gt "$lastts" ]; then gap_note="; no data for $(fmt_dur $((bt - lastts)))"; fi
 		if ! tail -n 5 "$JOURNAL_FILE" 2>/dev/null | awk -F'|' -v bt="$bt" '$2 == "boot" { d = bt - $1; if (d < 0) d = -d; if (d < 180) f = 1 } END { exit !f }'; then
-			jwrite "$bt" boot 0 "Роутер загружен${gap_note}"
-			[ "$TG_ALERTS" = 1 ] && tgsend "🔄 Роутер загружен${gap_note}"
+			jwrite "$bt" boot 0 "Router booted${gap_note}"
+			[ "$TG_ALERTS" = 1 ] && tgsend "🔄 Router booted${gap_note}"
 		fi
 	fi
 
-	# соединения, диск
+	# connections, disk
 	ctn=0; ctm=0
-	# /proc/sys читаем через cat: BusyBox read читает по байту, а sysctl при этом отдаёт только первую цифру
+	# read /proc/sys with cat: BusyBox read reads byte by byte, and sysctl then returns only the first digit
 	[ -r "$PROC/sys/net/netfilter/nf_conntrack_count" ] && ctn=$(cat "$PROC/sys/net/netfilter/nf_conntrack_count" 2>/dev/null)
 	[ -r "$PROC/sys/net/netfilter/nf_conntrack_max" ] && ctm=$(cat "$PROC/sys/net/netfilter/nf_conntrack_max" 2>/dev/null)
 	case "$ctn" in ''|*[!0-9]*) ctn=0 ;; esac
@@ -993,7 +993,7 @@ while :; do
 	fp=/overlay; [ -d /overlay ] || fp=/
 	fl=$(df -kP "$fp" 2>/dev/null | awk 'END { if (NR > 1 && $2 > 0) print int($3 * 100 / $2); else print 0 }')
 
-	# история пишется только когда часы синхронизированы и после первого замера
+	# history is written only when the clock is synchronized and after the first sample
 	if [ "$now" -gt 1700000000 ] && [ "$tick" -gt 1 ]; then
 		printf '%s %s %s %s %s %s %s %s %s %s\n' "$now" "$cpu" "$mem" "$temp" "$rx" "$tx" "$gwms" "$netms" "$loss" "$ctn" >> "$DIR/hist.fine"
 		tl=$(read_temps); [ -n "$tl" ] && printf '%s %s\n' "$now" "$tl" >> "$DIR/temps.fine"
@@ -1010,27 +1010,27 @@ while :; do
 			[ -x /usr/libexec/nightfall-speed ] && /usr/libexec/nightfall-speed start >/dev/null 2>&1
 		fi
 
-		# предупреждения
+		# warnings
 		ti=${temp%.*}; [ "$ti" -ge 0 ] 2>/dev/null || ti=0
 		c=0; [ "$ti" -ge "$TEMP_WARN" ] && [ "$ti" -lt "$TEMP_CRIT" ] && c=1
-		alert temp warn $((60 / STEP + 1)) $c "Процессор перегрет: ${temp} °C (порог $TEMP_WARN °C)"
+		alert temp warn $((60 / STEP + 1)) $c "CPU overheating: ${temp} °C (threshold $TEMP_WARN °C)"
 		c=0; [ "$ti" -ge "$TEMP_CRIT" ] && c=1
-		alert tempc crit 2 $c "Критическая температура процессора: ${temp} °C"
+		alert tempc crit 2 $c "Critical CPU temperature: ${temp} °C"
 		c=0; [ "$mem" -gt $((100 - MEM_MIN_PCT)) ] && c=1
-		alert mem warn $((120 / STEP)) $c "Мало свободной памяти: занято ${mem}%"
+		alert mem warn $((120 / STEP)) $c "Low free memory: ${mem}% used"
 		c=0; [ "$fl" -ge "$FLASH_MAX_PCT" ] && c=1
-		alert flash warn 2 $c "Флеш-память почти заполнена: ${fl}%"
+		alert flash warn 2 $c "Flash is almost full: ${fl}%"
 		c=0; [ "$ctm" -gt 0 ] && [ $((100 * ctn / ctm)) -ge "$CT_MAX_PCT" ] && c=1
-		alert ct warn 2 $c "Таблица соединений заполнена на $((100 * ctn / ${ctm:-1}))%"
+		alert ct warn 2 $c "Connection table is $((100 * ctn / ${ctm:-1}))% full"
 		c=0; [ "$cpu" -ge "$CPU_MAX_PCT" ] && c=1
-		alert cpu warn $((CPU_MINUTES * 60 / STEP)) $c "Процессор загружен на ${cpu}% дольше ${CPU_MINUTES} мин"
+		alert cpu warn $((CPU_MINUTES * 60 / STEP)) $c "CPU load at ${cpu}% for longer than ${CPU_MINUTES} min"
 		if [ -n "$PING_TARGET" ]; then
 			c=0; [ "$netms" = -1 ] && c=1
-			if [ "$gwms" = -1 ] && [ -n "$gw" ]; then wt="Нет связи со шлюзом $gw"; else wt="Нет доступа в интернет"; fi
+			if [ "$gwms" = -1 ] && [ -n "$gw" ]; then wt="No connection to gateway $gw"; else wt="No internet access"; fi
 			alert wan crit 3 $c "$wt"
 		fi
 
-		# раз в 5 минут: сводная точка за неделю, обрезка, сохранение
+		# every 5 minutes: weekly summary point, trimming, saving
 		if [ $((tick % AGG)) = 0 ]; then
 			tail -n "$AGG" "$DIR/hist.fine" | awk '{ for (i = 2; i <= 10; i++) if ($i >= 0) { s[i] += $i; c[i]++ } last = $1 }
 				END { printf "%d", last; for (i = 2; i <= 10; i++) printf " %s", (c[i] ? sprintf("%.1f", s[i] / c[i]) : -1); print "" }' >> "$DIR/hist.coarse"
@@ -1039,7 +1039,7 @@ while :; do
 			[ $((tick % (AGG * 6))) = 0 ] && long_point
 			extip_point
 			[ $((tick % (AGG * 3))) = 0 ] && procmem_point
-			# всплеск неудачных входов (SSH, LuCI): сообщение в Telegram, если TG_SEC не выключен
+			# burst of failed sign-ins (SSH, LuCI): Telegram message unless TG_SEC is off
 			if [ "$TG" = 1 ] && [ "$TG_SEC" != 0 ] && [ -x /usr/libexec/nightfall-sec ]; then
 				m=$(NF_DIR="$DIR" /usr/libexec/nightfall-sec watch 2>/dev/null); [ -z "$m" ] || tgsend "🛡 $m"
 			fi
@@ -1053,7 +1053,7 @@ while :; do
 			write_info
 		fi
 	fi
-	[ "$tick" = 1 ] && { write_info; event info "Сборщик истории запущен"; }
+	[ "$tick" = 1 ] && { write_info; event info "History collector started"; }
 
 	loops=$((loops + 1))
 	[ "$LOOPS" -gt 0 ] && [ "$loops" -ge "$LOOPS" ] && break

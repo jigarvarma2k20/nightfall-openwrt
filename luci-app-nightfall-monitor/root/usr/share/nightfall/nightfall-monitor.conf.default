@@ -1,83 +1,83 @@
-# Настройки фонового сборщика Nightfall (/etc/nightfall-monitor.conf).
-# Удобнее править на странице: Status → Монитор ресурсов → История → «Настройки предупреждений».
-# После изменений:  /etc/init.d/nightfall-collector restart
+# Nightfall background collector settings (/etc/nightfall-monitor.conf).
+# Easier to edit on the page: Status → Resource Monitor → History → "Warning settings".
+# After changes:  /etc/init.d/nightfall-collector restart
 
-# --- пороги предупреждений ---
-TEMP_WARN=80          # °C, предупреждение (держится больше минуты)
-TEMP_CRIT=90          # °C, критический перегрев
-MEM_MIN_PCT=10        # предупреждение, если свободно меньше N % памяти (2 мин)
-FLASH_MAX_PCT=90      # предупреждение, если флеш занят на N % и больше
-CT_MAX_PCT=80         # предупреждение, если таблица соединений заполнена на N % и больше
-CPU_MAX_PCT=90        # предупреждение, если процессор загружен на N % и больше
-CPU_MINUTES=3         # ...дольше N минут
+# --- warning thresholds ---
+TEMP_WARN=80          # °C, warning (lasting more than a minute)
+TEMP_CRIT=90          # °C, critical overheating
+MEM_MIN_PCT=10        # warning if less than N % of memory is free (2 min)
+FLASH_MAX_PCT=90      # warning if flash is N % full or more
+CT_MAX_PCT=80         # warning if the connection table is N % full or more
+CPU_MAX_PCT=90        # warning if CPU load is N % or more
+CPU_MINUTES=3         # ...for longer than N minutes
 
-# --- проверка интернета (ping). Нужен ответ хотя бы от одного адреса ---
+# --- internet check (ping). A reply from at least one address is needed ---
 PING_TARGET=1.1.1.1
 PING_TARGET2=77.88.8.8
 
-# --- сохранять историю между перезагрузками ---
-# По умолчанию история хранится в памяти (/tmp) и теряется при перезагрузке.
-# Укажите папку на флешке/USB, например /mnt/sda1/nightfall. Не указывайте /etc и /root,
-# чтобы не изнашивать встроенную флеш-память (запись раз в час).
+# --- keep history across reboots ---
+# By default history is kept in memory (/tmp) and is lost on reboot.
+# Set a folder on a flash drive/USB, for example /mnt/sda1/nightfall. Do not use /etc or /root,
+# to avoid wearing out the built-in flash (written once an hour).
 PERSIST_DIR=
 
-# --- экономия флеш-памяти ---
-# Как часто (в часах) сбрасывать историю из памяти в PERSIST_DIR. Файлы без изменений не пишутся.
-# Если PERSIST_DIR окажется на встроенной флеш-памяти роутера, запись будет заблокирована.
+# --- flash wear saving ---
+# How often (in hours) to flush history from memory to PERSIST_DIR. Unchanged files are not written.
+# If PERSIST_DIR turns out to be on the router built-in flash, writing will be blocked.
 PERSIST_HOURS=6
-# 1 = разрешить сохранять историю на встроенную флеш-память (например, eMMC или SSD с общим разделом). Обычно 0.
+# 1 = allow saving history to built-in flash (for example, eMMC or an SSD with a shared partition). Usually 0.
 PERSIST_ANY=0
-# Сколько суток хранить длинную историю (шаг 30 минут, 7–90). Она переживает перезагрузку, если задан PERSIST_DIR;
-# 90 суток занимают около 300 КБ в памяти и столько же на накопителе.
+# How many days to keep the long history (30-minute step, 7–90). It survives a reboot if PERSIST_DIR is set;
+# 90 days take about 300 KB in memory and the same on the drive.
 HIST_DAYS=30
-# Сколько последних резервных копий Nightfall оставлять на USB/SD (1–20).
+# How many recent Nightfall backups to keep on USB/SD (1–20).
 BACKUP_KEEP=5
-# Журнал перезагрузок и обрывов связи (/etc/nightfall-journal.log): одна короткая запись на событие, не более 200 строк.
+# Reboot and outage log (/etc/nightfall-journal.log): one short entry per event, at most 200 lines.
 JOURNAL=1
-# История уровня сигнала Wi-Fi клиентов (только в памяти, раз в минуту)
+# Wi-Fi client signal level history (in memory only, once a minute)
 WIFI_HIST=1
 
-# --- замер скорости самим роутером ---
-# Автоматически раз в N часов (0 = выключено; вручную можно кнопкой «Измерить сейчас»).
-# Каждый замер скачивает файл в SPEED_STREAMS потоков сразу (по умолчанию 4 × 25 МБ = до 100 МБ трафика).
-# Несколько потоков нужны, чтобы загрузить быстрый канал; на лимитном тарифе поставьте 1. Адрес можно заменить на любой файл по http/https.
+# --- speed test run by the router itself ---
+# Automatically every N hours (0 = off; run manually with the "Test now" button).
+# Each test downloads a file in SPEED_STREAMS streams at once (4 × 25 MB by default = up to 100 MB of traffic).
+# Several streams are needed to saturate a fast link; on a metered plan set 1. The address can be replaced with any file over http/https.
 SPEED_HOURS=0
 SPEED_URL=https://speed.cloudflare.com/__down?bytes=25000000
 SPEED_STREAMS=4
 
-# --- трафик по приложениям (YouTube, Telegram и т. д.) ---
-# 1 = включено. Включать лучше кнопкой в карточке «Трафик по приложениям» на странице «Обзор»: она заодно включит журнал DNS в dnsmasq.
+# --- traffic by app (YouTube, Telegram, etc.) ---
+# 1 = on. Better turned on with the button in the "Traffic by app" card on the "Overview" page: it also turns on the dnsmasq DNS log.
 APPS=0
-# Режим для слабых роутеров (0 — мощный, 1 — Lite): опрос раз в 60 с вместо 15, без учёта по приложениям и истории Wi-Fi. Текущий режим виден в шапке монитора.
+# Mode for low-end routers (0 — full, 1 — Lite): polling every 60 s instead of 15, no per-app accounting and no Wi-Fi history. The current mode is shown in the monitor header.
 LITE=0
 
-# --- новые устройства в сети ---
-# 1 = записывать в ленту событий (и в Telegram, если он включён), когда в сети появляется незнакомое устройство.
-# Известные устройства хранятся в /etc/nightfall-known.list. Телефоны со «случайным» Wi-Fi адресом могут считаться новыми.
+# --- new devices on the network ---
+# 1 = record in the event feed (and in Telegram, if on) when an unknown device appears on the network.
+# Known devices are stored in /etc/nightfall-known.list. Phones with a "random" Wi-Fi address may be treated as new.
 NEWDEV=1
 
-# --- уведомления в Telegram ---
-# Токен бота получите у @BotFather, chat id определяется кнопкой в настройках монитора. Если api.telegram.org у вас закрыт,
-# укажите прокси, например socks5h://127.0.0.1:1080 (нужен curl: apk add curl).
+# --- Telegram notifications ---
+# Get the bot token from @BotFather, the chat id is detected with a button in the monitor settings. If api.telegram.org is blocked for you,
+# set a proxy, for example socks5h://127.0.0.1:1080 (needs curl: apk add curl).
 TG=0
 TG_ALERTS=1
-# Бот с кнопками (/menu): статус, клиенты, трафик, блокировка устройств, перезагрузка. Отвечает только владельцу (TG_CHAT).
+# Bot with buttons (/menu): status, clients, traffic, device blocking, reboot. Answers only the owner (TG_CHAT).
 TG_BOT=1
-# Бот убирает за собой: ваша команда и прошлые ответы удаляются, новый ответ всегда внизу и виден сразу (только в личном чате).
+# The bot cleans up after itself: your command and previous replies are deleted, the new reply is always at the bottom and visible right away (private chat only).
 TG_CLEAN=1
-# Бот раз в 6 часов проверяет, вышла ли новая версия темы, и присылает уведомление с кнопкой «Установить».
+# Every 6 hours the bot checks whether a new theme version is out and sends a notification with an "Install" button.
 TG_UPDATES=1
-# Сообщать в Telegram о всплеске неудачных входов в роутер (SSH и LuCI).
+# Report bursts of failed sign-ins to the router (SSH and LuCI) to Telegram.
 TG_SEC=1
-# Интерактивные сообщения (виджеты, Bot API 10.4): «Статус» с живыми кольцами. Только личный чат; на старых клиентах виден обычный текст.
+# Interactive messages (widgets, Bot API 10.4): "Status" with live rings. Private chat only; older clients show plain text.
 TG_WIDGETS=0
-# Ежедневный отчёт в Telegram в указанное время (например 21:00); пусто = не отправлять.
+# Daily Telegram report at the given time (for example 21:00); empty = do not send.
 TG_REPORT=
 TG_TOKEN=
 TG_CHAT=
-# Если TG_CHAT это группа (id начинается с «-»): id людей через запятую, которым бот разрешает управление
-# (блокировка, перезагрузка, резервная копия). Остальным участникам группы доступен только просмотр. В личном чате не нужно.
+# If TG_CHAT is a group (id starts with "-"): comma-separated ids of people the bot allows to control it
+# (blocking, reboot, backup). Other group members can only view. Not needed in a private chat.
 TG_USERS=
 TG_PROXY=
-# Либо имя интерфейса VPN (wg0, tun0…): запросы к Telegram пойдут через него (нужен curl).
+# Or a VPN interface name (wg0, tun0…): Telegram requests will go through it (needs curl).
 TG_IFACE=

@@ -3,29 +3,15 @@
 'require view';
 
 /*
- * Nightfall: экран входа.
- * Кроме стандартного окна LuCI: сводка о роутере (из data-* шаблона),
- * запоминание имени пользователя, подсказки про Caps Lock и раскладку,
- * подсказка «Забыли пароль?». Пароль темой нигде не сохраняется (его может запомнить браузер).
+ * Nightfall: sign-in screen.
+ * On top of the standard LuCI dialog: a router summary (from the template's data-* attributes),
+ * remembering the username, Caps Lock and keyboard layout hints,
+ * and a "Forgot password?" hint. The theme never stores the password (the browser may remember it).
  */
 
 const KEY = 'nightfall-login-user';
 
 const TEXT = {
-	ru: {
-		net: 'Интернет', up: 'Работает', fw: 'Прошивка', speed: 'Скорость', test: 'Замер скорости', mbit: 'Мбит/с', temp: 'Температура', cpu: 'Процессор', mem: 'Память', cl: 'Устройств', dec: ',',
-		online: 'есть', offline: 'нет связи', nodata: 'нет данных', ms: 'мс',
-		d: 'д', h: 'ч', m: 'мин',
-		remember: 'Запомнить имя', forgot: 'Забыли пароль?',
-		caps: 'Включён Caps Lock', layout: 'Введены русские буквы — проверьте раскладку',
-		bad: 'Неверное имя или пароль. Проверьте раскладку и Caps Lock.',
-		helpTitle: 'Как войти без пароля',
-		help: [
-			[ 'Есть SSH-доступ', 'Подключитесь и выполните: passwd' ],
-			[ 'Доступа нет', 'Перезагрузите роутер, в начале загрузки, пока быстро мигает индикатор, нажмите reset (кнопка зависит от модели). Подключитесь по кабелю к 192.168.1.1 через telnet и выполните: mount_root; passwd; reboot' ],
-			[ 'Ничего не помогло', 'Сброс к заводским настройкам кнопкой reset (около 10 секунд). Все настройки будут потеряны.' ]
-		]
-	},
 	en: {
 		net: 'Internet', up: 'Uptime', fw: 'Firmware', speed: 'Speed', test: 'Speed test', mbit: 'Mbit/s', temp: 'Temperature', cpu: 'CPU', mem: 'Memory', cl: 'Devices', dec: '.',
 		online: 'online', offline: 'offline', nodata: 'no data', ms: 'ms',
@@ -50,8 +36,7 @@ return view.extend({
 	render() {
 		const form = document.querySelector('form');
 		const btn = document.querySelector('button');
-		const lang = document.documentElement.lang || 'en';
-		const T = /^ru|^uk|^be/i.test(lang) ? TEXT.ru : TEXT.en;
+		const T = TEXT.en;
 		const info = document.getElementById('view');
 		const user = form.querySelector('input[type="text"]');
 		const failed = !!document.querySelector('section .alert-message');
@@ -62,7 +47,7 @@ return view.extend({
 			'login'
 		);
 
-		/* --- шапка: имя и модель --- */
+		/* --- header: name and model --- */
 		const h = dlg.querySelector('h4');
 		const plate = E('div', { 'class': 'nf-plate' }, [
 			E('b', {}, (info && info.dataset.host) || ''),
@@ -70,16 +55,16 @@ return view.extend({
 		]);
 		dlg.insertBefore(plate, h ? h.nextSibling : dlg.firstChild);
 
-		/* сводку (карточки) рисует nightfall.js: он всегда свежий, а этот модуль браузер может держать в кэше */
+		/* the summary (cards) is drawn by nightfall.js: it is always fresh, while the browser may cache this module */
 
-		/* --- имя пользователя: запомнить --- */
+		/* --- username: remember --- */
 		const saved = store((s) => s.getItem(KEY));
 		const remember = E('input', { type: 'checkbox', id: 'nf-remember' });
 		remember.checked = saved !== null;
 		if (saved && (!user.value || user.value === 'root'))
 			user.value = saved;
 
-		/* --- подсказка под паролем --- */
+		/* --- hint under the password --- */
 		const pw = dlg.querySelector('input[type="password"]');
 		const hint = E('div', { 'class': 'nf-lhint', 'aria-live': 'polite' });
 		let caps = false;
@@ -104,7 +89,7 @@ return view.extend({
 			pw.addEventListener('blur', () => { caps = false; showHint(); });
 		}
 
-		/* --- ряд: запомнить / забыли пароль --- */
+		/* --- row: remember / forgot password --- */
 		const helpBox = E('div', { 'class': 'nf-help', hidden: true }, [
 			E('b', {}, T.helpTitle),
 			E('dl', {}, T.help.map((r) => [ E('dt', {}, r[0]), E('dd', {}, r[1]) ]).flat())
@@ -126,7 +111,7 @@ return view.extend({
 		dlg.insertBefore(row, submitBtn);
 		dlg.appendChild(helpBox);
 
-		/* --- ошибка входа: подсветка поля и фокус --- */
+		/* --- sign-in error: highlight the field and focus --- */
 		if (failed) {
 			const alertEl = dlg.querySelector('.alert-message');
 			if (alertEl)
@@ -148,8 +133,8 @@ return view.extend({
 			busy = true;
 			store((s) => remember.checked ? s.setItem(KEY, user.value) : s.removeItem(KEY));
 
-			/* настоящая отправка формы (с событием submit, пока поля видны): так браузер и менеджер паролей замечают вход
-			   и предлагают сохранить пароль. Раньше поля прятались до отправки, и предложение «Сохранить пароль?» не появлялось. */
+			/* a real form submission (with a submit event while the fields are visible): this way the browser and password manager notice the sign-in
+			   and offer to save the password. Previously the fields were hidden before submitting, and the "Save password?" prompt never appeared. */
 			if (form.requestSubmit)
 				form.requestSubmit();
 			else
@@ -165,7 +150,7 @@ return view.extend({
 			}, 50);
 		});
 
-		/* --- часы экрана блокировки --- */
+		/* --- lock screen clock --- */
 		const lock = E('div', { 'class': 'nf-lock' }, [ E('b'), E('span') ]);
 		const loc = document.documentElement.lang || undefined;
 		const tick = () => {
@@ -178,7 +163,7 @@ return view.extend({
 		window.setInterval(tick, 10000);
 		document.body.appendChild(lock);
 
-		/* --- показать пароль --- */
+		/* --- show password --- */
 		if (pw) {
 			const eye = E('button', { type: 'button', 'class': 'nf-eye', title: _('Show password'), 'aria-label': _('Show password'),
 				click: (ev) => {
@@ -192,7 +177,7 @@ return view.extend({
 			pw.parentNode.classList.add('nf-pw');
 			pw.parentNode.appendChild(eye);
 
-			/* имя уже известно — сразу в пароль; иначе в имя */
+			/* username already known: focus the password; otherwise the username */
 			if (user.value) {
 				pw.focus();
 				if (failed)
