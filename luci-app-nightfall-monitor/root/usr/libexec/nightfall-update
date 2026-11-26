@@ -203,7 +203,7 @@ run)
 	state installing 75 "Installing"
 	tar -xzf "$WORK/new.tar.gz" -C "${ROOT:-/}" || fail "Extraction error." rollback
 	[ -f "$VERF" ] || fail "The theme version was not found after installation." rollback
-	[ "$(version)" = "$EXPECTED" ] || fail "After installation the version did not match the archive version; the previous files were restored." rollback
+	[ "$(version)" = "$EXPECTED" ] || fail "After installation the version did not match the archive version." rollback
 
 	chmod 755 "$ROOT"/usr/libexec/nightfall-* "$ROOT"/etc/init.d/nightfall-collector 2>/dev/null
 	for f in "$ROOT/etc/uci-defaults/30_luci-theme-nightfall" "$ROOT/etc/uci-defaults/40_nightfall-collector"; do
